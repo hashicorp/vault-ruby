@@ -4,7 +4,10 @@ require_relative "../sys"
 
 module Vault
   class InitResponse < Response.new(:keys, :root_token); end
-  class InitStatus < Response.new(:initialized); end
+
+  class InitStatus < Response.new(:initialized)
+    alias_method :initialized?, :initialized
+  end
 
   class Sys
     # Show the initialization status for this vault.
