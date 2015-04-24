@@ -38,7 +38,8 @@ module Vault
       return true
     end
 
-    # Unmount the thing at the given path.
+    # Unmount the thing at the given path. If the mount does not exist, an error
+    # will be raised.
     #
     # @example
     #   Vault.sys.unmount("pg") #=> true
