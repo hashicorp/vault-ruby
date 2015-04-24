@@ -39,7 +39,9 @@ module Vault
     #
     # @return [Secret]
     def renew(id, increment = 0)
-      json = client.put("/v1/auth/token/renew/#{id}")
+      json = client.put("/v1/auth/token/renew/#{id}", JSON.fast_generate(
+        increment: increment,
+      ))
       return Secret.decode(json)
     end
 
@@ -53,7 +55,7 @@ module Vault
     #
     # @return [true]
     def revoke_orphan(id)
-      client.put("/v1/auth/token/revoke-orphan/#{id}")
+      client.put("/v1/auth/token/revoke-orphan/#{id}", nil)
       return true
     end
 
@@ -67,7 +69,7 @@ module Vault
     #
     # @return [true]
     def revoke_prefix(prefix)
-      client.put("/v1/auth/token/revoke-prefix/#{prefix}")
+      client.put("/v1/auth/token/revoke-prefix/#{prefix}", nil)
       return true
     end
 
@@ -81,7 +83,7 @@ module Vault
     #
     # @return [true]
     def revoke_tree(id)
-      client.put("/v1/auth/token/revoke/#{id}")
+      client.put("/v1/auth/token/revoke/#{id}", nil)
       return true
     end
   end
