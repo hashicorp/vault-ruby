@@ -32,3 +32,10 @@ end
 def tmp
   Pathname.new(File.expand_path("../tmp", __FILE__))
 end
+
+def vault_test_client
+  Vault::Client.new(
+    address: RSpec::Vault::Server.address,
+    token:   RSpec::Vault::Server.token,
+  )
+end
