@@ -92,7 +92,7 @@ module Vault
     # @param [Symbol] verb
     #   the lowercase symbol of the HTTP verb (e.g. :get, :delete)
     # @param [String] path
-    #   the absolute or relative path from {Defaults.endpoint} to make the
+    #   the absolute or relative path from {Defaults.address} to make the
     #   request against
     # @param [#read, Hash, nil] data
     #   the data to use (varies based on the +verb+)
@@ -183,14 +183,14 @@ module Vault
         end
       end
     rescue SocketError, Errno::ECONNREFUSED, EOFError
-      raise HTTPConnectionError.new(endpoint)
+      raise HTTPConnectionError.new(address)
     end
 
     # Construct a URL from the given verb and path. If the request is a GET or
     # DELETE request, the params are assumed to be query params are are
     # converted as such using {Client#to_query_string}.
     #
-    # If the path is relative, it is merged with the {Defaults.endpoint}
+    # If the path is relative, it is merged with the {Defaults.address}
     # attribute. If the path is absolute, it is converted to a URI object and
     # returned.
     #
@@ -212,7 +212,7 @@ module Vault
       uri = URI.parse(path)
 
       # Don't merge absolute URLs
-      uri = URI.parse(File.join(endpoint, path)) unless uri.absolute?
+      uri = URI.parse(File.join(address, path)) unless uri.absolute?
 
       # Return the URI object
       uri
@@ -274,12 +274,12 @@ module Vault
           json = JSON.parse(response.body, JSON_PARSE_OPTIONS)
 
           if json[:errors]
-            raise HTTPError.new(endpoint, response.code, json[:errors])
+            raise HTTPError.new(address, response.code, json[:errors])
           end
         rescue JSON::ParserError; end
       end
 
-      raise HTTPError.new(endpiont, response.code, [response.body])
+      raise HTTPError.new(address, response.code, [response.body])
     end
   end
 end

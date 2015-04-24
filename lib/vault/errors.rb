@@ -15,13 +15,13 @@ EOH
   end
 
   class HTTPConnectionError < VaultError
-    attr_reader :endpoint
+    attr_reader :address
 
-    def initialize(endpoint)
-      @endpoint = endpoint
+    def initialize(address)
+      @address = address
 
       super <<-EOH
-The Vault server at `#{endpoint}' is not currently
+The Vault server at `#{address}' is not currently
 accepting connections. Please ensure that the server is running an that your
 authentication information is correct.
 EOH
@@ -29,14 +29,14 @@ EOH
   end
 
   class HTTPError < VaultError
-    attr_reader :endpoint, :code, :errors
+    attr_reader :address, :code, :errors
 
-    def initialize(endpoint, code, errors = [])
-      @endpoint, @code, @errors = endpoint, code.to_i, errors
+    def initialize(address, code, errors = [])
+      @address, @code, @errors = address, code.to_i, errors
       errors = errors.map { |error| "  * #{error}" }
 
       super <<-EOH
-The Vault server at `#{endpoint}' responded with a #{code}.
+The Vault server at `#{address}' responded with a #{code}.
 Any additional information the server supplied is shown below:
 
 #{errors.join("\n").rstrip}

@@ -1,8 +1,8 @@
 module Vault
   module Defaults
-    # The default vault endpoint.
+    # The default vault address.
     # @return [String]
-    VAULT_ENDPOINT = "https://127.0.0.1:8200".freeze
+    VAULT_ADDRESS = "https://127.0.0.1:8200".freeze
 
     class << self
       # The list of calculated options for this configurable.
@@ -11,10 +11,10 @@ module Vault
         Hash[*Configurable.keys.map { |key| [key, public_send(key)] }.flatten]
       end
 
-      # The endpoint to communicate with Vault.
+      # The address to communicate with Vault.
       # @return [String]
-      def endpoint
-        ENV["VAULT_ADDR"] || VAULT_ENDPOINT
+      def address
+        ENV["VAULT_ADDR"] || VAULT_ADDRESS
       end
 
       # The vault token to use for authentiation.
