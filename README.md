@@ -1,39 +1,99 @@
-# Vault
+Vault Ruby Client
+=================
+[![Build Status](https://secure.travis-ci.org/hashicorp/vault-ruby.png?branch=master)](http://travis-ci.org/hashicorp/vault-ruby)
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/vault`. To experiment with that code, run `bin/console` for an interactive prompt.
+Vault is the official Ruby client for interacting with [Vault](https://vaultproject.io) by HashiCorp.
 
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'vault'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Quick Start
+-----------
+Install via Rubygems:
 
     $ gem install vault
 
-## Usage
+or add it to your Gemfile if you're using Bundler:
 
-TODO: Write usage instructions here
+```ruby
+gem "vault", "~> 0.1"
+```
 
-## Development
+and then run the `bundle` command to install.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
+Start a Vault client:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+Vault.endpoint = "http://127.0.0.1:8200" # Also reads from ENV["VAULT_ADDR"]
+Vault.token    = "abcd-1234" # Also reads from ENV["VAULT_TOKEN"]
 
-## Contributing
+Vault.sys.mounts #=> { :secret => #<struct Vault::Mount type="generic", description="generic secret storage"> }
+```
 
-1. Fork it ( https://github.com/[my-github-username]/vault/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+Usage
+-----
+The following configuration options are available:
+
+```ruby
+Vault::Client.configure do |config|
+  # The address of the Vault server, also read as ENV["VAULT_TOKEN"]
+  config.endpoint = "https://127.0.0.1:8200"
+
+  # The token to authenticate with Vault, also read as ENV["VAULT_TOKEN"]
+  config.token = "abcd-1234"
+
+  # Proxy connection information, also read as ENV["VAULT_PROXY_(thing)"]
+  config.proxy_address  = "..."
+  config.proxy_port     = "..."
+  config.proxy_username = "..."
+  config.proxy_password = "..."
+
+  # Custom SSL PEM, also read as ENV["VAULT_SSL_CERT"]
+  config.ssl_pem_file = "/path/on/disk.pem"
+
+  # Use SSL verification, also read as ENV["VAULT_SSL_VERIFY"]
+  config.ssl_verify = false
+end
+```
+
+If you do not want the Vault singleton, of if you need to communicate with multiple Vault servers at once, you can create indepenent client objects:
+
+```ruby
+client_1 = Vault::Client.new(endpoint: "https://vault.mycompany.com")
+client_2 = Vault::Client.new(endpoint: "https://other-vault.mycompany.com")
+```
+
+### Making requests
+All of the methods and API calls are heavily documented with examples inline using YARD. In order to keep the examples versioned with the code, the README only lists a few examples for using the Vault gem. Please see the inline documentation for the full API documentation. The tests in the 'spec' directory are an additional source of examples.
+
+#### Seal Status
+```ruby
+Vault.sys.seal_status
+#=> #<Vault::SealStatus sealed=false, t=1, n=1, progress=0>
+```
+
+#### Create a Secret
+```ruby
+Vault.logical.write("secret/bacon", delicious: true, cooktime: "11")
+#=> #<Vault::Secret lease_id="">
+```
+
+#### Retrieve a Secret
+```ruby
+Vault.logical.read("secret/bacon")
+#=> #<Vault::Secret lease_id="">
+```
+
+#### Seal the Vault
+```ruby
+Vault.sys.seal #=> true
+```
+
+Development
+-----------
+1. Clone the project on GitHub
+2. Create a feature branch
+3. Submit a Pull Request
+
+Important Notes:
+
+- **All new features must include test coverage.** At a bare minimum, Unit tests are required. It is preferred if you include acceptance tests as well.
+- **The tests must be be idempotent.** The HTTP calls made during a test should be able to be run over and over.
+- **Tests are order independent.** The default RSpec configuration randomizes the test order, so this should not be a problem.
