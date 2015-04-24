@@ -22,7 +22,7 @@ Start a Vault client:
 
 ```ruby
 Vault.address = "http://127.0.0.1:8200" # Also reads from ENV["VAULT_ADDR"]
-Vault.token    = "abcd-1234" # Also reads from ENV["VAULT_TOKEN"]
+Vault.token   = "abcd-1234" # Also reads from ENV["VAULT_TOKEN"]
 
 Vault.sys.mounts #=> { :secret => #<struct Vault::Mount type="generic", description="generic secret storage"> }
 ```
