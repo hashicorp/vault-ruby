@@ -21,7 +21,7 @@ and then run the `bundle` command to install.
 Start a Vault client:
 
 ```ruby
-Vault.endpoint = "http://127.0.0.1:8200" # Also reads from ENV["VAULT_ADDR"]
+Vault.address = "http://127.0.0.1:8200" # Also reads from ENV["VAULT_ADDR"]
 Vault.token    = "abcd-1234" # Also reads from ENV["VAULT_TOKEN"]
 
 Vault.sys.mounts #=> { :secret => #<struct Vault::Mount type="generic", description="generic secret storage"> }
@@ -34,7 +34,7 @@ The following configuration options are available:
 ```ruby
 Vault::Client.configure do |config|
   # The address of the Vault server, also read as ENV["VAULT_TOKEN"]
-  config.endpoint = "https://127.0.0.1:8200"
+  config.address = "https://127.0.0.1:8200"
 
   # The token to authenticate with Vault, also read as ENV["VAULT_TOKEN"]
   config.token = "abcd-1234"
@@ -56,8 +56,8 @@ end
 If you do not want the Vault singleton, of if you need to communicate with multiple Vault servers at once, you can create indepenent client objects:
 
 ```ruby
-client_1 = Vault::Client.new(endpoint: "https://vault.mycompany.com")
-client_2 = Vault::Client.new(endpoint: "https://other-vault.mycompany.com")
+client_1 = Vault::Client.new(address: "https://vault.mycompany.com")
+client_2 = Vault::Client.new(address: "https://other-vault.mycompany.com")
 ```
 
 ### Making requests

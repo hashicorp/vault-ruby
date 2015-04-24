@@ -4,7 +4,7 @@ module Vault
   module Configurable
     def self.keys
       @keys ||= [
-        :endpoint,
+        :address,
         :token,
         :proxy_address,
         :proxy_password,
