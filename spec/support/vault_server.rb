@@ -1,81 +1,75 @@
+require "open-uri"
 require "singleton"
+require "timeout"
 require "tempfile"
 
 module RSpec
-  module Vault
-    class Server
-      include Singleton
+  class VaultServer
+    include Singleton
 
-      def self.method_missing(m, *args, &block)
-        self.instance.public_send(m, *args, &block)
+    def self.method_missing(m, *args, &block)
+      self.instance.public_send(m, *args, &block)
+    end
+
+    attr_reader :token
+    attr_reader :unseal_token
+
+    def initialize
+      io = Tempfile.new("vault-server")
+      pid = Process.spawn({}, "vault server -dev", out: io.to_i, err: io.to_i)
+
+      at_exit do
+        Process.kill("INT", pid)
+        Process.waitpid2(pid)
+
+        io.close
+        io.unlink
       end
 
-      attr_reader :token
-      attr_reader :shard
+      wait_for_ready do
+        output = ""
 
-      def initialize
-        @pid = Process.spawn("vault server -config #{config.path}", [:out, :err] => "/dev/null")
-
-        at_exit do
-          Process.kill("INT", @pid)
-          Process.wait(@pid)
+        while
+          io.rewind
+          output = io.read
+          break if !output.empty?
         end
 
-        output = `vault init -key-shares 1 -key-threshold 1 -address #{address}`
-        raise RuntimeError, "Bad response during init!" if !$?.success?
-
-        if output.match("^Key 1: (.+)$")
-          @shard = $1.strip
-        else
-          raise RuntimeError, "Bad response from Vault"
-        end
-
-        if output.match("^Initial Root Token: (.+)$")
+        if output.match(/Root Token: (.+)/)
           @token = $1.strip
         else
-          raise RuntimeError, "Bad response from Vault"
+          raise "Vault did not return a token!\n\n#{output}"
         end
 
-        output = `vault unseal -address #{address} #{shard}`
-        raise RuntimeError, "Bad response unsealing!" if !$?.success?
+        if output.match(/Unseal Key: (.+)/)
+          @unseal_token = $1.strip
+        else
+          raise "Vault did not return an unseal token!"
+        end
+      end
+    end
+
+    def address
+      "http://127.0.0.1:8200"
+    end
+
+    def wait_for_ready(&block)
+      Timeout.timeout(5) do
+        while
+          begin
+            open(address)
+          rescue SocketError, Errno::ECONNREFUSED, EOFError
+          rescue OpenURI::HTTPError => e
+            break if e.message =~ /404/
+          end
+
+          sleep(0.25)
+        end
       end
 
-      def stop
-        @config.unlink
-      end
-
-      def address
-        "http://127.0.0.1:#{port}"
-      end
-
-      def config
-        return @config if defined?(@config)
-
-        @config = Tempfile.new("vault")
-        @config.write <<-EOH.gsub(/^ {10}/, "")
-          backend "inmem" {}
-
-          listener "tcp" {
-            address = "127.0.0.1:#{port}"
-            tls_disable = 1
-          }
-        EOH
-        @config.rewind
-        @config.close
-        @config
-      end
-
-      private
-
-      def port
-        return @port if defined?(@port)
-
-        server = TCPServer.new("127.0.0.1", 0)
-        @port  = server.addr[1].to_i
-        server.close
-
-        return @port
-      end
+      yield
+    rescue Timeout::Error
+      raise "Vault did not start in 5 seconds!"
     end
   end
 end

@@ -20,7 +20,7 @@ module Vault
       it "seals and unseals the vault" do
         subject.seal
         expect(subject.seal_status.sealed?).to be(true)
-        subject.unseal(RSpec::Vault::Server.shard)
+        subject.unseal(RSpec::VaultServer.unseal_token)
         expect(subject.seal_status.sealed?).to be(false)
       end
     end

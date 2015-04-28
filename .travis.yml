@@ -2,5 +2,22 @@ language: ruby
 cache: bundler
 sudo: false
 
+before_install:
+  - mkdir -p ~/gopath
+  - export GOPATH=$HOME/gopath
+  - curl -sL -o ~/gimme https://raw.githubusercontent.com/meatballhat/gimme/master/gimme
+  - chmod +x ~/gimme
+  - eval "$(~/gimme 1.4)"
+
+before_script:
+  - |-
+    mkdir -p $GOPATH/src/github.com/hashicorp
+    git clone https://github.com/hashicorp/vault $GOPATH/src/github.com/hashicorp/vault
+    cd $GOPATH/src/github.com/hashicorp/vault && make dev
+
+branches:
+  only:
+    - master
+
 rvm:
   - 2.2
