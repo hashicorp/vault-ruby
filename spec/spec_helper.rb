@@ -35,7 +35,7 @@ end
 
 def vault_test_client
   Vault::Client.new(
-    address: RSpec::Vault::Server.address,
-    token:   RSpec::Vault::Server.token,
+    address: RSpec::VaultServer.address,
+    token:   RSpec::VaultServer.token,
   )
 end
