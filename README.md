@@ -32,7 +32,7 @@ The following configuration options are available:
 
 ```ruby
 Vault::Client.configure do |config|
-  # The address of the Vault server, also read as ENV["VAULT_TOKEN"]
+  # The address of the Vault server, also read as ENV["VAULT_ADDR"]
   config.address = "https://127.0.0.1:8200"
 
   # The token to authenticate with Vault, also read as ENV["VAULT_TOKEN"]
