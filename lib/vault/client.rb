@@ -7,6 +7,7 @@ require "uri"
 
 require_relative "configurable"
 require_relative "errors"
+require_relative "version"
 
 module Vault
   class Client
