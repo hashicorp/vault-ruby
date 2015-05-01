@@ -13,7 +13,7 @@ before_script:
   - |-
     mkdir -p $GOPATH/src/github.com/hashicorp
     git clone https://github.com/hashicorp/vault $GOPATH/src/github.com/hashicorp/vault
-    cd $GOPATH/src/github.com/hashicorp/vault && make dev
+    cd $GOPATH/src/github.com/hashicorp/vault && go build && go install
 
 branches:
   only:
