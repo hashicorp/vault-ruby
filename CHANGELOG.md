@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.1.3 (May 14, 2015)
+
+BUG FIXES
+
+- Decode logical response body if present
+
 ## v0.1.2 (May 3, 2015)
 
 BUG FIXES
