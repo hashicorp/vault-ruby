@@ -53,6 +53,19 @@ module Vault
         ENV["VAULT_SSL_CERT"]
       end
 
+      # The path to the CA cert on disk to use for certificate verification
+      # @return [String, nil]
+      def ssl_ca_cert
+        ENV["VAULT_CACERT"]
+      end
+      #
+      # The path to the directory on disk holding CA certs to use
+      # for certificate verification
+      # @return [String, nil]
+      def ssl_ca_path
+        ENV["VAULT_CAPATH"]
+      end
+
       # Verify SSL requests (default: true)
       #
       # @return [true, false]
