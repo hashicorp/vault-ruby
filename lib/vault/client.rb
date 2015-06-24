@@ -158,7 +158,7 @@ module Vault
           connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
-        # Naughty, naughty, naughty! Don't blame when when someone hops in
+        # Naughty, naughty, naughty! Don't blame me when someone hops in
         # and executes a MITM attack!
         unless ssl_verify
           connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
