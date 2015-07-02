@@ -11,6 +11,8 @@ module Vault
         :proxy_port,
         :proxy_username,
         :ssl_pem_file,
+        :ssl_ca_cert,
+        :ssl_ca_path,
         :ssl_verify,
       ]
     end
