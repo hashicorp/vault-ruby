@@ -5,9 +5,17 @@ module Vault
     def initialize
       super <<-EOH
 Missing Vault token! I cannot make requests to Vault without a token. Please
-set a Vault token:
+set a Vault token in the client:
 
     Vault.token = "42d1dee5-eb6e-102c-8d23-cc3ba875da51"
+
+or authenticate with Vault using the Vault CLI:
+
+    $ vault auth ...
+
+or set the environment variable $VAULT_TOKEN to the token value:
+
+    $ export VAULT_TOKEN="..."
 
 Please refer to the documentation for more examples.
 EOH

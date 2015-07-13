@@ -1,8 +1,14 @@
+require "pathname"
+
 module Vault
   module Defaults
     # The default vault address.
     # @return [String]
     VAULT_ADDRESS = "https://127.0.0.1:8200".freeze
+
+    # The path to the vault token on disk.
+    # @return [String]
+    VAULT_DISK_TOKEN = Pathname.new("~/.vault-token").expand_path.freeze
 
     class << self
       # The list of calculated options for this configurable.
@@ -20,7 +26,12 @@ module Vault
       # The vault token to use for authentiation.
       # @return [String, nil]
       def token
-        ENV["VAULT_TOKEN"]
+        if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
+          VAULT_DISK_TOKEN.read
+        else
+          ENV["VAULT_TOKEN"]
+        end
+      end
       end
 
       # The HTTP Proxy server address as a string
@@ -67,7 +78,6 @@ module Vault
       end
 
       # Verify SSL requests (default: true)
-      #
       # @return [true, false]
       def ssl_verify
         if ENV["VAULT_SSL_VERIFY"].nil?
