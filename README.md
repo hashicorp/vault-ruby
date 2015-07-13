@@ -55,7 +55,7 @@ Vault::Client.configure do |config|
   config.timeout = 30
 
   # It is also possible to have finer-grained controls over the timeouts, these
-  # may also be read as environment variables.
+  # may also be read as environment variables
   config.ssl_timeout  = 5
   config.open_timeout = 5
   config.read_timeout = 30
