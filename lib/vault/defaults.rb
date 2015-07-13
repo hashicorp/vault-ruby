@@ -32,6 +32,12 @@ module Vault
           ENV["VAULT_TOKEN"]
         end
       end
+
+      # The number of seconds to wait when trying to open a connection before
+      # timing out
+      # @return [String, nil]
+      def open_timeout
+        ENV["VAULT_OPEN_TIMEOUT"]
       end
 
       # The HTTP Proxy server address as a string
@@ -56,6 +62,12 @@ module Vault
       # @return [String, nil]
       def proxy_port
         ENV["VAULT_PROXY_PORT"]
+      end
+
+      # The number of seconds to wait when reading a response before timing out
+      # @return [String, nil]
+      def read_timeout
+        ENV["VAULT_READ_TIMEOUT"]
       end
 
       # The path to a pem on disk to use with custom SSL verification
@@ -85,6 +97,19 @@ module Vault
         else
           %w[t y].include?(ENV["VAULT_SSL_VERIFY"].downcase[0])
         end
+      end
+
+      # The number of seconds to wait for connecting and verifying SSL
+      # @return [String, nil]
+      def ssl_timeout
+        ENV["VAULT_SSL_TIMEOUT"]
+      end
+
+      # A default meta-attribute to set all timeout values - individually set
+      # timeout values will take precedence
+      # @return [String, nil]
+      def timeout
+        ENV["VAULT_TIMEOUT"]
       end
     end
   end
