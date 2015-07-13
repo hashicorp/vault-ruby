@@ -1,5 +1,16 @@
 # Vault Ruby Changelog
 
+## v0.1.3.dev (Unreleased)
+
+IMPROVEMENTS
+
+- Add support for using a custom CA cert [GH-8]
+- Allow clients to specify timeouts [GH-12, GH-14]
+
+BUG FIXES
+
+- Read local token (`~/.vault-token`) for token if present [GH-13]
+
 ## v0.1.3 (May 14, 2015)
 
 BUG FIXES
