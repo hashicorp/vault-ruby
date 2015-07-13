@@ -1,8 +1,14 @@
+require "pathname"
+
 module Vault
   module Defaults
     # The default vault address.
     # @return [String]
     VAULT_ADDRESS = "https://127.0.0.1:8200".freeze
+
+    # The path to the vault token on disk.
+    # @return [String]
+    VAULT_DISK_TOKEN = Pathname.new("~/.vault-token").expand_path.freeze
 
     class << self
       # The list of calculated options for this configurable.
@@ -20,7 +26,18 @@ module Vault
       # The vault token to use for authentiation.
       # @return [String, nil]
       def token
-        ENV["VAULT_TOKEN"]
+        if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
+          VAULT_DISK_TOKEN.read
+        else
+          ENV["VAULT_TOKEN"]
+        end
+      end
+
+      # The number of seconds to wait when trying to open a connection before
+      # timing out
+      # @return [String, nil]
+      def open_timeout
+        ENV["VAULT_OPEN_TIMEOUT"]
       end
 
       # The HTTP Proxy server address as a string
@@ -47,6 +64,12 @@ module Vault
         ENV["VAULT_PROXY_PORT"]
       end
 
+      # The number of seconds to wait when reading a response before timing out
+      # @return [String, nil]
+      def read_timeout
+        ENV["VAULT_READ_TIMEOUT"]
+      end
+
       # The path to a pem on disk to use with custom SSL verification
       # @return [String, nil]
       def ssl_pem_file
@@ -67,7 +90,6 @@ module Vault
       end
 
       # Verify SSL requests (default: true)
-      #
       # @return [true, false]
       def ssl_verify
         if ENV["VAULT_SSL_VERIFY"].nil?
@@ -75,6 +97,19 @@ module Vault
         else
           %w[t y].include?(ENV["VAULT_SSL_VERIFY"].downcase[0])
         end
+      end
+
+      # The number of seconds to wait for connecting and verifying SSL
+      # @return [String, nil]
+      def ssl_timeout
+        ENV["VAULT_SSL_TIMEOUT"]
+      end
+
+      # A default meta-attribute to set all timeout values - individually set
+      # timeout values will take precedence
+      # @return [String, nil]
+      def timeout
+        ENV["VAULT_TIMEOUT"]
       end
     end
   end

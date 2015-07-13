@@ -135,6 +135,16 @@ module Vault
       connection = Net::HTTP.new(uri.host, uri.port,
         proxy_address, proxy_port, proxy_username, proxy_password)
 
+      # Use a custom open timeout
+      if open_timeout || timeout
+        connection.open_timeout = (open_timeout || timeout).to_i
+      end
+
+      # Use a custom read timeout
+      if read_timeout || timeout
+        connection.read_timeout = (read_timeout || timeout).to_i
+      end
+
       # Create the cookie for the request.
       cookie = CGI::Cookie.new
       cookie.name    = "token"
@@ -170,8 +180,13 @@ module Vault
 
         # Naughty, naughty, naughty! Don't blame me when someone hops in
         # and executes a MITM attack!
-        unless ssl_verify
+        if !ssl_verify
           connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+
+        # Use custom timeout for connecting and verifying via SSL
+        if ssl_timeout || timeout
+          connection.ssl_timeout = (ssl_timeout || timeout).to_i
         end
       end
 

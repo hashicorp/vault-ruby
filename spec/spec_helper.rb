@@ -39,3 +39,17 @@ def vault_test_client
     token:   RSpec::VaultServer.token,
   )
 end
+
+def with_stubbed_env(env = {})
+  old = ENV.to_hash
+  env.each do |k,v|
+    if v.nil?
+      ENV.delete(k.to_s)
+    else
+      ENV[k.to_s] = v.to_s
+    end
+  end
+  yield
+ensure
+  ENV.replace(old)
+end
