@@ -208,7 +208,7 @@ module Vault
           error(response)
         end
       end
-    rescue SocketError, Errno::ECONNREFUSED, EOFError
+    rescue SocketError, Errno::ECONNREFUSED, EOFError, Net::ReadTimeout, Net::OpenTimeout
       raise HTTPConnectionError.new(address)
     end
 
