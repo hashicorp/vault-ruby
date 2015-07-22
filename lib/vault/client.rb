@@ -157,6 +157,9 @@ module Vault
         # Turn on SSL
         connection.use_ssl = true
 
+        # Vault requires TLS1.2
+        connection.ssl_version = :TLSv1_2
+
         # Turn on secure cookies
         cookie.secure = true
 
