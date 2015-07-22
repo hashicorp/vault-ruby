@@ -158,7 +158,10 @@ module Vault
         connection.use_ssl = true
 
         # Vault requires TLS1.2
-        connection.ssl_version = :TLSv1_2
+        connection.ssl_version = "TLSv1_2"
+
+        # Only use secure ciphers
+        connection.ciphers = "TLSv1.2:!aNULL:!eNULL"
 
         # Turn on secure cookies
         cookie.secure = true
