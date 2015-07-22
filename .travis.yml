@@ -3,7 +3,7 @@ cache: bundler
 sudo: false
 
 before_install: |-
-  wget -O vault.zip -q https://dl.bintray.com/mitchellh/vault/vault_0.1.1_linux_amd64.zip
+  wget -O vault.zip -q https://dl.bintray.com/mitchellh/vault/vault_0.2.0_linux_amd64.zip
   unzip vault.zip
   mkdir ~/bin
   mv vault ~/bin
