@@ -10,6 +10,20 @@ module Vault
 
   extend Vault::Configurable
 
+  # Sets the initial configurable values and tunes SSL to be more secure.
+  #
+  # @return [self]
+  def self.setup!
+    reset!
+
+    # Set secure SSL options
+    OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:options] &= ~OpenSSL::SSL::OP_DONT_INSERT_EMPTY_FRAGMENTS
+    OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:options] |= OpenSSL::SSL::OP_NO_COMPRESSION
+    OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:options] |= OpenSSL::SSL::OP_NO_SSLv2
+    OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:options] |= OpenSSL::SSL::OP_NO_SSLv3
+    self
+  end
+
   # API client object based off the configured options in {Configurable}.
   #
   # @return [Vault::Client]

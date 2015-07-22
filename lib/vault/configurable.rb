@@ -40,7 +40,6 @@ module Vault
       end
       self
     end
-    alias_method :setup!, :reset!
 
     # The list of options for this configurable.
     #
