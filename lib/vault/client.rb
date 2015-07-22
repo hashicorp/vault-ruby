@@ -150,7 +150,7 @@ module Vault
       cookie.name    = "token"
       cookie.value   = token
       cookie.path    = "/"
-      cookie.expires = Time.now + (60*60*24*376)
+      cookie.expires = Time.now + (60*60*24*365)
 
       # Apply SSL, if applicable
       if uri.scheme == "https"
