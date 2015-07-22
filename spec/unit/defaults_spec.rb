@@ -35,8 +35,6 @@ module Vault
       after do
         if File.exist?(backup_token)
           FileUtils.mv(backup_token, token)
-        else
-          FileUtils.rm(backup_token)
         end
       end
 
