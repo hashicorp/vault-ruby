@@ -28,6 +28,25 @@ module Vault
       symbolize_names:  true,
     }.freeze
 
+    RESCUED_EXCEPTIONS = [].tap do |a|
+      # Failure to even open the socket (usually permissions)
+      a << SocketError
+
+      # Failed to reach the server (aka bad URL)
+      a << Errno::ECONNREFUSED
+
+      # Failed to read body or no response body given
+      a << EOFError
+
+      # Timeout (Ruby 1.9-)
+      a << Timeout::Error
+
+      # Timeout (Ruby 1.9+) - Ruby 1.9 does not define these constants so we
+      # only add them if they are defiend
+      a << Net::ReadTimeout if defined?(Net::ReadTimeout)
+      a << Net::OpenTimeout if defined?(Net::OpenTimeout)
+    end.freeze
+
     include Vault::Configurable
 
     # Create a new Client with the given options. Any options given take
@@ -214,7 +233,7 @@ module Vault
           error(response)
         end
       end
-    rescue SocketError, Errno::ECONNREFUSED, EOFError, Net::ReadTimeout, Net::OpenTimeout
+    rescue *RESCUED_EXCEPTIONS
       raise HTTPConnectionError.new(address)
     end
 
