@@ -9,9 +9,8 @@ before_install: |-
   mv vault ~/bin
   export PATH="~/bin:$PATH"
 
-branches:
-  only:
-    - master
-
 rvm:
+  - 2.0
+  - 2.1
   - 2.2
+  - jruby-19mode
