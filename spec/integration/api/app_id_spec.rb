@@ -16,7 +16,7 @@ module Vault
 
     describe "#login" do
       it "creates a new client token" do
-        result = subject.login("app_id":$APP_ID, "user_id":$USER_ID)
+        result = subject.login($APP_ID, $USER_ID)
         expect(result).to be_a(Vault::Secret)
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
