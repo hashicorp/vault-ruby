@@ -7,8 +7,8 @@ $USER_ID = "bar"
 vault_test_client.sys.enable_auth('app-id', 'app-id', nil)
 
 # Configure App ID and User ID assocaited with the root policy
-vault_test_client.logical.write("auth/app-id/map/app-id/#{$APP_ID}", "value":"root", "display_name":$APP_ID)
-vault_test_client.logical.write("auth/app-id/map/user-id/#{$USER_ID}", "value":$APP_ID)
+vault_test_client.logical.write("auth/app-id/map/app-id/#{$APP_ID}", {"value" => "root", "display_name" => $APP_ID})
+vault_test_client.logical.write("auth/app-id/map/user-id/#{$USER_ID}", {"value" => $APP_ID})
 
 module Vault
   describe AppId do
