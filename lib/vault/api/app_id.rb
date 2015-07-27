@@ -16,13 +16,15 @@ module Vault
     # Create an authentication token.
     #
     # @example
-    #   Vault.app_id.login #=> #<Vault::Secret lease_id="">
+    #   Vault.app_id.login('foo', 'bar') #=> #<Vault::Secret lease_id="">
     #
-    # @param [Hash] options
+    # @param [String] app_id
+    # @param [String] user_id
     #
     # @return [Secret]
-    def login(options = {})
-      json = client.post("/v1/auth/app-id/login", JSON.fast_generate(options))
+    def login(app_id, user_id)
+      payload = { app_id: app_id, user_id: user_id }
+      json = client.post("/v1/auth/app-id/login", JSON.fast_generate(payload))
       return Secret.decode(json)
     end
   end
