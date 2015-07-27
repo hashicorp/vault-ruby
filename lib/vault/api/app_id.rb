@@ -25,6 +25,7 @@ module Vault
     def login(app_id, user_id)
       payload = { app_id: app_id, user_id: user_id }
       json = client.post("/v1/auth/app-id/login", JSON.fast_generate(payload))
+      client.token = Secret.decode(json).auth.client_token
       return Secret.decode(json)
     end
   end
