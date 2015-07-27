@@ -12,14 +12,15 @@ vault_test_client.logical.write("auth/app-id/map/user-id/#{$USER_ID}", {"value" 
 
 module Vault
   describe AppId do
-    subject { vault_test_client.app_id }
+    subject { vault_test_client }
 
     describe "#login" do
       it "creates a new client token" do
-        result = subject.login($APP_ID, $USER_ID)
+        result = subject.app_id.login($APP_ID, $USER_ID)
         expect(result).to be_a(Vault::Secret)
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
+        expect(subject.token).to be == result.auth.client_token
       end
     end
   end
