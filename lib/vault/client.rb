@@ -119,7 +119,7 @@ module Vault
     def request(verb, path, data = {}, headers = {})
       # All requests to vault require a token, so we should error without even
       # trying if there is no token set
-      # raise MissingTokenError if token.nil?
+      raise MissingTokenError if token.nil?
 
       # Build the URI and request object from the given information
       uri = build_uri(verb, path, data)

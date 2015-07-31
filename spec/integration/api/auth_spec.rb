@@ -5,6 +5,10 @@ module Vault
     subject { vault_test_client }
 
     describe "#token" do
+      before do
+        subject.token = nil
+      end
+
       it "verifies the token and saves it on the client" do
         subject.auth.token(subject.token)
         expect(subject.token).to eq(subject.token)
@@ -31,6 +35,10 @@ module Vault
         vault_test_client.sys.enable_auth("new-app-id", "app-id", nil)
         vault_test_client.logical.write("auth/new-app-id/map/app-id/#{@app_id}", { value: "root" })
         vault_test_client.logical.write("auth/new-app-id/map/user-id/#{@user_id}", { value: @app_id })
+      end
+
+      before do
+        subject.token = nil
       end
 
       it "authenticates and saves the token on the client" do
@@ -62,6 +70,10 @@ module Vault
 
         vault_test_client.sys.enable_auth("new-userpass", "userpass", nil)
         vault_test_client.logical.write("auth/new-userpass/users/#{@username}", { password: @password, policies: "root" })
+      end
+
+      before do
+        subject.token = nil
       end
 
       it "authenticates and saves the token on the client" do
