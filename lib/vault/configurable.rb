@@ -30,17 +30,6 @@ module Vault
       yield self
     end
 
-    # Reset all the values to their defaults.
-    #
-    # @return [self]
-    def reset!
-      defaults = Defaults.options
-      Vault::Configurable.keys.each do |key|
-        instance_variable_set(:"@#{key}", defaults[key])
-      end
-      self
-    end
-
     # The list of options for this configurable.
     #
     # @return [Hash<Symbol, Object>]

@@ -56,12 +56,7 @@ module Vault
     def initialize(options = {})
       # Use any options given, but fall back to the defaults set on the module
       Vault::Configurable.keys.each do |key|
-        value = if options[key].nil?
-          Vault.instance_variable_get(:"@#{key}")
-        else
-          options[key]
-        end
-
+        value = options.key?(key) ? options[key] : Defaults.public_send(key)
         instance_variable_set(:"@#{key}", value)
       end
     end
