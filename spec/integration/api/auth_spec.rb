@@ -52,7 +52,7 @@ module Vault
       end
     end
 
-    describe "#userpass", :focus do
+    describe "#userpass" do
       before(:context) do
         @username = "sethvargo"
         @password = "s3kr3t"
