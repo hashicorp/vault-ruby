@@ -11,7 +11,7 @@ module Vault
     end
 
     describe "#request" do
-      specify "raises HTTPConnectionError if it takes too long to read packets from the connection" do
+      it "raises HTTPConnectionError if it takes too long to read packets from the connection" do
         TCPServer.open('localhost', 0) do |server|
           Thread.new do
             client = server.accept
@@ -27,12 +27,23 @@ module Vault
         end
       end
 
-      specify "raises HTTPConnectionError if the port on the remote server is not open" do
+      it "raises HTTPConnectionError if the port on the remote server is not open" do
         address = "http://%s:%s" % free_address
 
         client = described_class.new(address: address, token: "foo")
 
         expect { client.request(:get, "/", {}, {}) }.to raise_error(HTTPConnectionError)
+      end
+
+      it "raises an error when a token was missing" do
+        client = Vault::Client.new(
+          address: RSpec::VaultServer.address,
+          token: nil,
+        )
+
+        expect {
+          client.get("/v1/secret/password")
+        }.to raise_error(MissingTokenError)
       end
     end
   end
