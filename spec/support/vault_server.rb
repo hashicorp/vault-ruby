@@ -49,11 +49,6 @@ module RSpec
         end
 
         if output.match(/Unseal Key: (.+)/)
-          STDOUT.puts
-          STDOUT.puts
-          STDOUT.puts $1.strip
-          STDOUT.puts
-          STDOUT.puts
           @unseal_token = $1.strip
         else
           raise "Vault did not return an unseal token!"
