@@ -10,8 +10,9 @@ module Vault
       end
 
       it "verifies the token and saves it on the client" do
-        subject.auth.token(subject.token)
-        expect(subject.token).to eq(subject.token)
+        token = RSpec::VaultServer.token
+        subject.auth.token(token)
+        expect(subject.token).to eq(token)
       end
 
       it "raises an error if the token is invalid" do
