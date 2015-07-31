@@ -51,5 +51,36 @@ module Vault
         }.to_not change(subject, :token)
       end
     end
+
+    describe "#userpass", :focus do
+      before(:context) do
+        @username = "sethvargo"
+        @password = "s3kr3t"
+
+        vault_test_client.sys.enable_auth("userpass", "userpass", nil)
+        vault_test_client.logical.write("auth/userpass/users/#{@username}", { password: @password, policies: "root" })
+
+        vault_test_client.sys.enable_auth("new-userpass", "userpass", nil)
+        vault_test_client.logical.write("auth/new-userpass/users/#{@username}", { password: @password, policies: "root" })
+      end
+
+      it "authenticates and saves the token on the client" do
+        result = subject.auth.userpass(@username, @password)
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
+      it "authenticates with custom options" do
+        result = subject.auth.userpass(@username, @password, mount: "new-userpass")
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
+      it "raises an error if the authentication is bad" do
+        expect {
+          expect {
+            subject.auth.userpass("nope", "bad")
+          }.to raise_error(HTTPError)
+        }.to_not change(subject, :token)
+      end
+    end
   end
 end
