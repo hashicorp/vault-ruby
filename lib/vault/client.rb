@@ -119,7 +119,7 @@ module Vault
     def request(verb, path, data = {}, headers = {})
       # All requests to vault require a token, so we should error without even
       # trying if there is no token set
-      raise MissingTokenError if token.nil?
+      # raise MissingTokenError if token.nil?
 
       # Build the URI and request object from the given information
       uri = build_uri(verb, path, data)
@@ -210,8 +210,10 @@ module Vault
         end
       end
 
-      # Add the cookie to the request.
-      request["Cookie"] = cookie.to_s
+      # Add the cookie to the request if a token was given.
+      if !token.nil?
+        request["Cookie"] = cookie.to_s
+      end
 
       # Create a connection using the block form, which will ensure the socket
       # is properly closed in the event of an error.
