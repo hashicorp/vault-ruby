@@ -117,10 +117,6 @@ module Vault
     # @return [String, Hash]
     #   the response body
     def request(verb, path, data = {}, headers = {})
-      # All requests to vault require a token, so we should error without even
-      # trying if there is no token set
-      raise MissingTokenError if token.nil?
-
       # Build the URI and request object from the given information
       uri = build_uri(verb, path, data)
       request = class_for_request(verb).new(uri.request_uri)
@@ -210,8 +206,10 @@ module Vault
         end
       end
 
-      # Add the cookie to the request.
-      request["Cookie"] = cookie.to_s
+      # Add the cookie to the request if a token was given.
+      if !token.nil?
+        request["Cookie"] = cookie.to_s
+      end
 
       # Create a connection using the block form, which will ensure the socket
       # is properly closed in the event of an error.
@@ -314,6 +312,10 @@ module Vault
     # @param [HTTP::Message] response
     #   the response object from the request
     def error(response)
+      if response.body && response.body.match("missing client token")
+        raise MissingTokenError
+      end
+
       if (response.content_type || '').include?("json")
         # Attempt to parse the error as JSON
         begin
