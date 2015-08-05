@@ -30,7 +30,7 @@ EOH
 
       super <<-EOH
 The Vault server at `#{address}' is not currently
-accepting connections. Please ensure that the server is running an that your
+accepting connections. Please ensure that the server is running and that your
 authentication information is correct.
 EOH
     end
