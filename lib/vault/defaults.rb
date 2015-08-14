@@ -10,6 +10,8 @@ module Vault
     # @return [String]
     VAULT_DISK_TOKEN = Pathname.new("~/.vault-token").expand_path.freeze
 
+    SSL_CIPHERS = "TLSv1.2:!aNULL:!eNULL".freeze
+
     class << self
       # The list of calculated options for this configurable.
       # @return [Hash]
@@ -68,6 +70,14 @@ module Vault
       # @return [String, nil]
       def read_timeout
         ENV["VAULT_READ_TIMEOUT"]
+      end
+
+      # The ciphers that will be used when communicating with vault over ssl
+      # You should only change the defaults if the ciphers aren't available on 
+      # your platform and you know what you are doing
+      # @return [String]
+      def ssl_ciphers
+        SSL_CIPHERS
       end
 
       # The path to a pem on disk to use with custom SSL verification
