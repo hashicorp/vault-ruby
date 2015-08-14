@@ -12,6 +12,7 @@ module Vault
         :proxy_port,
         :proxy_username,
         :read_timeout,
+        :ssl_ciphers,
         :ssl_pem_file,
         :ssl_ca_cert,
         :ssl_ca_path,

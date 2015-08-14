@@ -171,7 +171,7 @@ module Vault
         connection.ssl_version = "TLSv1_2"
 
         # Only use secure ciphers
-        connection.ciphers = "TLSv1.2:!aNULL:!eNULL"
+        connection.ciphers = ssl_ciphers
 
         # Turn on secure cookies
         cookie.secure = true
