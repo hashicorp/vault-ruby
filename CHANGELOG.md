@@ -7,7 +7,8 @@ IMPROVEMENTS
 - Add support for using a custom CA cert [GH-8]
 - Allow clients to specify timeouts [GH-12, GH-14]
 - Show which error caused the HTTPConnectionError [GH-30]
-- Allow user to specify which SSL cipher suites to use [GH-29]
+- Allow clients to specify which SSL cipher suites to use [GH-29]
+- Allow clients to specify the SSL pem password [GH-22, GH-31]
 
 BUG FIXES
 
