@@ -105,6 +105,20 @@ module Vault
       end
     end
 
+    describe ".ssl_ciphers" do
+      it "defaults to ENV['VAULT_SSL_CIPHERS']" do
+        with_stubbed_env("VAULT_SSL_CIPHERS" => "testing") do
+          expect(Defaults.ssl_ciphers).to eq("testing")
+        end
+      end
+
+      it "falls back to the default SSL_CIPHERS" do
+        with_stubbed_env("VAULT_SSL_CIPHERS" => nil) do
+          expect(Defaults.ssl_ciphers).to eq(Defaults::SSL_CIPHERS)
+        end
+      end
+    end
+
     describe ".ssl_pem_file" do
       it "defaults to ENV['VAULT_SSL_CERT']" do
         with_stubbed_env("VAULT_SSL_CERT" => "~/path/to/cert") do
