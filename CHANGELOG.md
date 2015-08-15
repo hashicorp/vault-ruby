@@ -15,6 +15,7 @@ BUG FIXES
 - Read local token (`~/.vault-token`) for token if present [GH-13]
 - Disable bad SSL cipher suites and force TLSv1.2 [GH-16]
 - Update to test against Vault 0.2.0 [GH-20]
+- Do not attempt a read on logical path write [GH-11, GH-32]
 
 ## v0.1.3 (May 14, 2015)
 
