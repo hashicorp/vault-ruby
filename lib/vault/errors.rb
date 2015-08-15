@@ -25,13 +25,21 @@ EOH
   class HTTPConnectionError < VaultError
     attr_reader :address
 
-    def initialize(address)
+    def initialize(address, exception)
       @address = address
+      @exception = exception
 
       super <<-EOH
 The Vault server at `#{address}' is not currently
 accepting connections. Please ensure that the server is running and that your
 authentication information is correct.
+
+The original error was `#{exception.class}'. Additional information (if any) is
+show below:
+
+    #{exception.message}
+
+Please refer to the documentation for more help.
 EOH
     end
   end

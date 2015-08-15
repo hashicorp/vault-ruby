@@ -226,8 +226,8 @@ module Vault
           error(response)
         end
       end
-    rescue *RESCUED_EXCEPTIONS
-      raise HTTPConnectionError.new(address)
+    rescue *RESCUED_EXCEPTIONS => e
+      raise HTTPConnectionError.new(address, e)
     end
 
     # Construct a URL from the given verb and path. If the request is a GET or
