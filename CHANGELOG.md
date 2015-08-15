@@ -1,6 +1,6 @@
 # Vault Ruby Changelog
 
-## v0.1.3.dev (Unreleased)
+## v0.1.4 (August 15, 2015)
 
 IMPROVEMENTS
 
