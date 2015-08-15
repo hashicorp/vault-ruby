@@ -35,7 +35,7 @@ accepting connections. Please ensure that the server is running and that your
 authentication information is correct.
 
 The original error was `#{exception.class}'. Additional information (if any) is
-show below:
+shown below:
 
     #{exception.message}
 
