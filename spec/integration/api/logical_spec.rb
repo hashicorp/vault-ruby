@@ -19,14 +19,16 @@ module Vault
 
     describe "#write" do
       it "creates and returns the secret" do
-        result = subject.write("secret/test-write", zip: "zap")
+        subject.write("secret/test-write", zip: "zap")
+        result = subject.read("secret/test-write")
         expect(result).to be
         expect(result.data).to eq(zip: "zap")
       end
 
       it "overwrites existing secrets" do
         subject.write("secret/test-overwrite", zip: "zap")
-        result = subject.write("secret/test-overwrite", bacon: true)
+        subject.write("secret/test-overwrite", bacon: true)
+        result = subject.read("secret/test-overwrite")
         expect(result).to be
         expect(result.data).to eq(bacon: true)
       end

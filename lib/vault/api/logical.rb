@@ -45,7 +45,11 @@ module Vault
     # @return [Secret]
     def write(path, data = {})
       json = client.put("/v1/#{path}", JSON.fast_generate(data))
-      return json.nil? ? read(path) : Secret.decode(json)
+      if json.nil?
+        return true
+      else
+        return Secret.decode(json)
+      end
     end
 
     # Delete the secret at the given path. If the secret does not exist, vault
