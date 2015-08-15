@@ -180,7 +180,7 @@ module Vault
         if ssl_pem_file
           pem = File.read(ssl_pem_file)
           connection.cert = OpenSSL::X509::Certificate.new(pem)
-          connection.key = OpenSSL::PKey::RSA.new(pem)
+          connection.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
           connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 

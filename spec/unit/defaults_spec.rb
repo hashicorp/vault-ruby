@@ -127,6 +127,14 @@ module Vault
       end
     end
 
+    describe ".ssl_pem_passphrase" do
+      it "defaults to ENV['VAULT_SSL_CERT_PASSPHRASE']" do
+        with_stubbed_env("VAULT_SSL_CERT_PASSPHRASE" => "testing") do
+          expect(Defaults.ssl_pem_passphrase).to eq("testing")
+        end
+      end
+    end
+
     describe ".ssl_ca_cert" do
       it "defaults to ENV['VAULT_CACERT']" do
         with_stubbed_env("VAULT_CACERT" => "~/path/to/cert") do
