@@ -80,7 +80,7 @@ module Vault
       # your platform and you know what you are doing
       # @return [String]
       def ssl_ciphers
-        SSL_CIPHERS
+        ENV["VAULT_SSL_CIPHERS"] || SSL_CIPHERS
       end
 
       # The path to a pem on disk to use with custom SSL verification
