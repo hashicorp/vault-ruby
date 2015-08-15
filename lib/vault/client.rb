@@ -211,23 +211,25 @@ module Vault
         request["Cookie"] = cookie.to_s
       end
 
-      # Create a connection using the block form, which will ensure the socket
-      # is properly closed in the event of an error.
-      connection.start do |http|
-        response = http.request(request)
+      begin
+        # Create a connection using the block form, which will ensure the socket
+        # is properly closed in the event of an error.
+        connection.start do |http|
+          response = http.request(request)
 
-        case response
-        when Net::HTTPRedirection
-          redirect = URI.parse(response["location"])
-          request(verb, redirect, data, headers)
-        when Net::HTTPSuccess
-          success(response)
-        else
-          error(response)
+          case response
+          when Net::HTTPRedirection
+            redirect = URI.parse(response["location"])
+            request(verb, redirect, data, headers)
+          when Net::HTTPSuccess
+            success(response)
+          else
+            error(response)
+          end
         end
+      rescue *RESCUED_EXCEPTIONS => e
+        raise HTTPConnectionError.new(address, e)
       end
-    rescue *RESCUED_EXCEPTIONS => e
-      raise HTTPConnectionError.new(address, e)
     end
 
     # Construct a URL from the given verb and path. If the request is a GET or
