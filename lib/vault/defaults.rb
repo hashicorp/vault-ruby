@@ -89,7 +89,7 @@ module Vault
         ENV["VAULT_SSL_CERT"]
       end
 
-      # The path to a pem on disk to use with custom SSL verification
+      # Passphrase to the pem file on disk to use with custom SSL verification
       # @return [String, nil]
       def ssl_pem_passphrase
         ENV["VAULT_SSL_CERT_PASSPHRASE"]
