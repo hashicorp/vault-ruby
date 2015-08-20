@@ -14,6 +14,7 @@ module Vault
         :read_timeout,
         :ssl_ciphers,
         :ssl_pem_file,
+        :ssl_pem_passphrase,
         :ssl_ca_cert,
         :ssl_ca_path,
         :ssl_verify,
