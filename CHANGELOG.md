@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.1.4.dev (Unreleased)
+
+IMPROVEMENTS
+
+- Use headers instead of cookies for authenticating to Vault [GH-36]
+
 ## v0.1.4 (August 15, 2015)
 
 IMPROVEMENTS
