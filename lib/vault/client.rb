@@ -1,5 +1,4 @@
 require "cgi"
-require "cgi/cookie"
 require "json"
 require "net/http"
 require "net/https"
@@ -13,6 +12,9 @@ module Vault
   class Client
     # The user agent for this client.
     USER_AGENT = "VaultRuby/#{Vault::VERSION} (+github.com/hashicorp/vault-ruby)".freeze
+
+    # The name of the header used to hold the Vault token.
+    TOKEN_HEADER = "X-Vault-Token".freeze
 
     # The default headers that are sent with every request.
     DEFAULT_HEADERS = {
@@ -121,8 +123,16 @@ module Vault
       uri = build_uri(verb, path, data)
       request = class_for_request(verb).new(uri.request_uri)
 
-      # Add headers
+      # Get a list of headers
       headers = DEFAULT_HEADERS.merge(headers)
+
+      # Add the Vault token header - users could still override this on a
+      # per-request basis
+      if !token.nil?
+        request.add_field(TOKEN_HEADER, token)
+      end
+
+      # Add headers
       headers.each do |key, value|
         request.add_field(key, value)
       end
@@ -155,13 +165,6 @@ module Vault
         connection.read_timeout = (read_timeout || timeout).to_i
       end
 
-      # Create the cookie for the request.
-      cookie = CGI::Cookie.new
-      cookie.name    = "token"
-      cookie.value   = token
-      cookie.path    = "/"
-      cookie.expires = Time.now + (60*60*24*365)
-
       # Apply SSL, if applicable
       if uri.scheme == "https"
         # Turn on SSL
@@ -172,9 +175,6 @@ module Vault
 
         # Only use secure ciphers
         connection.ciphers = ssl_ciphers
-
-        # Turn on secure cookies
-        cookie.secure = true
 
         # Custom pem files, no problem!
         if ssl_pem_file
@@ -204,11 +204,6 @@ module Vault
         if ssl_timeout || timeout
           connection.ssl_timeout = (ssl_timeout || timeout).to_i
         end
-      end
-
-      # Add the cookie to the request if a token was given.
-      if !token.nil?
-        request["Cookie"] = cookie.to_s
       end
 
       begin
