@@ -4,6 +4,7 @@ require "vault"
 require "pathname"
 
 require_relative "support/vault_server"
+require_relative "support/github_server"
 
 RSpec.configure do |config|
   # Custom helper modules and extensions
