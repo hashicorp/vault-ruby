@@ -120,5 +120,27 @@ module Vault
       client.token = secret.auth.client_token
       return secret
     end
+
+    # Authenticate via the GitHub authentication method. If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.github("mypersonalgithubtoken") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] github_token
+    #
+    # @return [Secret]
+    def github(github_token)
+      old_token    = client.token
+      payload = {token: github_token}
+      json = client.post("/v1/auth/github/login", JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    rescue
+      client.token = old_token
+      raise
+    end
   end
 end
