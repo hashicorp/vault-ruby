@@ -99,7 +99,7 @@ module Vault
       return secret
     end
 
-    # Authenticate via the Github authentication method. If authentication is
+    # Authenticate via the GitHub authentication method. If authentication is
     # successful, the resulting token will be stored on the client and used
     # for future requests.
     #
