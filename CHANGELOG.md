@@ -1,10 +1,15 @@
 # Vault Ruby Changelog
 
-## v0.1.4.dev (Unreleased)
+## v0.1.5 (September 1, 2015)
 
 IMPROVEMENTS
 
 - Use headers instead of cookies for authenticating to Vault [GH-36]
+
+BUG FIXES
+
+- Do not set undefined OpenSSL options
+- Add `ssl_pem_passphrase` as a configuration option [GH-35]
 
 ## v0.1.4 (August 15, 2015)
 
