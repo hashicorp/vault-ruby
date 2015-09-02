@@ -95,5 +95,35 @@ module Vault
         }.to_not change(subject, :token)
       end
     end
+    describe "#github" do
+      before(:context) do
+        # spawn an instance of the github stub server
+        RSpec::GithubServer.instance
+
+        @github_token = '10ad4cf71757f49c4859187ca73e918fdca59719'
+        @organization = 'vault-intgration-tests'
+
+        vault_test_client.sys.enable_auth("github", "github", nil)
+        vault_test_client.logical.write("auth/github/config", { organization: @organization, base_url: "http://127.0.0.1:8201" })
+        vault_test_client.logical.write("auth/github/map/teams/owners", { value: :root })
+      end
+
+      before do
+        subject.token = nil
+      end
+
+      it "authenticates and saves the token on the client" do
+        result = subject.auth.github(@github_token)
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
+      it "raises an error if the authentication is bad" do
+        expect {
+          expect {
+            subject.auth.github("nope")
+          }.to raise_error(HTTPError)
+        }.to_not change(subject, :token)
+      end
+    end
   end
 end
