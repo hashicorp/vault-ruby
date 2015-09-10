@@ -4,6 +4,7 @@ require "vault"
 require "pathname"
 
 require_relative "support/vault_server"
+require_relative "support/redirect_server"
 
 RSpec.configure do |config|
   # Custom helper modules and extensions
@@ -36,6 +37,13 @@ end
 def vault_test_client
   Vault::Client.new(
     address: RSpec::VaultServer.address,
+    token:   RSpec::VaultServer.token,
+  )
+end
+
+def vault_redirect_test_client
+  Vault::Client.new(
+    address: RSpec::RedirectServer.address,
     token:   RSpec::VaultServer.token,
   )
 end
