@@ -214,8 +214,7 @@ module Vault
 
           case response
           when Net::HTTPRedirection
-            redirect = URI.parse(response["location"])
-            request(verb, redirect, data, headers)
+            request(verb, response["location"], data, headers)
           when Net::HTTPSuccess
             success(response)
           else
