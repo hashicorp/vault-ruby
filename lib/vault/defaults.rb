@@ -8,7 +8,7 @@ module Vault
 
     # The path to the vault token on disk.
     # @return [String]
-    VAULT_DISK_TOKEN = Pathname.new("~/.vault-token").expand_path.freeze
+    VAULT_DISK_TOKEN = Pathname.new("#{ENV["HOME"]}/.vault-token").expand_path.freeze
 
     # The list of SSL ciphers to allow. You should not change this value unless
     # you absolutely know what you are doing!
