@@ -2,6 +2,7 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "vault"
 
 require "pathname"
+require "webmock/rspec"
 
 require_relative "support/vault_server"
 require_relative "support/redirect_server"
@@ -18,6 +19,11 @@ RSpec.configure do |config|
   # is focused, then all tests are executed.
   config.filter_run(focus: true)
   config.run_all_when_everything_filtered = true
+
+  # Disable real connections.
+  config.before(:suite) do
+    WebMock.disable_net_connect!(allow_localhost: true)
+  end
 
   # Ensure our configuration is reset on each run.
   config.before(:each) { Vault.setup! }
