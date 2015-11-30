@@ -61,4 +61,11 @@ Please refer to the documentation for help.
 EOH
     end
   end
+
+  class ServerError < VaultError
+    attr_reader :response
+    def initialize(response)
+      @response = response
+    end
+  end
 end

@@ -16,6 +16,9 @@ module Vault
     # The name of the header used to hold the Vault token.
     TOKEN_HEADER = "X-Vault-Token".freeze
 
+    # The name of the header used for redirection.
+    LOCATION_HEADER = "location".freeze
+
     # The default headers that are sent with every request.
     DEFAULT_HEADERS = {
       "Content-Type" => "application/json",
@@ -207,20 +210,28 @@ module Vault
       end
 
       begin
-        # Create a connection using the block form, which will ensure the socket
-        # is properly closed in the event of an error.
-        connection.start do |http|
-          response = http.request(request)
-
-          case response
-          when Net::HTTPRedirection
-            request(verb, response["location"], data, headers)
-          when Net::HTTPSuccess
-            success(response)
-          else
-            error(response)
+        errors = RESCUED_EXCEPTIONS + [ServerError]
+        with_retries(errors) do
+          connection.start do |http|
+            response = http.request(request)
+            case response
+            when Net::HTTPInformation, Net::HTTPSuccess
+              return success(response)
+            when Net::HTTPRedirection
+              return request(verb, response[LOCATION_HEADER], data, headers)
+            when Net::HTTPClientError
+              return error(response)
+            when Net::HTTPServerError
+              # Wrap our response and raise an error so we can retry this
+              # particular exception.
+              raise ServerError.new(response)
+            else
+              return error(response)
+            end
           end
         end
+      rescue ServerError => e
+        return error(e.response)
       rescue *RESCUED_EXCEPTIONS => e
         raise HTTPConnectionError.new(address, e)
       end
@@ -324,6 +335,37 @@ module Vault
       end
 
       raise HTTPError.new(address, response.code, [response.body])
+    end
+
+    # Execute the given block with retries and exponential backoff.
+    def with_retries(rescued = [Exception], &block)
+      exception = nil
+
+      backoff_base = self.retry_base
+      backoff_max  = self.retry_timeout
+
+      self.retry_attempts.times do |attempt|
+        begin
+          return yield attempt
+        rescue *rescued => e
+          exception = e
+
+          # Calculate the exponential backoff combined with an element of
+          # randomness.
+          backoff = [backoff_base * (2 ** (attempt - 1)), backoff_max].min
+          backoff = backoff * (0.5 * (1 + Kernel.rand))
+
+          # Ensure we are sleeping at least the minimum interval.
+          backoff = [backoff_base, backoff].max
+
+          # Exponential backoff.
+          sleep(backoff)
+        end
+      end
+
+      # If we got this far, we have exhausted the retries and should raise the
+      # error back to the user.
+      raise exception
     end
   end
 end

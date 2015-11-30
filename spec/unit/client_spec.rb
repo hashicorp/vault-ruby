@@ -74,5 +74,57 @@ module Vault
         expect(subject.to_query_string(params)).to eq("emoji=sad+panda")
       end
     end
+
+    context "with retries" do
+      before do
+        subject.retry_attempts = 2
+        subject.retry_base = 0.00
+        subject.retry_timeout = 1
+        subject.address = "https://vault.test"
+      end
+
+      Vault::Client::RESCUED_EXCEPTIONS.each do |e|
+        it "retries on #{e}" do
+          stub_request(:get, "https://vault.test/")
+            .to_raise(e).then
+            .to_return(status: 200, body: "{}")
+
+          subject.get("/")
+        end
+
+        it "raises after maximum attempts on #{e}" do
+          stub_request(:get, "https://vault.test/")
+            .to_raise(e)
+          expect { subject.get("/") }.to raise_error(Vault::HTTPConnectionError)
+        end
+      end
+
+      (400..422).each do |code|
+        it "does not retry on a #{code} response code" do
+          wrong_error = StandardError.new("bad")
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code)
+            .to_raise(wrong_error)
+
+          expect { subject.get("/") }.to raise_error(Vault::HTTPError)
+        end
+      end
+
+      (500..520).each do |code|
+        it "retries on a #{code} response code" do
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code).then
+            .to_return(status: 200, body: "{}")
+
+          subject.get("/")
+        end
+
+        it "raises after maximum attempts on #{code}" do
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code, body: "#{code}")
+          expect { subject.get("/") }.to raise_error(Vault::HTTPError)
+        end
+      end
+    end
   end
 end
