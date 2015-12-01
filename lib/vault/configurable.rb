@@ -14,7 +14,7 @@ module Vault
         :read_timeout,
         :retry_attempts,
         :retry_base,
-        :retry_timeout,
+        :retry_max_wait,
         :ssl_ciphers,
         :ssl_pem_file,
         :ssl_pem_passphrase,

@@ -344,10 +344,11 @@ module Vault
     def with_retries(rescued, &block)
       exception = nil
 
+      retries      = [self.retry_attempts, 1].max
       backoff_base = self.retry_base
-      backoff_max  = self.retry_timeout
+      backoff_max  = self.retry_max_wait
 
-      self.retry_attempts.times do |attempt|
+      retries.times do |attempt|
         begin
           return yield attempt
         rescue *rescued => e

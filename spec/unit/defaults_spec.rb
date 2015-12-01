@@ -133,16 +133,16 @@ module Vault
       end
     end
 
-    describe ".retry_timeout" do
-      it "defaults to ENV['VAULT_RETRY_TIMEOUT']" do
-        with_stubbed_env("VAULT_RETRY_TIMEOUT" => "30") do
-          expect(Defaults.retry_timeout).to eq(30)
+    describe ".retry_max_wait" do
+      it "defaults to ENV['VAULT_RETRY_MAX_WAIT']" do
+        with_stubbed_env("VAULT_RETRY_MAX_WAIT" => "30") do
+          expect(Defaults.retry_max_wait).to eq(30)
         end
       end
 
-      it "falls back to default RETRY_TIMEOUT" do
-        with_stubbed_env("VAULT_RETRY_TIMEOUT" => nil) do
-          expect(Defaults.retry_timeout).to eq(2.0)
+      it "falls back to default RETRY_MAX_WAIT" do
+        with_stubbed_env("VAULT_RETRY_MAX_WAIT" => nil) do
+          expect(Defaults.retry_max_wait).to eq(2.0)
         end
       end
     end

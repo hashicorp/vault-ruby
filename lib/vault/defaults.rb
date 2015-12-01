@@ -24,7 +24,7 @@ module Vault
     DEFAULT_RETRY_BASE = 0.05
 
     # The default amount of time for a single request to timeout.
-    DEFAULT_RETURN_TIMEOUT = 2.0
+    DEFAULT_RETRY_MAX_WAIT = 2.0
 
     class << self
       # The list of calculated options for this configurable.
@@ -119,11 +119,11 @@ module Vault
       # {retry_attempts} and {retry_interval} to limit the number of attempts
       # and the space between them.
       # @return [Fixnum]
-      def retry_timeout
-        if ENV["VAULT_RETRY_TIMEOUT"].nil?
-          DEFAULT_RETURN_TIMEOUT
+      def retry_max_wait
+        if ENV["VAULT_RETRY_MAX_WAIT"].nil?
+          DEFAULT_RETRY_MAX_WAIT
         else
-          ENV["VAULT_RETRY_TIMEOUT"].to_i
+          ENV["VAULT_RETRY_MAX_WAIT"].to_i
         end
       end
 

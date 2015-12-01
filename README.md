@@ -59,8 +59,8 @@ Vault.configure do |config|
   config.retry_base
 
   # The maximum amount of time for a single exponential backoff to sleep, also
-  # read as ENV["VAULT_RETRY_TIMEOUT"]
-  config.retry_timeout
+  # read as ENV["VAULT_RETRY_MAX_WAIT"]
+  config.retry_max_wait
 
   # Custom SSL PEM, also read as ENV["VAULT_SSL_CERT"]
   config.ssl_pem_file = "/path/on/disk.pem"
