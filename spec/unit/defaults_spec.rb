@@ -114,7 +114,7 @@ module Vault
 
       it "falls back to default 0" do
         with_stubbed_env("VAULT_RETRY_ATTEMPTS" => nil) do
-          expect(Defaults.retry_attempts).to eq(1)
+          expect(Defaults.retry_attempts).to eq(0)
         end
       end
     end

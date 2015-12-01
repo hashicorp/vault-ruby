@@ -17,7 +17,7 @@ module Vault
 
     # The default number of attempts.
     # @return [Fixnum]
-    DEFAULT_RETRY_ATTEMPTS = 1
+    DEFAULT_RETRY_ATTEMPTS = 0
 
     # The default backoff interval.
     # @return [Fixnum]
