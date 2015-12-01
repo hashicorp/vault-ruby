@@ -50,6 +50,18 @@ Vault.configure do |config|
   config.proxy_username = "..."
   config.proxy_password = "..."
 
+  # The number of retries when communicating with the Vault server, also read as
+  # ENV["VAULT_RETRY_ATTEMPTS"]
+  config.retry_attempts
+
+  # The base interval for retry exponential backoff, also read as
+  # ENV["VAULT_RETRY_BASE"]
+  config.retry_base
+
+  # The maximum amount of time for a single exponential backoff to sleep, also
+  # read as ENV["VAULT_RETRY_TIMEOUT"]
+  config.retry_timeout
+
   # Custom SSL PEM, also read as ENV["VAULT_SSL_CERT"]
   config.ssl_pem_file = "/path/on/disk.pem"
 
