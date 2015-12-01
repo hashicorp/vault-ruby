@@ -77,7 +77,7 @@ module Vault
 
     context "with retries" do
       before do
-        subject.retry_attempts = 2
+        subject.retry_attempts = 1
         subject.retry_base = 0.00
         subject.retry_max_wait = 1
         subject.address = "https://vault.test"

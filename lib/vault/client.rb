@@ -342,34 +342,30 @@ module Vault
     # @param [Array<Exception>] rescued
     #   the list of exceptions to rescue
     def with_retries(rescued, &block)
-      exception = nil
-
-      retries      = [self.retry_attempts, 1].max
+      retries      = 0
       backoff_base = self.retry_base
       backoff_max  = self.retry_max_wait
 
-      retries.times do |attempt|
-        begin
-          return yield attempt
-        rescue *rescued => e
-          exception = e
+      begin
+        return yield retries
+      rescue *rescued => e
+        retries += 1
+        raise if retries > self.retry_attempts
 
-          # Calculate the exponential backoff combined with an element of
-          # randomness.
-          backoff = [backoff_base * (2 ** (attempt - 1)), backoff_max].min
-          backoff = backoff * (0.5 * (1 + Kernel.rand))
+        # Calculate the exponential backoff combined with an element of
+        # randomness.
+        backoff = [backoff_base * (2 ** (retries - 1)), backoff_max].min
+        backoff = backoff * (0.5 * (1 + Kernel.rand))
 
-          # Ensure we are sleeping at least the minimum interval.
-          backoff = [backoff_base, backoff].max
+        # Ensure we are sleeping at least the minimum interval.
+        backoff = [backoff_base, backoff].max
 
-          # Exponential backoff.
-          sleep(backoff)
-        end
+        # Exponential backoff.
+        Kernel.sleep(backoff)
+
+        # Now retry
+        retry
       end
-
-      # If we got this far, we have exhausted the retries and should raise the
-      # error back to the user.
-      raise exception
     end
   end
 end
