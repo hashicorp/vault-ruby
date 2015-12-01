@@ -338,7 +338,10 @@ module Vault
     end
 
     # Execute the given block with retries and exponential backoff.
-    def with_retries(rescued = [Exception], &block)
+    #
+    # @param [Array<Exception>] rescued
+    #   the list of exceptions to rescue
+    def with_retries(rescued, &block)
       exception = nil
 
       backoff_base = self.retry_base
