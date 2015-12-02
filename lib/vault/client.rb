@@ -210,6 +210,8 @@ module Vault
       end
 
       begin
+        # Create a connection using the block form, which will ensure the socket
+        # is properly closed in the event of an error.
         connection.start do |http|
           response = http.request(request)
           case response
@@ -221,9 +223,9 @@ module Vault
             return error(response)
           end
         end
+      rescue *RESCUED_EXCEPTIONS => e
+        raise HTTPConnectionError.new(address, e)
       end
-    rescue *RESCUED_EXCEPTIONS => e
-      raise HTTPConnectionError.new(address, e)
     end
 
     # Construct a URL from the given verb and path. If the request is a GET or
