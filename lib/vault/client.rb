@@ -348,9 +348,9 @@ module Vault
       exception    = nil
       retries      = 0
 
-      max_attempts = options[:attempts] || DEFAULT_RETRY_ATTEMPTS
-      backoff_base = options[:base]     || DEFAULT_RETRY_BASE
-      backoff_max  = options[:max_wait] || DEFAULT_RETRY_MAX_WAIT
+      max_attempts = options[:attempts] || Defaults::RETRY_ATTEMPTS
+      backoff_base = options[:base]     || Defaults::RETRY_BASE
+      backoff_max  = options[:max_wait] || Defaults::RETRY_MAX_WAIT
 
       begin
         return yield retries

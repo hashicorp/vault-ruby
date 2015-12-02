@@ -17,14 +17,14 @@ module Vault
 
     # The default number of attempts.
     # @return [Fixnum]
-    DEFAULT_RETRY_ATTEMPTS = 2
+    RETRY_ATTEMPTS = 2
 
     # The default backoff interval.
     # @return [Fixnum]
-    DEFAULT_RETRY_BASE = 0.05
+    RETRY_BASE = 0.05
 
     # The default amount of time for a single request to timeout.
-    DEFAULT_RETRY_MAX_WAIT = 2.0
+    RETRY_MAX_WAIT = 2.0
 
     class << self
       # The list of calculated options for this configurable.
