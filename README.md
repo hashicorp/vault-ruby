@@ -78,6 +78,61 @@ client_2 = Vault::Client.new(address: "https://other-vault.mycompany.com")
 ### Making requests
 All of the methods and API calls are heavily documented with examples inline using YARD. In order to keep the examples versioned with the code, the README only lists a few examples for using the Vault gem. Please see the inline documentation for the full API documentation. The tests in the 'spec' directory are an additional source of examples.
 
+Idempotent requests can be wrapped with a `with_retries` clause to automatically retry on certain connection errors. For example, to retry on socket/network-level issues, you can do the following:
+
+```ruby
+Vault.with_retries(Vault::HTTPConnectionError) do
+  Vault.logical.read("secret/on_bad_network")
+end
+```
+
+To rescue particular HTTP exceptions:
+
+```ruby
+# Rescue 4xx errors
+Vault.with_retries(Vault::HTTPClientError) {}
+
+# Rescue 5xx errors
+Vault.with_retries(Vault::HTTPServerError) {}
+
+# Rescue all HTTP errors
+Vault.with_retries(Vault::HTTPError) {}
+```
+
+For advanced users, the first argument of the block is the attempt number and the second argument is the exception itself:
+
+```ruby
+Vault.with_retries(Vault::HTTPConnectionError, Vault::HTTPError) do |attempt, e|
+  log "Received exception #{e} from Vault - attempt #{attempt}"
+  Vault.logical.read("secret/bacon")
+end
+```
+
+The following options are available:
+
+```ruby
+# :attempts - The number of retries when communicating with the Vault server.
+#   The default value is 2.
+#
+# :base - The base interval for retry exponential backoff. The default value is
+#   0.05s.
+#
+# :max_wait - The maximum amount of time for a single exponential backoff to
+#   sleep. The default value is 2.0s.
+
+Vault.with_retries(Vault::HTTPError, attempts: 5) do
+  # ...
+end
+```
+
+After the number of retries have been exhausted, the original exception is raised.
+
+```ruby
+Vault.with_retries(Exception) do
+  raise Exception
+end #=> #<Exception>
+```
+
 #### Seal Status
 ```ruby
 Vault.sys.seal_status

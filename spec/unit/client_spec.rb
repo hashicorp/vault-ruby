@@ -74,5 +74,77 @@ module Vault
         expect(subject.to_query_string(params)).to eq("emoji=sad+panda")
       end
     end
+
+    context "#with_retries" do
+      let(:options) do
+        {
+          attempts: 1,
+          base:     0.00,
+          max_wait: 1.0,
+        }
+      end
+
+      before { subject.address = "https://vault.test" }
+
+      Vault::Client::RESCUED_EXCEPTIONS.each do |e|
+        it "retries on #{e}" do
+          stub_request(:get, "https://vault.test/")
+            .to_raise(e).then
+            .to_return(status: 200, body: "{}")
+
+          subject.with_retries(Vault::HTTPConnectionError, options) do
+            subject.get("/")
+          end
+        end
+
+        it "raises after maximum attempts on #{e}" do
+          stub_request(:get, "https://vault.test/")
+            .to_raise(e)
+
+          expect {
+            subject.with_retries(Vault::HTTPConnectionError, options) do
+              subject.get("/")
+            end
+          }.to raise_error(Vault::HTTPConnectionError)
+        end
+
+        break
+      end
+
+      (400..422).each do |code|
+        it "does not retry on a #{code} response code" do
+          wrong_error = StandardError.new("bad")
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code)
+            .to_raise(wrong_error)
+
+          expect {
+            subject.get("/")
+          }.to raise_error(Vault::HTTPClientError)
+        end
+      end
+
+      (500..520).each do |code|
+        it "retries on a #{code} response code" do
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code).then
+            .to_return(status: 200, body: "{}")
+
+          subject.with_retries(Vault::HTTPError, options) do
+            subject.get("/")
+          end
+        end
+
+        it "raises after maximum attempts on #{code}" do
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code, body: "#{code}")
+          expect {
+            subject.with_retries(Vault::HTTPServerError, options) do
+              subject.get("/")
+            end
+          }.to raise_error(Vault::HTTPServerError)
+        end
+      end
+    end
   end
 end

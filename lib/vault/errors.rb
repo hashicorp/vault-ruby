@@ -42,13 +42,18 @@ shown below:
 Please refer to the documentation for more help.
 EOH
     end
+
+    def original_exception
+      @exception
+    end
   end
 
   class HTTPError < VaultError
-    attr_reader :address, :code, :errors
+    attr_reader :address, :response, :code, :errors
 
-    def initialize(address, code, errors = [])
-      @address, @code, @errors = address, code.to_i, errors
+    def initialize(address, response, errors = [])
+      @address, @response, @errors = address, response, errors
+      @code  = response.code.to_i
       errors = errors.map { |error| "  * #{error}" }
 
       super <<-EOH
@@ -61,4 +66,7 @@ Please refer to the documentation for help.
 EOH
     end
   end
+
+  class HTTPClientError < HTTPError; end
+  class HTTPServerError < HTTPError; end
 end

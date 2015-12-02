@@ -15,6 +15,17 @@ module Vault
     # @return [String]
     SSL_CIPHERS = "TLSv1.2:!aNULL:!eNULL".freeze
 
+    # The default number of attempts.
+    # @return [Fixnum]
+    RETRY_ATTEMPTS = 2
+
+    # The default backoff interval.
+    # @return [Fixnum]
+    RETRY_BASE = 0.05
+
+    # The maximum amount of time for a single exponential backoff to sleep.
+    RETRY_MAX_WAIT = 2.0
+
     class << self
       # The list of calculated options for this configurable.
       # @return [Hash]
