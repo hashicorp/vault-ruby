@@ -1,6 +1,15 @@
 # Vault Ruby Changelog
 
-## v0.1.5.dev (Unreleased)
+## v0.2.0 (December 2, 2015)
+
+IMPROVEMENTS
+
+- Add support for retries (clients must opt-in) [GH-47]
+
+BUG FIXES
+
+- Fix redirection on POST/PUT [GH-40]
+- Use `$HOME` instead of `~` for shell expansion
 
 ## v0.1.5 (September 1, 2015)
 
