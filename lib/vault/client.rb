@@ -312,25 +312,36 @@ module Vault
         raise MissingTokenError
       end
 
+      # Use the correct exception class
+      case response
+      when Net::HTTPClientError
+        klass = HTTPClientError
+      when Net::HTTPServerError
+        klass = HTTPServerError
+      else
+        klass = HTTPError
+      end
+
       if (response.content_type || '').include?("json")
         # Attempt to parse the error as JSON
         begin
           json = JSON.parse(response.body, JSON_PARSE_OPTIONS)
 
           if json[:errors]
-            raise HTTPError.new(address, response, json[:errors])
+            raise klass.new(address, response, json[:errors])
           end
         rescue JSON::ParserError; end
       end
 
-      raise HTTPError.new(address, response, [response.body])
+      raise klass.new(address, response, [response.body])
     end
 
     # Execute the given block with retries and exponential backoff.
     #
     # @param [Array<Exception>] rescued
     #   the list of exceptions to rescue
-    def with_retries(rescued, &block)
+    def with_retries(*rescued, &block)
+      exception    = nil
       retries      = 0
       backoff_base = self.retry_base
       backoff_max  = self.retry_max_wait
@@ -338,6 +349,8 @@ module Vault
       begin
         return yield retries
       rescue *rescued => e
+        exception = e
+
         retries += 1
         raise if retries > self.retry_attempts
 

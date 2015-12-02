@@ -111,7 +111,7 @@ module Vault
 
           expect {
             subject.get("/")
-          }.to raise_error(Vault::HTTPError)
+          }.to raise_error(Vault::HTTPClientError)
         end
       end
 
@@ -128,8 +128,8 @@ module Vault
           stub_request(:get, "https://vault.test/")
             .to_return(status: code, body: "#{code}")
           expect {
-            subject.with_retries(Vault::HTTPError) { subject.get("/") }
-          }.to raise_error(Vault::HTTPError)
+            subject.with_retries(Vault::HTTPServerError) { subject.get("/") }
+          }.to raise_error(Vault::HTTPServerError)
         end
       end
     end

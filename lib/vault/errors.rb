@@ -62,4 +62,7 @@ Please refer to the documentation for help.
 EOH
     end
   end
+
+  class HTTPClientError < HTTPError; end
+  class HTTPServerError < HTTPError; end
 end
