@@ -75,7 +75,7 @@ module Vault
       end
     end
 
-    context "with retries" do
+    context "#with_retries" do
       before do
         subject.retry_attempts = 1
         subject.retry_base = 0.00
@@ -89,13 +89,16 @@ module Vault
             .to_raise(e).then
             .to_return(status: 200, body: "{}")
 
-          subject.get("/")
+          subject.with_retries(Vault::HTTPConnectionError) { subject.get("/") }
         end
 
         it "raises after maximum attempts on #{e}" do
           stub_request(:get, "https://vault.test/")
             .to_raise(e)
-          expect { subject.get("/") }.to raise_error(Vault::HTTPConnectionError)
+
+          expect {
+            subject.with_retries(Vault::HTTPConnectionError) { subject.get("/") }
+          }.to raise_error(Vault::HTTPConnectionError)
         end
       end
 
@@ -106,7 +109,9 @@ module Vault
             .to_return(status: code)
             .to_raise(wrong_error)
 
-          expect { subject.get("/") }.to raise_error(Vault::HTTPError)
+          expect {
+            subject.get("/")
+          }.to raise_error(Vault::HTTPError)
         end
       end
 
@@ -116,13 +121,15 @@ module Vault
             .to_return(status: code).then
             .to_return(status: 200, body: "{}")
 
-          subject.get("/")
+          subject.with_retries(Vault::HTTPError) { subject.get("/") }
         end
 
         it "raises after maximum attempts on #{code}" do
           stub_request(:get, "https://vault.test/")
             .to_return(status: code, body: "#{code}")
-          expect { subject.get("/") }.to raise_error(Vault::HTTPError)
+          expect {
+            subject.with_retries(Vault::HTTPError) { subject.get("/") }
+          }.to raise_error(Vault::HTTPError)
         end
       end
     end

@@ -210,31 +210,20 @@ module Vault
       end
 
       begin
-        errors = RESCUED_EXCEPTIONS + [ServerError]
-        with_retries(errors) do
-          connection.start do |http|
-            response = http.request(request)
-            case response
-            when Net::HTTPInformation, Net::HTTPSuccess
-              return success(response)
-            when Net::HTTPRedirection
-              return request(verb, response[LOCATION_HEADER], data, headers)
-            when Net::HTTPClientError
-              return error(response)
-            when Net::HTTPServerError
-              # Wrap our response and raise an error so we can retry this
-              # particular exception.
-              raise ServerError.new(response)
-            else
-              return error(response)
-            end
+        connection.start do |http|
+          response = http.request(request)
+          case response
+          when Net::HTTPInformation, Net::HTTPSuccess
+            return success(response)
+          when Net::HTTPRedirection
+            return request(verb, response[LOCATION_HEADER], data, headers)
+          else
+            return error(response)
           end
         end
-      rescue ServerError => e
-        return error(e.response)
-      rescue *RESCUED_EXCEPTIONS => e
-        raise HTTPConnectionError.new(address, e)
       end
+    rescue *RESCUED_EXCEPTIONS => e
+      raise HTTPConnectionError.new(address, e)
     end
 
     # Construct a URL from the given verb and path. If the request is a GET or
