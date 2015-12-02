@@ -23,7 +23,7 @@ EOH
   end
 
   class HTTPConnectionError < VaultError
-    attr_reader :address, :exception
+    attr_reader :address
 
     def initialize(address, exception)
       @address = address
@@ -41,6 +41,10 @@ shown below:
 
 Please refer to the documentation for more help.
 EOH
+    end
+
+    def original_exception
+      @exception
     end
   end
 
