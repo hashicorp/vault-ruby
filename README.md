@@ -50,18 +50,6 @@ Vault.configure do |config|
   config.proxy_username = "..."
   config.proxy_password = "..."
 
-  # The number of retries when communicating with the Vault server, also read as
-  # ENV["VAULT_RETRY_ATTEMPTS"]
-  config.retry_attempts
-
-  # The base interval for retry exponential backoff, also read as
-  # ENV["VAULT_RETRY_BASE"]
-  config.retry_base
-
-  # The maximum amount of time for a single exponential backoff to sleep, also
-  # read as ENV["VAULT_RETRY_MAX_WAIT"]
-  config.retry_max_wait
-
   # Custom SSL PEM, also read as ENV["VAULT_SSL_CERT"]
   config.ssl_pem_file = "/path/on/disk.pem"
 
@@ -117,6 +105,23 @@ For advanced users, the first argument of the block is the attempt number and th
 Vault.with_retries(Vault::HTTPConnectionError, Vault::HTTPError) do |attempt, e|
   log "Received exception #{e} from Vault - attempt #{attempt}"
   Vault.logical.read("secret/bacon")
+end
+```
+
+The following options are available:
+
+```ruby
+# :attempts - The number of retries when communicating with the Vault server.
+#   The default value is 2.
+#
+# :base - The base interval for retry exponential backoff. The default value is
+#   0.05s.
+#
+# :max_wait - The maximum amount of time for a single exponential backoff to
+#   sleep. The default value is 2.0s.
+
+Vault.with_retries(Vault::HTTPError, attempts: 5) do
+  # ...
 end
 ```
 
