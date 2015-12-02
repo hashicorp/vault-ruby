@@ -1,5 +1,8 @@
 # Vault Ruby Changelog
 
+## 0.2.0.dev (Unreleased)
+
+
 ## v0.2.0 (December 2, 2015)
 
 IMPROVEMENTS
