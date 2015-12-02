@@ -17,7 +17,7 @@ module Vault
 
     # The default number of attempts.
     # @return [Fixnum]
-    DEFAULT_RETRY_ATTEMPTS = 0
+    DEFAULT_RETRY_ATTEMPTS = 2
 
     # The default backoff interval.
     # @return [Fixnum]
@@ -84,47 +84,6 @@ module Vault
       # @return [String, nil]
       def read_timeout
         ENV["VAULT_READ_TIMEOUT"]
-      end
-
-      # The number of retries when communicating with the Vault server. The
-      # Vault gem will attempt to retry any server-level errors (5xx) that
-      # occur during communication. The higher this value, the more attempts
-      # that are made, but it also increases the amount of time the process is
-      # busy waiting for a response from the server. If you are running a
-      # single-threaded application, this could be a performance impact!
-      # @return [Fixnum]
-      def retry_attempts
-        if ENV["VAULT_RETRY_ATTEMPTS"].nil?
-          DEFAULT_RETRY_ATTEMPTS
-        else
-          ENV["VAULT_RETRY_ATTEMPTS"].to_i
-        end
-      end
-
-      # The base interval for retry exponential backoff. This value will be used
-      # to square the 2 value and should be combined with {retry_attempts} to
-      # control the number and rate of retries for bad server responses.
-      # @return [Fixnum]
-      def retry_base
-        if ENV["VAULT_RETRY_BASE"].nil?
-          DEFAULT_RETRY_BASE
-        else
-          ENV["VAULT_RETRY_BASE"].to_i
-        end
-      end
-
-      # The maximum amount of time for a single exponential backoff to sleep.
-      # This is the upper bound on _each_ request, not the entire retry loop. If
-      # you want to limit the duration of the outer retry, you should combine
-      # {retry_attempts} and {retry_interval} to limit the number of attempts
-      # and the space between them.
-      # @return [Fixnum]
-      def retry_max_wait
-        if ENV["VAULT_RETRY_MAX_WAIT"].nil?
-          DEFAULT_RETRY_MAX_WAIT
-        else
-          ENV["VAULT_RETRY_MAX_WAIT"].to_i
-        end
       end
 
       # The ciphers that will be used when communicating with vault over ssl

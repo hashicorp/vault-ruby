@@ -214,13 +214,14 @@ module Vault
         # is properly closed in the event of an error.
         connection.start do |http|
           response = http.request(request)
+
           case response
-          when Net::HTTPInformation, Net::HTTPSuccess
-            return success(response)
           when Net::HTTPRedirection
-            return request(verb, response[LOCATION_HEADER], data, headers)
+            request(verb, response[LOCATION_HEADER], data, headers)
+          when Net::HTTPSuccess
+            success(response)
           else
-            return error(response)
+            error(response)
           end
         end
       rescue *RESCUED_EXCEPTIONS => e
@@ -343,10 +344,13 @@ module Vault
     # @param [Array<Exception>] rescued
     #   the list of exceptions to rescue
     def with_retries(*rescued, &block)
+      options      = rescued.last.is_a?(Hash) ? rescued.pop : {}
       exception    = nil
       retries      = 0
-      backoff_base = self.retry_base
-      backoff_max  = self.retry_max_wait
+
+      max_attempts = options[:attempts] || DEFAULT_RETRY_ATTEMPTS
+      backoff_base = options[:base]     || DEFAULT_RETRY_BASE
+      backoff_max  = options[:max_wait] || DEFAULT_RETRY_MAX_WAIT
 
       begin
         return yield retries
@@ -354,7 +358,7 @@ module Vault
         exception = e
 
         retries += 1
-        raise if retries > self.retry_attempts
+        raise if retries > max_attempts
 
         # Calculate the exponential backoff combined with an element of
         # randomness.

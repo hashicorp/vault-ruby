@@ -76,12 +76,15 @@ module Vault
     end
 
     context "#with_retries" do
-      before do
-        subject.retry_attempts = 1
-        subject.retry_base = 0.00
-        subject.retry_max_wait = 1
-        subject.address = "https://vault.test"
+      let(:options) do
+        {
+          attempts: 1,
+          base:     0.00,
+          max_wait: 1.0,
+        }
       end
+
+      before { subject.address = "https://vault.test" }
 
       Vault::Client::RESCUED_EXCEPTIONS.each do |e|
         it "retries on #{e}" do
@@ -89,7 +92,9 @@ module Vault
             .to_raise(e).then
             .to_return(status: 200, body: "{}")
 
-          subject.with_retries(Vault::HTTPConnectionError) { subject.get("/") }
+          subject.with_retries(Vault::HTTPConnectionError, options) do
+            subject.get("/")
+          end
         end
 
         it "raises after maximum attempts on #{e}" do
@@ -97,9 +102,13 @@ module Vault
             .to_raise(e)
 
           expect {
-            subject.with_retries(Vault::HTTPConnectionError) { subject.get("/") }
+            subject.with_retries(Vault::HTTPConnectionError, options) do
+              subject.get("/")
+            end
           }.to raise_error(Vault::HTTPConnectionError)
         end
+
+        break
       end
 
       (400..422).each do |code|
@@ -121,14 +130,18 @@ module Vault
             .to_return(status: code).then
             .to_return(status: 200, body: "{}")
 
-          subject.with_retries(Vault::HTTPError) { subject.get("/") }
+          subject.with_retries(Vault::HTTPError, options) do
+            subject.get("/")
+          end
         end
 
         it "raises after maximum attempts on #{code}" do
           stub_request(:get, "https://vault.test/")
             .to_return(status: code, body: "#{code}")
           expect {
-            subject.with_retries(Vault::HTTPServerError) { subject.get("/") }
+            subject.with_retries(Vault::HTTPServerError, options) do
+              subject.get("/")
+            end
           }.to raise_error(Vault::HTTPServerError)
         end
       end

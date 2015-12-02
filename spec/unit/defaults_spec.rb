@@ -105,48 +105,6 @@ module Vault
       end
     end
 
-    describe ".retry_attempts" do
-      it "defaults to ENV['VAULT_RETRY_ATTEMPTS']" do
-        with_stubbed_env("VAULT_RETRY_ATTEMPTS" => "30") do
-          expect(Defaults.retry_attempts).to eq(30)
-        end
-      end
-
-      it "falls back to default 0" do
-        with_stubbed_env("VAULT_RETRY_ATTEMPTS" => nil) do
-          expect(Defaults.retry_attempts).to eq(0)
-        end
-      end
-    end
-
-    describe ".retry_base" do
-      it "defaults to ENV['VAULT_RETRY_BASE']" do
-        with_stubbed_env("VAULT_RETRY_BASE" => "30") do
-          expect(Defaults.retry_base).to eq(30)
-        end
-      end
-
-      it "falls back to default RETRY_BASE" do
-        with_stubbed_env("VAULT_RETRY_BASE" => nil) do
-          expect(Defaults.retry_base).to eq(0.05)
-        end
-      end
-    end
-
-    describe ".retry_max_wait" do
-      it "defaults to ENV['VAULT_RETRY_MAX_WAIT']" do
-        with_stubbed_env("VAULT_RETRY_MAX_WAIT" => "30") do
-          expect(Defaults.retry_max_wait).to eq(30)
-        end
-      end
-
-      it "falls back to default RETRY_MAX_WAIT" do
-        with_stubbed_env("VAULT_RETRY_MAX_WAIT" => nil) do
-          expect(Defaults.retry_max_wait).to eq(2.0)
-        end
-      end
-    end
-
     describe ".ssl_ciphers" do
       it "defaults to ENV['VAULT_SSL_CIPHERS']" do
         with_stubbed_env("VAULT_SSL_CIPHERS" => "testing") do
