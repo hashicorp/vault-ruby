@@ -329,12 +329,12 @@ module Vault
           json = JSON.parse(response.body, JSON_PARSE_OPTIONS)
 
           if json[:errors]
-            raise HTTPError.new(address, response.code, json[:errors])
+            raise HTTPError.new(address, response, json[:errors])
           end
         rescue JSON::ParserError; end
       end
 
-      raise HTTPError.new(address, response.code, [response.body])
+      raise HTTPError.new(address, response, [response.body])
     end
 
     # Execute the given block with retries and exponential backoff.

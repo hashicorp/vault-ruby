@@ -45,10 +45,11 @@ EOH
   end
 
   class HTTPError < VaultError
-    attr_reader :address, :code, :errors
+    attr_reader :address, :response, :code, :errors
 
-    def initialize(address, code, errors = [])
-      @address, @code, @errors = address, code.to_i, errors
+    def initialize(address, response, errors = [])
+      @address, @response, @errors = address, response, errors
+      @code  = response.code.to_i
       errors = errors.map { |error| "  * #{error}" }
 
       super <<-EOH
