@@ -23,7 +23,7 @@ module Vault
     # @return [Fixnum]
     RETRY_BASE = 0.05
 
-    # The default amount of time for a single request to timeout.
+    # The maximum amount of time for a single exponential backoff to sleep.
     RETRY_MAX_WAIT = 2.0
 
     class << self
