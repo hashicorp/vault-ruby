@@ -1,4 +1,4 @@
-require "CGI"
+require "cgi"
 
 require_relative "secret"
 require_relative "../client"
