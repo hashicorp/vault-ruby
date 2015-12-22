@@ -15,6 +15,13 @@ module Vault
         expect(secret).to be
         expect(secret.data).to eq(foo: "bar")
       end
+
+      it "is able to read a secret with % in the path" do
+        subject.write("secret/test-read@%", foo: "bar")
+        secret = subject.read("secret/test-read@%")
+        expect(secret).to be
+        expect(secret.data).to eq(foo: "bar")
+      end
     end
 
     describe "#write" do
@@ -32,6 +39,13 @@ module Vault
         expect(result).to be
         expect(result.data).to eq(bacon: true)
       end
+
+      it "is able to write a secret with % in the path" do
+        subject.write("secret/test-write@%", zip: "zap")
+        result = subject.read("secret/test-write@%")
+        expect(result).to be
+        expect(result.data).to eq(zip: "zap")
+      end
     end
 
     describe "#delete" do
@@ -47,6 +61,12 @@ module Vault
           subject.delete("secret/delete")
           subject.delete("secret/delete")
         }.to_not raise_error
+      end
+
+      it "can delete a secret with % in the path" do
+        subject.write("secret/delete@%", foo: "bar")
+        expect(subject.delete("secret/delete@%")).to be(true)
+        expect(subject.read("secret/delete@%")).to be(nil)
       end
     end
   end
