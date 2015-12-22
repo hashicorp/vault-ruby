@@ -17,7 +17,9 @@ module Vault
       end
 
       it "is able to read a secret with % in the path" do
-        expect(subject.read("secret/test-read@%")).to_not raise_error
+        expect {
+          subject.read("secret/test-read@%")
+        }.to_not raise_error
       end
     end
 
@@ -38,7 +40,9 @@ module Vault
       end
 
       it "is able to write a secret with % in the path" do
-        expect(subject.write("secret/test-write@%", zip: "zap")).to_not raise_error
+        expect {
+          subject.write("secret/test-write@%", zip: "zap")
+        }.to_not raise_error
       end
     end
 
@@ -58,7 +62,9 @@ module Vault
       end
 
       it "can delete a secret with % in the path" do
-        expect(subject.delete("secret/delete@%")).to be(true)
+        expect {
+          subject.delete("secret/delete@%")
+        }.to_not raise_error
       end
     end
   end
