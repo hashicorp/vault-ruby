@@ -45,7 +45,7 @@ module Vault
       return Secret.decode(json)
     end
 
-    # Renew the authentication token.
+    # Renews a lease associated with the callign token.
     #
     # @example
     #   Vault.auth_token.renew_self #=> #<Vault::Secret lease_id="">
@@ -60,14 +60,14 @@ module Vault
       return Secret.decode(json)
     end
 
-    # Revoke the authentication token.
+    # Revokes the token used to call it.
     #
     # @example
     #   Vault.auth_token.revoke_self #=> 204
     #
     # @return response code.
     def revoke_self
-      client.put("/v1/auth/token/revoke-self")
+      client.post("/v1/auth/token/revoke-self")
     end
 
     # Revoke exactly the orphans at the id.
