@@ -13,6 +13,14 @@ module Vault
       end
     end
 
+    describe "#renew_self" do
+      it "renew the callign token"
+    end
+
+    describe "#revoke_self" do
+      it "revoke the callign token"
+    end
+
     describe "#renew" do
       it "renews the auth"
 
