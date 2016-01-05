@@ -80,7 +80,7 @@ module Vault
 
     # Perform a POST request.
     # @see Client#request
-    def post(path, data, headers = {})
+    def post(path, data = {}, headers = {})
       request(:post, path, data, headers)
     end
 
