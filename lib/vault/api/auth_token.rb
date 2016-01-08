@@ -45,6 +45,31 @@ module Vault
       return Secret.decode(json)
     end
 
+    # Renews a lease associated with the callign token.
+    #
+    # @example
+    #   Vault.auth_token.renew_self #=> #<Vault::Secret lease_id="">
+    #
+    # @param [Fixnum] increment
+    #
+    # @return [Secret]
+    def renew_self(increment = 0)
+      json = client.put("/v1/auth/token/renew-self", JSON.fast_generate(
+        increment: increment,
+      ))
+      return Secret.decode(json)
+    end
+
+    # Revokes the token used to call it.
+    #
+    # @example
+    #   Vault.auth_token.revoke_self #=> 204
+    #
+    # @return response code.
+    def revoke_self
+      client.post("/v1/auth/token/revoke-self")
+    end
+
     # Revoke exactly the orphans at the id.
     #
     # @example
