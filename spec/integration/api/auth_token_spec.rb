@@ -2,11 +2,11 @@ require "spec_helper"
 
 module Vault
   describe AuthToken do
-    subject { vault_test_client.auth_token }
+    subject { vault_test_client }
 
     describe "#create" do
       it "creates a new token" do
-        result = subject.create
+        result = subject.auth_token.create
         expect(result).to be_a(Vault::Secret)
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
@@ -14,23 +14,21 @@ module Vault
     end
 
     describe "#renew_self" do
-      subject { vault_test_client }
-      it "renew the callign token" do
+      it "renews the calling token" do
         token = subject.auth_token.create(policies: ['default'])
         subject.auth.token(token.auth.client_token)
         result = subject.auth_token.renew_self
-        expect(result).to be_a Vault::Secret
-        expect(result.auth).to be_a Vault::SecretAuth
+        expect(result).to be_a(Vault::Secret)
+        expect(result.auth).to be_a(Vault::SecretAuth)
       end
     end
 
     describe "#revoke_self" do
-      subject { vault_test_client }
-      it "revoke the callign token" do
+      it "revokes the calling token" do
         token = subject.auth_token.create(policies: ['default'])
         subject.auth.token(token.auth.client_token)
         result = subject.auth_token.revoke_self
-        expect(result).to be nil
+        expect(result).to be(nil)
       end
     end
 
