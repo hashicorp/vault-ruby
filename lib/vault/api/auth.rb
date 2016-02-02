@@ -93,7 +93,7 @@ module Vault
     # @return [Secret]
     def userpass(username, password, options = {})
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/userpass/login/#{username}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/userpass/login/#{CGI.escape(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
