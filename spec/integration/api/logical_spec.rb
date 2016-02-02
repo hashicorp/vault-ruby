@@ -64,5 +64,14 @@ module Vault
         }.to_not raise_error
       end
     end
+
+    it "can write, read, delete with % in path" do
+      subject.write("secret/foobar@%", foo: "bar")
+      secret = subject.read("secret/foobar@%")
+      expect(secret).to be
+      expect(secret.data).to eq(foo: "bar")
+      expect(subject.delete("secret/foobar@%")).to be(true)
+      expect(subject.read("secret/foobar@%")).to be(nil)
+    end
   end
 end

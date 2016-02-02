@@ -1,3 +1,5 @@
+require "cgi"
+
 require_relative "secret"
 require_relative "../client"
 require_relative "../request"
@@ -42,6 +44,7 @@ module Vault
     #
     # @return [Secret, nil]
     def read(path)
+      path = CGI.escape(path)
       json = client.get("/v1/#{path}")
       return Secret.decode(json)
     rescue HTTPError => e
@@ -62,6 +65,7 @@ module Vault
     #
     # @return [Secret]
     def write(path, data = {})
+      path = CGI.escape(path)
       json = client.put("/v1/#{path}", JSON.fast_generate(data))
       if json.nil?
         return true
@@ -81,6 +85,7 @@ module Vault
     #
     # @return [true]
     def delete(path)
+      path = CGI.escape(path)
       client.delete("/v1/#{path}")
       return true
     end
