@@ -13,6 +13,24 @@ module Vault
   end
 
   class Logical < Request
+    # List the secrets at the given path, if the path supports listing. If the
+    # the path does not exist, an exception will be raised.
+    #
+    # @example
+    #   Vault.logical.list("secret") #=> [#<Vault::Secret>, #<Vault::Secret>, ...]
+    #
+    # @param [String] path
+    #   the path to list
+    #
+    # @return [Array<String>]
+    def list(path)
+      json = client.get("/v1/#{path}", list: true)
+      json[:data][:keys] || []
+    rescue HTTPError => e
+      return [] if e.code == 404
+      raise
+    end
+
     # Read the secret at the given path. If the secret does not exist, +nil+
     # will be returned.
     #
