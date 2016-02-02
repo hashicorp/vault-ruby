@@ -29,7 +29,7 @@ describe Vault do
   describe ".method_missing" do
     context "when the client responds to the method" do
       let(:client) { double(:client) }
-      before { allow(Vault).to receive(:client).and_return(client) }
+      before { Vault.instance_variable_set(:@client, client) }
 
       it "delegates the method to the client" do
         allow(client).to receive(:bacon).and_return("awesome")

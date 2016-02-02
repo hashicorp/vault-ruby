@@ -31,8 +31,8 @@ module Vault
     # Delegate all methods to the client object, essentially making the module
     # object behave like a {Client}.
     def method_missing(m, *args, &block)
-      if client.respond_to?(m)
-        client.send(m, *args, &block)
+      if @client.respond_to?(m)
+        @client.send(m, *args, &block)
       else
         super
       end
@@ -40,7 +40,7 @@ module Vault
 
     # Delegating +respond_to+ to the {Client}.
     def respond_to_missing?(m, include_private = false)
-      client.respond_to?(m, include_private) || super
+      @client.respond_to?(m, include_private) || super
     end
   end
 end

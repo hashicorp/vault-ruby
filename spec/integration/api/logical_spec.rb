@@ -4,6 +4,21 @@ module Vault
   describe Logical do
     subject { vault_test_client.logical }
 
+    describe "#list" do
+      it "returns the empty array when no items exist" do
+        expect(subject.list("secret/that/never/existed")).to eq([])
+      end
+
+      it "returns all secrets" do
+        subject.write("secret/test-list-1", foo: "bar")
+        subject.write("secret/test-list-2", foo: "bar")
+        secrets = subject.list("secret")
+        expect(secrets).to be_a(Array)
+        expect(secrets).to include("test-list-1")
+        expect(secrets).to include("test-list-2")
+      end
+    end
+
     describe "#read" do
       it "returns nil with the thing does not exist" do
         expect(subject.read("secret/foo/bar/zip")).to be(nil)
