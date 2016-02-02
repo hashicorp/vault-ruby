@@ -30,6 +30,13 @@ module Vault
         expect(secret).to be
         expect(secret.data).to eq(foo: "bar")
       end
+
+      it "allows special characters" do
+        subject.write("secret/b:@c%n-read", foo: "bar")
+        secret = subject.read("secret/b:@c%n-read")
+        expect(secret).to be
+        expect(secret.data).to eq(foo: "bar")
+      end
     end
 
     describe "#write" do
@@ -47,6 +54,14 @@ module Vault
         expect(result).to be
         expect(result.data).to eq(bacon: true)
       end
+
+      it "allows special characters" do
+        subject.write("secret/b:@c%n-write", foo: "bar")
+        subject.write("secret/b:@c%n-write", bacon: true)
+        secret = subject.read("secret/b:@c%n-write")
+        expect(secret).to be
+        expect(secret.data).to eq(bacon: true)
+      end
     end
 
     describe "#delete" do
@@ -54,6 +69,12 @@ module Vault
         subject.write("secret/delete", foo: "bar")
         expect(subject.delete("secret/delete")).to be(true)
         expect(subject.read("secret/delete")).to be(nil)
+      end
+
+      it "allows special characters" do
+        subject.write("secret/b:@c%n-delete", foo: "bar")
+        expect(subject.delete("secret/b:@c%n-delete")).to be(true)
+        expect(subject.read("secret/b:@c%n-delete")).to be(nil)
       end
 
       it "does not error if the secret does not exist" do

@@ -34,7 +34,7 @@ module Vault
       payload = { type: type }
       payload[:description] = description if !description.nil?
 
-      client.post("/v1/sys/mounts/#{path}", JSON.fast_generate(payload))
+      client.post("/v1/sys/mounts/#{CGI.escape(path)}", JSON.fast_generate(payload))
       return true
     end
 
@@ -49,7 +49,7 @@ module Vault
     #
     # @return [true]
     def unmount(path)
-      client.delete("/v1/sys/mounts/#{path}")
+      client.delete("/v1/sys/mounts/#{CGI.escape(path)}")
       return true
     end
 
