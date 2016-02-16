@@ -1,7 +1,22 @@
 # Vault Ruby Changelog
 
-## 0.2.0.dev (Unreleased)
+## v0.3.0.dev (Unreleased)
 
+
+
+## v0.3.0 (February 16, 2016)
+
+NEW FEATURES
+
+- Add API for `renew_self`
+- Add API for `revoke_self`
+- Add API for listing secrets where supported
+
+BUG FIXES
+
+- Relax bundler constraint
+- Fix race conditions on Ruby 2.3
+- Escape path params before posting to Vault
 
 ## v0.2.0 (December 2, 2015)
 
