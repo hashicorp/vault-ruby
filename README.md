@@ -68,7 +68,7 @@ Vault.configure do |config|
 end
 ```
 
-If you do not want the Vault singleton, of if you need to communicate with multiple Vault servers at once, you can create indepenent client objects:
+If you do not want the Vault singleton, or if you need to communicate with multiple Vault servers at once, you can create indepenent client objects:
 
 ```ruby
 client_1 = Vault::Client.new(address: "https://vault.mycompany.com")
