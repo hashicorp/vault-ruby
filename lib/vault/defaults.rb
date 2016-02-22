@@ -141,6 +141,12 @@ module Vault
       def timeout
         ENV["VAULT_TIMEOUT"]
       end
+
+      # A default options for retrying requests
+      # @return [Array, nil]
+      def retry_options
+        nil
+      end
     end
   end
 end

@@ -20,6 +20,7 @@ module Vault
         :ssl_verify,
         :ssl_timeout,
         :timeout,
+        :retry_options
       ]
     end
 

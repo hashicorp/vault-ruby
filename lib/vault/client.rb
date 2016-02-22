@@ -75,7 +75,7 @@ module Vault
     # Perform a GET request.
     # @see Client#request
     def get(path, params = {}, headers = {})
-      request(:get, path, params, headers)
+      request_with_retries(:get, path, params, headers)
     end
 
     # Perform a POST request.
@@ -87,7 +87,7 @@ module Vault
     # Perform a PUT request.
     # @see Client#request
     def put(path, data, headers = {})
-      request(:put, path, data, headers)
+      request_with_retries(:put, path, data, headers)
     end
 
     # Perform a PATCH request.
@@ -99,7 +99,19 @@ module Vault
     # Perform a DELETE request.
     # @see Client#request
     def delete(path, params = {}, headers = {})
-      request(:delete, path, params, headers)
+      request_with_retries(:delete, path, params, headers)
+    end
+
+    # Perform a request with retries for idempotent operations
+    # @see Client#request
+    def request_with_retries(verb, path, data = {}, headers = {})
+      unless options[:retry_options].nil?
+        send(:with_retries, options[:retry_options]) do
+          request(verb, path, data, headers)
+        end
+      else
+        request(verb, path, data, headers)
+      end
     end
 
     # Make an HTTP request with the given verb, data, params, and headers. If
