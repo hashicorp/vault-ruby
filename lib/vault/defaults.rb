@@ -42,7 +42,7 @@ module Vault
       # The vault token to use for authentiation.
       # @return [String, nil]
       def token
-        unless ENV["VAULT_TOKEN"].nil?
+        if !ENV["VAULT_TOKEN"].nil?
           return ENV["VAULT_TOKEN"]
         end
 
