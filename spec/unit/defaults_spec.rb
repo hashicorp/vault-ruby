@@ -49,10 +49,10 @@ module Vault
         end
       end
 
-      it "prefers the local token over the environment" do
+      it "prefers the environment over local token" do
         File.open(token, "w") { |f| f.write("testing1") }
         with_stubbed_env("VAULT_TOKEN" => "testing2") do
-          expect(Defaults.token).to eq("testing1")
+          expect(Defaults.token).to eq("testing2")
         end
       end
     end

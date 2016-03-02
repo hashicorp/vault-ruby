@@ -42,11 +42,15 @@ module Vault
       # The vault token to use for authentiation.
       # @return [String, nil]
       def token
-        if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
-          VAULT_DISK_TOKEN.read
-        else
-          ENV["VAULT_TOKEN"]
+        unless ENV["VAULT_TOKEN"].nil?
+          return ENV["VAULT_TOKEN"]
         end
+
+        if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
+          return VAULT_DISK_TOKEN.read
+        end
+
+        nil
       end
 
       # The number of seconds to wait when trying to open a connection before
