@@ -2,7 +2,10 @@
 
 ## v0.3.0.dev (Unreleased)
 
+BUG FIXES
 
+- Prefer `VAULT_TOKEN` environment variable over disk to mirror Vault's own
+  behavior [GH-98]
 
 ## v0.3.0 (February 16, 2016)
 
