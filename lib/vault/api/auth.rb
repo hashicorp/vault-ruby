@@ -98,5 +98,27 @@ module Vault
       client.token = secret.auth.client_token
       return secret
     end
+
+    # Authenticate via the "ldap" authentication method. If authentication
+    # is successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.ldap("sethvargo", "s3kr3t") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] username
+    # @param [String] password
+    # @param [Hash] options
+    #   additional options to pass to the authentication call, such as a custom
+    #   mount point
+    #
+    # @return [Secret]
+    def ldap(username, password, options = {})
+      payload = { password: password }.merge(options)
+      json = client.post("/v1/auth/ldap/login/#{CGI.escape(username)}", JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
   end
 end
