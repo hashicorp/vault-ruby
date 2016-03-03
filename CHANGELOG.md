@@ -5,6 +5,7 @@
 NEW FEATURES
 
 - Add LDAP authentication method [GH-61]
+- Add GitHub authentication method [GH-37]
 
 BUG FIXES
 
