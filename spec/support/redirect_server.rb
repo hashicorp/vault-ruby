@@ -14,7 +14,11 @@ module RSpec
 
     def self.start
       @server ||= begin
-                    server = WEBrick::HTTPServer.new(Port: 8201)
+                    server = WEBrick::HTTPServer.new(
+                      Port: 8201,
+                      Logger: WEBrick::Log.new("/dev/null"),
+                      AccessLogs: [],
+                    )
                     server.mount '/', self
                     at_exit { server.shutdown }
                     Thread.new { server.start }

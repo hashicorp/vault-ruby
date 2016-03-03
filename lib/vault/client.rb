@@ -217,9 +217,12 @@ module Vault
 
           case response
           when Net::HTTPRedirection
-            # on a redirect of a get, the url already contains the data as query string params
-            redirect_data = verb == :get ? {} : data
-            request(verb, response[LOCATION_HEADER], redirect_data, headers)
+            # On a redirect of a GET or HEAD request, the URL already contains
+            # the data as query string parameters.
+            if [:head, :get].include?(verb)
+              data = {}
+            end
+            request(verb, response[LOCATION_HEADER], data, headers)
           when Net::HTTPSuccess
             success(response)
           else
