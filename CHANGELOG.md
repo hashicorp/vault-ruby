@@ -6,6 +6,7 @@ BUG FIXES
 
 - Prefer `VAULT_TOKEN` environment variable over disk to mirror Vault's own
   behavior [GH-98]
+- Do not duplicate query parameters on HEAD/GET requests [GH-62]
 
 ## v0.3.0 (February 16, 2016)
 
