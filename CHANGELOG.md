@@ -2,6 +2,10 @@
 
 ## v0.3.0.dev (Unreleased)
 
+NEW FEATURES
+
+- Add LDAP authentication method [GH-61]
+
 BUG FIXES
 
 - Prefer `VAULT_TOKEN` environment variable over disk to mirror Vault's own
