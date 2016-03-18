@@ -6,6 +6,7 @@ require "webmock/rspec"
 
 require_relative "support/vault_server"
 require_relative "support/redirect_server"
+require_relative "support/sample_certificate"
 
 RSpec.configure do |config|
   # Custom helper modules and extensions
