@@ -23,6 +23,10 @@ module Vault
       client.sys.enable_auth('cert', 'cert', 'Allow to login via TLS certificate')
     end
 
+    def enabled?
+      client.sys.auths.keys.include? :cert
+    end
+
     # This disable the auth tls cert backend
     def disable
       client.sys.disable_auth('cert')
