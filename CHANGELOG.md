@@ -1,6 +1,6 @@
 # Vault Ruby Changelog
 
-## v0.3.0.dev (Unreleased)
+## v0.4.0 (March 31, 2016)
 
 NEW FEATURES
 
@@ -15,6 +15,7 @@ BUG FIXES
 - Prefer `VAULT_TOKEN` environment variable over disk to mirror Vault's own
   behavior [GH-98]
 - Do not duplicate query parameters on HEAD/GET requests [GH-62]
+- Yield exception in `with_retries` [GH-68]
 
 ## v0.3.0 (February 16, 2016)
 
