@@ -6,6 +6,9 @@ NEW FEATURES
 
 - Add LDAP authentication method [GH-61]
 - Add GitHub authentication method [GH-37]
+- Add `create_orphan` method [GH-65]
+- Add `lookup` and `lookup_self` for tokens
+- Accept `VAULT_SKIP_VERIFY` environment variable [GH-66]
 
 BUG FIXES
 
