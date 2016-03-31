@@ -1,5 +1,7 @@
 # Vault Ruby Changelog
 
+## v0.4.0.dev (Unreleased)
+
 ## v0.4.0 (March 31, 2016)
 
 NEW FEATURES
