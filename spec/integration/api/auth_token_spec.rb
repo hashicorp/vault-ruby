@@ -22,6 +22,22 @@ module Vault
       end
     end
 
+    describe "#lookup" do
+      it "retrieves the given token" do
+        result = subject.auth_token.lookup(subject.token)
+        expect(result).to be_a(Vault::Secret)
+        expect(result.data[:id]).to eq(subject.token)
+      end
+    end
+
+    describe "#lookup_self" do
+      it "retrieves the current token" do
+        result = subject.auth_token.lookup_self
+        expect(result).to be_a(Vault::Secret)
+        expect(result.data[:id]).to eq(subject.token)
+      end
+    end
+
     describe "#renew_self" do
       it "renews the calling token" do
         token = subject.auth_token.create(policies: ['default'])

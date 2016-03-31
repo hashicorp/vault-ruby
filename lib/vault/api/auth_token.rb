@@ -41,6 +41,30 @@ module Vault
       return Secret.decode(json)
     end
 
+    # Lookup information about the current token.
+    #
+    # @example
+    #   Vault.auth_token.lookup_self("abcd-...") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] token
+    #
+    # @return [Secret]
+    def lookup(token)
+      json = client.get("/v1/auth/token/lookup/#{CGI.escape(token)}")
+      return Secret.decode(json)
+    end
+
+    # Lookup information about the given token.
+    #
+    # @example
+    #   Vault.auth_token.lookup_self #=> #<Vault::Secret lease_id="">
+    #
+    # @return [Secret]
+    def lookup_self
+      json = client.get("/v1/auth/token/lookup-self")
+      return Secret.decode(json)
+    end
+
     # Renew the given authentication token.
     #
     # @example
