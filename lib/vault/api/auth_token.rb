@@ -28,6 +28,19 @@ module Vault
       return Secret.decode(json)
     end
 
+    # Create an orphaned authentication token.
+    #
+    # @example
+    #   Vault.auth_token.create_orphan #=> #<Vault::Secret lease_id="">
+    #
+    # @param [Hash] options
+    #
+    # @return [Secret]
+    def create_orphan(options = {})
+      json = client.post("/v1/auth/token/create-orphan", JSON.fast_generate(options))
+      return Secret.decode(json)
+    end
+
     # Renew the given authentication token.
     #
     # @example

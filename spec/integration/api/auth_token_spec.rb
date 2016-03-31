@@ -13,6 +13,15 @@ module Vault
       end
     end
 
+    describe "#create_orphan" do
+      it "creates an orphaned token" do
+        result = subject.auth_token.create_orphan
+        expect(result).to be_a(Vault::Secret)
+        expect(result.auth).to be_a(Vault::SecretAuth)
+        expect(result.auth.client_token).to be
+      end
+    end
+
     describe "#renew_self" do
       it "renews the calling token" do
         token = subject.auth_token.create(policies: ['default'])
