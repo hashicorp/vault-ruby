@@ -358,7 +358,7 @@ module Vault
       backoff_max  = options[:max_wait] || Defaults::RETRY_MAX_WAIT
 
       begin
-        return yield retries
+        return yield retries, exception
       rescue *rescued => e
         exception = e
 
