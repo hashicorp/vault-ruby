@@ -128,7 +128,7 @@ module Vault
       def ssl_verify
         # Vault CLI uses this envvar, so accept it by precedence
         if !ENV["VAULT_SKIP_VERIFY"].nil?
-          return true
+          return false
         end
 
         if ENV["VAULT_SSL_VERIFY"].nil?

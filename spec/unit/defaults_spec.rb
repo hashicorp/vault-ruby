@@ -158,7 +158,7 @@ module Vault
 
       it "reads the value of ENV['VAULT_SKIP_VERIFY']" do
         with_stubbed_env("VAULT_SKIP_VERIFY" => true) do
-          expect(Defaults.ssl_verify).to be(true)
+          expect(Defaults.ssl_verify).to be(false)
         end
       end
 
