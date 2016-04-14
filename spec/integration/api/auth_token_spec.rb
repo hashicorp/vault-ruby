@@ -5,8 +5,19 @@ module Vault
     subject { vault_test_client }
 
     describe "#create" do
+      before(:context) do
+        vault_test_client.logical.write("auth/token/roles/default")
+      end
+
       it "creates a new token" do
         result = subject.auth_token.create
+        expect(result).to be_a(Vault::Secret)
+        expect(result.auth).to be_a(Vault::SecretAuth)
+        expect(result.auth.client_token).to be
+      end
+
+      it "creates a new token using a role" do
+        result = subject.auth_token.create(role: 'default')
         expect(result).to be_a(Vault::Secret)
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
