@@ -24,6 +24,16 @@ module Vault
       end
     end
 
+    describe "#mount_tune" do
+      it "tunes the mount" do
+        expect(subject.mount("test_mount_tune", "aws")).to be(true)
+        expect(subject.mount_tune("test_mount_tune", max_lease_ttl: '1234h'))
+        result = subject.mounts[:test_mount_tune]
+        expect(result).to be_a(Mount)
+        expect(result.config[:max_lease_ttl]).to eq(1234*60*60)
+      end
+    end
+
     describe "#unmount" do
       it "unmounts by name" do
         subject.mount("test_unmount", "aws")
