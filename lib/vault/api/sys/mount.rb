@@ -3,7 +3,7 @@ require "json"
 require_relative "../sys"
 
 module Vault
-  class Mount < Response.new(:type, :description); end
+  class Mount < Response.new(:type, :description, :config); end
 
   class Sys < Request
     # List all mounts in the vault.
@@ -35,6 +35,20 @@ module Vault
       payload[:description] = description if !description.nil?
 
       client.post("/v1/sys/mounts/#{CGI.escape(path)}", JSON.fast_generate(payload))
+      return true
+    end
+
+    # Tune a mount at the given path.
+    #
+    # @example
+    #   Vault.sys.mount_tune("pki", max_lease_ttl: '87600h') #=> true
+    #
+    # @param [String] path
+    #   the path to write
+    # @param [Hash] data
+    #   the data to write
+    def mount_tune(path, data = {})
+      json = client.post("/v1/sys/mounts/#{CGI.escape(path)}/tune", JSON.fast_generate(data))
       return true
     end
 
