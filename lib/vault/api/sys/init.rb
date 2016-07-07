@@ -1,7 +1,5 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
   class InitResponse < Response.new(:keys, :root_token); end
 

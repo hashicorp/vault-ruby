@@ -1,7 +1,5 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
   class Policy < Response.new(:rules); end
 
