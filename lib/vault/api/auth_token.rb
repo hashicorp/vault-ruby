@@ -24,7 +24,12 @@ module Vault
     #
     # @return [Secret]
     def create(options = {})
-      json = client.post("/v1/auth/token/create", JSON.fast_generate(options))
+      url = if options.include?(:role)
+              "/v1/auth/token/create/" + options.delete(:role)
+            else
+              "/v1/auth/token/create"
+            end
+      json = client.post(url, JSON.fast_generate(options))
       return Secret.decode(json)
     end
 
