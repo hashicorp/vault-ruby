@@ -1,7 +1,22 @@
 require "json"
 
 module Vault
-  class Mount < Response.new(:type, :description, :config); end
+  class Mount < Response
+    # @!attribute [r] config
+    #   Arbitrary configuration for the backend.
+    #   @return [Hash<Symbol, Object>]
+    field :config
+
+    # @!attribute [r] description
+    #   Description of the mount.
+    #   @return [String]
+    field :description
+
+    # @!attribute [r] type
+    #   Type of the mount.
+    #   @return [String]
+    field :type
+  end
 
   class Sys < Request
     # List all mounts in the vault.

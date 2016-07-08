@@ -157,11 +157,6 @@ secret = Vault.logical.read("secret/bacon")
 secret.data #=> { :cooktime = >"11", :delicious => true }
 ```
 
-#### Seal the Vault
-```ruby
-Vault.sys.seal #=> true
-```
-
 Development
 -----------
 1. Clone the project on GitHub

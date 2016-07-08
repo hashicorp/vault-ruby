@@ -1,10 +1,23 @@
 require "json"
 
 module Vault
-  class InitResponse < Response.new(:keys, :root_token); end
+  class InitResponse < Response
+    # @!attribute [r] keys
+    #   List of unseal keys.
+    #   @return [Array<String>]
+    field :keys
 
-  class InitStatus < Response.new(:initialized)
-    alias_method :initialized?, :initialized
+    # @!attribute [r] root_token
+    #   Initial root token.
+    #   @return [String]
+    field :root_token
+  end
+
+  class InitStatus < Response
+    # @!method initialized?
+    #   Returns whether the Vault server is initialized.
+    #   @return [Boolean]
+    field :initialized, as: :initialized?
   end
 
   class Sys

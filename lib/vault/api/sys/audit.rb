@@ -1,7 +1,22 @@
 require "json"
 
 module Vault
-  class Audit < Response.new(:type, :description, :options); end
+  class Audit < Response
+    # @!attribute [r] description
+    #   Description of the audit backend.
+    #   @return [String]
+    field :description
+
+    # @!attribute [r] options
+    #   Map of options configured to the audit backend.
+    #   @return [Hash<Symbol, Object>]
+    field :options
+
+    # @!attribute [r] type
+    #   Name of the audit backend.
+    #   @return [String]
+    field :type
+  end
 
   class Sys
     # List all audis for the vault.
