@@ -41,6 +41,19 @@ module Vault
       return Secret.decode(json)
     end
 
+    # Create an orphaned authentication token.
+    #
+    # @example
+    #   Vault.auth_token.create_with_role("developer") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [Hash] options
+    #
+    # @return [Secret]
+    def create_with_role(name, options = {})
+      json = client.post("/v1/auth/token/create/#{CGI.escape(name)}", JSON.fast_generate(options))
+      return Secret.decode(json)
+    end
+
     # Lookup information about the current token.
     #
     # @example

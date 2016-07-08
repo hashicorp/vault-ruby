@@ -22,6 +22,16 @@ module Vault
       end
     end
 
+    describe "#create_with_role" do
+      it "creates a token attached to a role" do
+        vault_test_client.logical.write("auth/token/roles/default")
+        result = subject.auth_token.create_with_role("default")
+        expect(result).to be_a(Vault::Secret)
+        expect(result.auth).to be_a(Vault::SecretAuth)
+        expect(result.auth.client_token).to be
+      end
+    end
+
     describe "#lookup" do
       it "retrieves the given token" do
         result = subject.auth_token.lookup(subject.token)
