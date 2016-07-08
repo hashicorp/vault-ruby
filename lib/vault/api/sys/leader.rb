@@ -1,5 +1,3 @@
-require_relative "../sys"
-
 module Vault
   class LeaderStatus < Response.new(:ha_enabled, :is_self, :leader_address)
     alias_method :ha_enabled?, :ha_enabled

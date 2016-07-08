@@ -1,7 +1,5 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
   class SealStatus < Response.new(:sealed, :t, :n, :progress)
     alias_method :sealed?, :sealed

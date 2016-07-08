@@ -1,7 +1,5 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
   class Auth < Response.new(:type, :description); end
 

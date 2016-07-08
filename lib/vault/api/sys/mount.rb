@@ -1,7 +1,5 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
   class Mount < Response.new(:type, :description, :config); end
 
