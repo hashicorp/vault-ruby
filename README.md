@@ -151,11 +151,10 @@ Vault.logical.read("secret/bacon")
 #=> #<Vault::Secret lease_id="">
 ```
 
-#### Display the contents of a secret
+#### Retrieve the Contents of a Secret
 ```ruby
-secrets=Vault.logical.read("secret/bacon")
-puts "#{secrets.data}"
-#=> {:cooktime=>"11", :delicious=>true}
+secret = Vault.logical.read("secret/bacon")
+secret.data #=> { :cooktime = >"11", :delicious => true }
 ```
 
 #### Seal the Vault
