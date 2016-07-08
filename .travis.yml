@@ -3,7 +3,7 @@ cache: bundler
 sudo: false
 
 before_install: |-
-  curl -sO vault.zip https://releases.hashicorp.com/vault/0.6.0/vault_0.6.0_linux_amd64.zip
+  curl -so vault.zip https://releases.hashicorp.com/vault/0.6.0/vault_0.6.0_linux_amd64.zip
   unzip vault.zip
   mkdir ~/bin
   mv vault ~/bin
