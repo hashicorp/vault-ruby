@@ -8,7 +8,6 @@ module Vault
       it "returns the seal status" do
         result = subject.seal_status
         expect(result).to be_a(SealStatus)
-        expect(result.sealed).to be(false)
         expect(result.sealed?).to be(false)
         expect(result.t).to eq(1)
         expect(result.n).to eq(1)

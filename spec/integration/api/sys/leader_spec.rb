@@ -8,7 +8,6 @@ module Vault
       it "returns leader information" do
         result = subject.leader
         expect(result).to be_a(LeaderStatus)
-        expect(result.ha_enabled).to be(false)
         expect(result.ha_enabled?).to be(false)
         expect(result.ha?).to be(false)
         expect(result.is_self?).to be(false)
