@@ -16,6 +16,9 @@ module Vault
     # The name of the header used to hold the Vault token.
     TOKEN_HEADER = "X-Vault-Token".freeze
 
+    # The name of the header used to hold the wrapped request ttl.
+    WRAP_TTL_HEADER = "X-Vault-Wrap-TTL".freeze
+
     # The name of the header used for redirection.
     LOCATION_HEADER = "location".freeze
 
@@ -132,7 +135,7 @@ module Vault
       # Add the Vault token header - users could still override this on a
       # per-request basis
       if !token.nil?
-        request.add_field(TOKEN_HEADER, token)
+        headers[TOKEN_HEADER] ||= token
       end
 
       # Add headers

@@ -157,6 +157,26 @@ secret = Vault.logical.read("secret/bacon")
 secret.data #=> { :cooktime = >"11", :delicious => true }
 ```
 
+### Response wrapping
+```ruby
+# Request new access token as wrapped response where the ttl of the temporary token is 500
+wrapped_token_response = Vault.auth_token.create(wrap_ttl: 500)
+# Unwrap wrapped response for final token using the initial temporary token
+unwrapped_token_response = Vault.logical.unwrap(wrapped_token_response.wrap_info.token)
+# Extract final token from response
+unwrapped_token = unwrapped_token_response.data.auth.client_token
+```
+
+If the above detail is unnecessary there is a helper method 'unwrap_token' available
+
+```ruby
+# Request new access token as wrapped response where the ttl of the temporary token is 500
+wrapped_token_response = Vault.auth_token.create(wrap_ttl: 500)
+# Unwrap wrapped response for final token using the initial temporary token
+unwrapped_token = Vault.logical.unwrap_token(wrapped_token_response)
+```
+
+
 Development
 -----------
 1. Clone the project on GitHub
@@ -168,3 +188,4 @@ Important Notes:
 - **All new features must include test coverage.** At a bare minimum, Unit tests are required. It is preferred if you include acceptance tests as well.
 - **The tests must be be idempotent.** The HTTP calls made during a test should be able to be run over and over.
 - **Tests are order independent.** The default RSpec configuration randomizes the test order, so this should not be a problem.
+- **Integration tests require Vault**  Vault must be available in the path for the integration tests to pass.

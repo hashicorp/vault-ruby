@@ -84,5 +84,42 @@ module Vault
       client.delete("/v1/#{CGI.escape(path)}")
       return true
     end
+
+    # Unwrap the data stored against the given token. If the secret does not exist, +nil+
+    # will be returned.
+    #
+    # @example
+    #   Vault.logical.unwrap("f363dba8-25a7-08c5-430c-00b2367124e6") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] wrapper_token
+    #   the token to unwrap
+    #
+    # @return [Secret, nil]
+    def unwrap(wrapper_token)
+      json = client.get("/v1/cubbyhole/response", {}, { Vault::Client::TOKEN_HEADER => wrapper_token })
+      secret = Secret.decode(json)
+      secret.instance_variable_set("@data", Vault::Secret.new(JSON.parse(secret.data[:response], symbolize_names: true))) if secret.data
+      return secret
+    rescue HTTPError => e
+      return nil if e.code == 404
+      raise
+    end
+
+    # Unwrap a token in a wrapped response given the temporary token.
+    #
+    # @example
+    #   Vault.logical.unwrap("f363dba8-25a7-08c5-430c-00b2367124e6") #=> '0f0f40fd-06ce-4af1-61cb-cdc12796f42b'
+    #
+    # @param [String, Secret] wrapper_token
+    #   the token to unwrap as a string or Vault::Secret response
+    #
+    # @return [String]
+    def unwrap_token(wrapper_token)
+      wrapper_token = wrapper_token.wrap_info.token if wrapper_token.is_a?(Vault::Secret) && wrapper_token.wrap_info
+      unwrapped_token_response = unwrap(wrapper_token)
+      return unwrapped_token_response.data.auth.client_token
+    rescue HTTPError => e
+      raise
+    end
   end
 end

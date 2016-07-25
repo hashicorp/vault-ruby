@@ -136,6 +136,16 @@ module Vault
     #   @return [String]
     field :token
 
+    # @!attribute [r] wrapped_accessor
+    #   Accessor for the wrapped token. This is like a `lease_id`, but for a token.
+    #   @return [String]
+    field :wrapped_accessor
+
+    # @!attribute [r] creation_time
+    #   Date & time when the wrapped token was created
+    #   @return [Time]
+    field :creation_time, load: ->(v) { Time.parse(v) }
+
     # @!attribute [r] ttl
     #   The TTL on the token returned in seconds.
     #   @return [Fixnum]

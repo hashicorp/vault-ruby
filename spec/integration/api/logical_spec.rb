@@ -85,5 +85,64 @@ module Vault
         }.to_not raise_error
       end
     end
+
+    describe "#unwrap" do
+      it "preserves the original access token" do
+        original_token = Vault.token
+        expect { subject.unwrap('some token')}.to raise_error
+        expect(Vault.token).to eq(original_token)
+      end
+
+      it "returns the wrapped secret when it exists" do
+        original_token = vault_test_client.token
+        subject.write("secret/test-read", foo: "bar")
+        expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+
+        expect {
+          wrapped_token_response = vault_test_client.auth_token.create({"display_name" => "", "num_uses" => 0, "renewable" => true, :wrap_ttl => 500})
+          unwrapped_token_response = subject.unwrap(wrapped_token_response.wrap_info.token)
+          # Verify quality of unwrapped token response
+          vault_test_client.token = unwrapped_token_response.data.auth.client_token
+          expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+        }.to_not raise_error
+        vault_test_client.token = original_token
+      end
+    end
+
+    describe "#unwrap_token" do
+      it "preserves the original access token" do
+        original_token = Vault.token
+        expect { subject.unwrap_token('some token')}.to raise_error
+        expect(Vault.token).to eq(original_token)
+      end
+
+      it "returns the wrapped token (as a string) when it exists" do
+        original_token = vault_test_client.token
+        subject.write("secret/test-read", foo: "bar")
+        expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+
+        expect {
+          wrapped_token_response = vault_test_client.auth_token.create({"display_name" => "", "num_uses" => 0, "renewable" => true, :wrap_ttl => 500})
+          vault_test_client.token = subject.unwrap_token(wrapped_token_response.wrap_info.token)
+          expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+        }.to_not raise_error
+        vault_test_client.token = original_token
+      end
+
+      it "returns the wrapped token (as a Vault::Secret) when it exists" do
+        original_token = vault_test_client.token
+        subject.write("secret/test-read", foo: "bar")
+        expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+
+        expect {
+          wrapped_token_response = vault_test_client.auth_token.create({"display_name" => "", "num_uses" => 0, "renewable" => true, :wrap_ttl => 500})
+          vault_test_client.token = subject.unwrap_token(wrapped_token_response)
+          expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+        }.to_not raise_error
+        vault_test_client.token = original_token
+      end
+
+    end
+
   end
 end

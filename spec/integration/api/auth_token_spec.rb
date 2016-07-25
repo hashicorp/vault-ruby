@@ -11,6 +11,15 @@ module Vault
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
       end
+
+      it "creates a new token as a wrapped response" do
+        ttl = 50
+        result = subject.auth_token.create({:wrap_ttl => ttl})
+        expect(result).to be_a(Vault::Secret)
+        expect(result.wrap_info).to be_a(Vault::WrapInfo)
+        expect(result.wrap_info.ttl).to eq(ttl)
+        expect(result.wrap_info.token).to be
+      end
     end
 
     describe "#create_orphan" do
@@ -19,6 +28,15 @@ module Vault
         expect(result).to be_a(Vault::Secret)
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
+      end
+
+      it "creates an orphaned token as a wrapped response" do
+        ttl = 50
+        result = subject.auth_token.create_orphan({:wrap_ttl => ttl})
+        expect(result).to be_a(Vault::Secret)
+        expect(result.wrap_info).to be_a(Vault::WrapInfo)
+        expect(result.wrap_info.ttl).to eq(ttl)
+        expect(result.wrap_info.token).to be
       end
     end
 
@@ -29,6 +47,16 @@ module Vault
         expect(result).to be_a(Vault::Secret)
         expect(result.auth).to be_a(Vault::SecretAuth)
         expect(result.auth.client_token).to be
+      end
+
+      it "creates a new token attached to a role as a wrapped response" do
+        ttl = 50
+        vault_test_client.logical.write("auth/token/roles/default")
+        result = subject.auth_token.create_with_role("default", {:wrap_ttl => ttl})
+        expect(result).to be_a(Vault::Secret)
+        expect(result.wrap_info).to be_a(Vault::WrapInfo)
+        expect(result.wrap_info.ttl).to eq(ttl)
+        expect(result.wrap_info.token).to be
       end
     end
 

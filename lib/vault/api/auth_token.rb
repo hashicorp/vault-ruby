@@ -19,12 +19,14 @@ module Vault
     #
     # @example
     #   Vault.auth_token.create #=> #<Vault::Secret lease_id="">
+    #   Vault.auth_token.create({"policies":["myapp"],"display_name":"","num_uses":0,"renewable":true, wrap_ttl:500})
     #
     # @param [Hash] options
     #
     # @return [Secret]
     def create(options = {})
-      json = client.post("/v1/auth/token/create", JSON.fast_generate(options))
+      headers = options[:wrap_ttl].nil? ? {} : { Vault::Client::WRAP_TTL_HEADER => options.delete(:wrap_ttl) }
+      json = client.post("/v1/auth/token/create", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -37,7 +39,8 @@ module Vault
     #
     # @return [Secret]
     def create_orphan(options = {})
-      json = client.post("/v1/auth/token/create-orphan", JSON.fast_generate(options))
+      headers = options[:wrap_ttl].nil? ? {} : { Vault::Client::WRAP_TTL_HEADER => options.delete(:wrap_ttl) }
+      json = client.post("/v1/auth/token/create-orphan", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -50,7 +53,8 @@ module Vault
     #
     # @return [Secret]
     def create_with_role(name, options = {})
-      json = client.post("/v1/auth/token/create/#{CGI.escape(name)}", JSON.fast_generate(options))
+      headers = options[:wrap_ttl].nil? ? {} : { Vault::Client::WRAP_TTL_HEADER => options.delete(:wrap_ttl) }
+      json = client.post("/v1/auth/token/create/#{CGI.escape(name)}", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -139,8 +143,8 @@ module Vault
     # @example
     #   Vault.auth_token.revoke_prefix("abcd-1234") #=> true
     #
-    # @param [String] id
-    #   the auth id
+    # @param [String] prefix
+    #   the prefix to revoke
     #
     # @return [true]
     def revoke_prefix(prefix)
