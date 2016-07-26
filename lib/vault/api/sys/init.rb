@@ -44,7 +44,7 @@ module Vault
     #   the number of shares
     # @option options [Fixnum] :threshold
     #   the number of keys needed to unlock
-    # @options options [Array] :pgp_keys
+    # @option options [Array] :pgp_keys
     #   an optional Array of base64-encoded PGP public keys to encrypt shares with
     #
     # @return [InitResponse]
