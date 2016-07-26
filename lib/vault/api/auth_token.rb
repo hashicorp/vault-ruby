@@ -15,17 +15,44 @@ module Vault
   end
 
   class AuthToken < Request
-    # Create an authentication token.
+    # Create an authentication token. Note that the parameters specified below
+    # are not validated and passed directly to the Vault server. Depending on
+    # the version of Vault in operation, some of these options may not work, and
+    # newer options may be available that are not listed here.
     #
-    # @example
+    # @example Creating a token
     #   Vault.auth_token.create #=> #<Vault::Secret lease_id="">
-    #   Vault.auth_token.create({"policies":["myapp"],"display_name":"","num_uses":0,"renewable":true, wrap_ttl:500})
+    #
+    # @example Creating a token assigned to policies with a wrap TTL
+    #   Vault.auth_token.create(
+    #     policies: ["myapp"],
+    #     wrap_ttl: 500,
+    #   )
     #
     # @param [Hash] options
+    # @option options [String] :id
+    #   The ID of the client token - this can only be specified for root tokens
+    # @option options [Array<String>] :policies
+    #   List of policies to apply to the token
+    # @option options [Fixnum, String] :wrap_ttl
+    #   The number of seconds or a golang-formatted timestamp like "5s" or "10m"
+    #   for the TTL on the wrapped response
+    # @option options [Hash<String, String>] :meta
+    #   A map of metadata that is passed to audit backends
+    # @option options [Boolean] :no_parent
+    #   Create a token without a parent - see also {#create_orphan}
+    # @option options [Boolean] :no_default_policy
+    #   Create a token without the default policy attached
+    # @option options [Boolean] :renewable
+    #   Set whether this token is renewable or not
+    # @option options [String] :display_name
+    #   Name of the token
+    # @option options [Fixnum] :num_uses
+    #   Maximum number of uses for the token
     #
     # @return [Secret]
     def create(options = {})
-      headers = options[:wrap_ttl].nil? ? {} : { Vault::Client::WRAP_TTL_HEADER => options.delete(:wrap_ttl) }
+      headers = extract_headers!(options)
       json = client.post("/v1/auth/token/create", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
@@ -35,11 +62,12 @@ module Vault
     # @example
     #   Vault.auth_token.create_orphan #=> #<Vault::Secret lease_id="">
     #
-    # @param [Hash] options
+    # @param (see #create)
+    # @option (see #create)
     #
     # @return [Secret]
     def create_orphan(options = {})
-      headers = options[:wrap_ttl].nil? ? {} : { Vault::Client::WRAP_TTL_HEADER => options.delete(:wrap_ttl) }
+      headers = extract_headers!(options)
       json = client.post("/v1/auth/token/create-orphan", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
@@ -53,7 +81,7 @@ module Vault
     #
     # @return [Secret]
     def create_with_role(name, options = {})
-      headers = options[:wrap_ttl].nil? ? {} : { Vault::Client::WRAP_TTL_HEADER => options.delete(:wrap_ttl) }
+      headers = extract_headers!(options)
       json = client.post("/v1/auth/token/create/#{CGI.escape(name)}", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
@@ -164,6 +192,28 @@ module Vault
     def revoke_tree(id)
       client.put("/v1/auth/token/revoke/#{id}", nil)
       return true
+    end
+
+    private
+
+    # Removes the given header fields from options and returns the result. This
+    # modifies the given options in place.
+    #
+    # @param [Hash] options
+    #
+    # @return [Hash]
+    def extract_headers!(options = {})
+      extract = {
+        wrap_ttl: Vault::Client::WRAP_TTL_HEADER,
+      }
+
+      {}.tap do |h|
+        extract.each do |k,v|
+          if options[k]
+            h[v] = options.delete(k)
+          end
+        end
+      end
     end
   end
 end
