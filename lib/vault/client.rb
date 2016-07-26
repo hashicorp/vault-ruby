@@ -69,6 +69,18 @@ module Vault
       end
     end
 
+    # Creates and yields a new client object with the given token. This may be
+    # used safely in a threadsafe manner because the original client remains
+    # unchanged. The value of the block is returned.
+    #
+    # @yield [Vault::Client]
+    def with_token(token)
+      client = self.dup
+      client.token = token
+      return yield client if block_given?
+      return nil
+    end
+
     # Determine if the given options are the same as ours.
     # @return [true, false]
     def same_options?(opts)

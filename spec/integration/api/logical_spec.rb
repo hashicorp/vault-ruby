@@ -87,62 +87,47 @@ module Vault
     end
 
     describe "#unwrap" do
-      it "preserves the original access token" do
-        original_token = Vault.token
-        expect { subject.unwrap('some token')}.to raise_error
-        expect(Vault.token).to eq(original_token)
-      end
-
       it "returns the wrapped secret when it exists" do
-        original_token = vault_test_client.token
-        subject.write("secret/test-read", foo: "bar")
-        expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+        wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
+        unwrapped = subject.unwrap(wrapped.wrap_info.token)
 
-        expect {
-          wrapped_token_response = vault_test_client.auth_token.create({"display_name" => "", "num_uses" => 0, "renewable" => true, :wrap_ttl => 500})
-          unwrapped_token_response = subject.unwrap(wrapped_token_response.wrap_info.token)
-          # Verify quality of unwrapped token response
-          vault_test_client.token = unwrapped_token_response.data.auth.client_token
-          expect(subject.read("secret/test-read").data).to eq(foo: "bar")
-        }.to_not raise_error
-        vault_test_client.token = original_token
+        expect(unwrapped.auth).to be
+        expect(unwrapped.auth.client_token).to be
+
+        vault_test_client.with_token(unwrapped.auth.client_token) do |client|
+          expect { client.logical.read("secret/test") }.to_not raise_error
+        end
       end
     end
 
     describe "#unwrap_token" do
-      it "preserves the original access token" do
-        original_token = Vault.token
-        expect { subject.unwrap_token('some token')}.to raise_error
-        expect(Vault.token).to eq(original_token)
+      it "returns the wrapped token when given a string" do
+        wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
+        unwrapped = subject.unwrap_token(wrapped.wrap_info.token)
+
+        expect(unwrapped).to be
+
+        vault_test_client.with_token(unwrapped) do |client|
+          expect { client.logical.read("secret/test") }.to_not raise_error
+        end
       end
 
-      it "returns the wrapped token (as a string) when it exists" do
-        original_token = vault_test_client.token
-        subject.write("secret/test-read", foo: "bar")
-        expect(subject.read("secret/test-read").data).to eq(foo: "bar")
+      it "returns the wrapped token when given a Vault::Secret" do
+        wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
+        unwrapped = subject.unwrap_token(wrapped)
 
-        expect {
-          wrapped_token_response = vault_test_client.auth_token.create({"display_name" => "", "num_uses" => 0, "renewable" => true, :wrap_ttl => 500})
-          vault_test_client.token = subject.unwrap_token(wrapped_token_response.wrap_info.token)
-          expect(subject.read("secret/test-read").data).to eq(foo: "bar")
-        }.to_not raise_error
-        vault_test_client.token = original_token
+        expect(unwrapped).to be
+
+        vault_test_client.with_token(unwrapped) do |client|
+          expect { client.logical.read("secret/test") }.to_not raise_error
+        end
       end
 
-      it "returns the wrapped token (as a Vault::Secret) when it exists" do
-        original_token = vault_test_client.token
-        subject.write("secret/test-read", foo: "bar")
-        expect(subject.read("secret/test-read").data).to eq(foo: "bar")
-
-        expect {
-          wrapped_token_response = vault_test_client.auth_token.create({"display_name" => "", "num_uses" => 0, "renewable" => true, :wrap_ttl => 500})
-          vault_test_client.token = subject.unwrap_token(wrapped_token_response)
-          expect(subject.read("secret/test-read").data).to eq(foo: "bar")
-        }.to_not raise_error
-        vault_test_client.token = original_token
+      it "returns nil when the response is empty" do
+        token = vault_test_client.auth_token.create # Note no wrap-ttl here
+        unwrapped = subject.unwrap_token(token.auth.client_token)
+        expect(unwrapped).to be(nil)
       end
-
     end
-
   end
 end

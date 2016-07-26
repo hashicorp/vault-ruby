@@ -158,22 +158,29 @@ secret.data #=> { :cooktime = >"11", :delicious => true }
 ```
 
 ### Response wrapping
+
 ```ruby
-# Request new access token as wrapped response where the ttl of the temporary token is 500
-wrapped_token_response = Vault.auth_token.create(wrap_ttl: 500)
-# Unwrap wrapped response for final token using the initial temporary token
-unwrapped_token_response = Vault.logical.unwrap(wrapped_token_response.wrap_info.token)
-# Extract final token from response
-unwrapped_token = unwrapped_token_response.data.auth.client_token
+# Request new access token as wrapped response where the TTL of the temporary
+# token is "5s".
+wrapped = Vault.auth_token.create(wrap_ttl: "5s")
+
+# Unwrap the wrapped response to get the final token using the initial temporary
+# token from the first request.
+unwrapped = Vault.logical.unwrap(wrapped.wrap_info.token)
+
+# Extract the final token from the response.
+token = unwrapped.data.auth.client_token
 ```
 
-If the above detail is unnecessary there is a helper method 'unwrap_token' available
+A helper function is also provided when unwrapping a token directly:
 
 ```ruby
-# Request new access token as wrapped response where the ttl of the temporary token is 500
-wrapped_token_response = Vault.auth_token.create(wrap_ttl: 500)
-# Unwrap wrapped response for final token using the initial temporary token
-unwrapped_token = Vault.logical.unwrap_token(wrapped_token_response)
+# Request new access token as wrapped response where the TTL of the temporary
+# token is "5s".
+wrapped = Vault.auth_token.create(wrap_ttl: "5s")
+
+# Unwrap wrapped response for final token using the initial temporary token.
+token = Vault.logical.unwrap_token(wrapped)
 ```
 
 
