@@ -100,8 +100,13 @@ module Vault
       before(:context) { vault_test_client.auth_tls.enable }
       after(:context) { vault_test_client.auth_tls.disable }
 
-      let(:certificate) { Certificate.new('kaelumania-cert', RSpec::SampleCertificate.cert, "default", 3600) }
       let!(:old_token) { subject.token }
+      let(:certificate) do
+        Certificate.new(display_name: 'kaelumania-cert',
+                        certificate: RSpec::SampleCertificate.cert,
+                        policies: "default",
+                        ttl: 3600)
+      end
 
       before do
         allow(File).to receive(:read).with('kaelumania.pem') { RSpec::SampleCertificate.cert << RSpec::SampleCertificate.key }

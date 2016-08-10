@@ -6,11 +6,34 @@ require_relative "../request"
 require_relative "../response"
 
 module Vault
-  class Certificate < Response.new(:display_name, :certificate, :policies, :ttl); end
+  class Certificate < Response
+    # @!attribute [r] display_name
+    #   Display name for the certificate.
+    #   @return [String]
+    field :display_name
+
+    # @!attribute [r] certificate
+    #   The raw tls certificate.
+    #   @return [String]
+    field :certificate
+
+    # @!attribute [r] policies
+    #   List of policies assigned to this certificate.
+    #
+    #   @example "production, staging"
+    #
+    #   @return [String]
+    field :policies
+
+    # @!attribute [r] ttl
+    #   The ttl until the certificate expires.
+    #   @return [Fixnum]
+    field :ttl
+  end
 
   class Client
-    # A proxy to the {AuthToken} methods.
-    # @return [AuthToken]
+    # A proxy to the {AuthTLS} methods.
+    # @return [AuthTLS]
     def auth_tls
       @auth_tls ||= AuthTLS.new(self)
     end
@@ -65,7 +88,7 @@ module Vault
     # Saves a certificate with the given name and attributes.
     #
     # @example
-    #   cert = Certificate.new('web-cert', '-----BEGIN CERTIFICATE...', "default", 3600)
+    #   cert = Certificate.new(display_name: 'web-cert', certificate: '-----BEGIN CERTIFICATE...', policies: "default", ttl: 3600)
     #   Vault.auth_tls.put_certificate("web", cert) #=> true
     #
     # @param [String] name
