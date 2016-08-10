@@ -1,9 +1,25 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
-  class Policy < Response.new(:rules); end
+  class Policy < Response
+    # @!attribute [r] name
+    #   Name of the policy.
+    #
+    #   @example Get the name of the policy
+    #     policy.name #=> "default"
+    #
+    #   @return [String]
+    field :name
+
+    # @!attribute [r] rules
+    #   Raw HCL policy.
+    #
+    #   @example Display the list of rules
+    #     policy.rules #=> "path \"secret/foo\" {}"
+    #
+    #   @return [String]
+    field :rules
+  end
 
   class Sys
     # The list of policies in vault.

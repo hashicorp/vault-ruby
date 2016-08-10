@@ -85,5 +85,49 @@ module Vault
         }.to_not raise_error
       end
     end
+
+    describe "#unwrap" do
+      it "returns the wrapped secret when it exists" do
+        wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
+        unwrapped = subject.unwrap(wrapped.wrap_info.token)
+
+        expect(unwrapped.auth).to be
+        expect(unwrapped.auth.client_token).to be
+
+        vault_test_client.with_token(unwrapped.auth.client_token) do |client|
+          expect { client.logical.read("secret/test") }.to_not raise_error
+        end
+      end
+    end
+
+    describe "#unwrap_token" do
+      it "returns the wrapped token when given a string" do
+        wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
+        unwrapped = subject.unwrap_token(wrapped.wrap_info.token)
+
+        expect(unwrapped).to be
+
+        vault_test_client.with_token(unwrapped) do |client|
+          expect { client.logical.read("secret/test") }.to_not raise_error
+        end
+      end
+
+      it "returns the wrapped token when given a Vault::Secret" do
+        wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
+        unwrapped = subject.unwrap_token(wrapped)
+
+        expect(unwrapped).to be
+
+        vault_test_client.with_token(unwrapped) do |client|
+          expect { client.logical.read("secret/test") }.to_not raise_error
+        end
+      end
+
+      it "returns nil when the response is empty" do
+        token = vault_test_client.auth_token.create # Note no wrap-ttl here
+        unwrapped = subject.unwrap_token(token.auth.client_token)
+        expect(unwrapped).to be(nil)
+      end
+    end
   end
 end

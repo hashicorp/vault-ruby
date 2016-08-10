@@ -84,5 +84,64 @@ module Vault
       client.delete("/v1/#{CGI.escape(path)}")
       return true
     end
+
+    # Unwrap the data stored against the given token. If the secret does not
+    # exist, `nil` will be returned.
+    #
+    # @example
+    #   Vault.logical.unwrap("f363dba8-25a7-08c5-430c-00b2367124e6") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] wrapper
+    #   the token to use when unwrapping the value
+    #
+    # @return [Secret, nil]
+    def unwrap(wrapper)
+      client.with_token(wrapper) do |client|
+        json = client.get("/v1/cubbyhole/response")
+        secret = Secret.decode(json)
+
+        # If there is nothing in the cubbyhole, return early.
+        if secret.nil? || secret.data.nil? || secret.data[:response].nil?
+          return nil
+        end
+
+        # Extract the response and parse it into a new secret.
+        json = JSON.parse(secret.data[:response], symbolize_names: true)
+        secret = Secret.decode(json)
+        return secret
+      end
+    rescue HTTPError => e
+      return nil if e.code == 404
+      raise
+    end
+
+    # Unwrap a token in a wrapped response given the temporary token.
+    #
+    # @example
+    #   Vault.logical.unwrap("f363dba8-25a7-08c5-430c-00b2367124e6") #=> "0f0f40fd-06ce-4af1-61cb-cdc12796f42b"
+    #
+    # @param [String, Secret] wrapper
+    #   the token to unwrap
+    #
+    # @return [String, nil]
+    def unwrap_token(wrapper)
+      # If provided a secret, grab the token. This is really just to make the
+      # API a bit nicer.
+      if wrapper.is_a?(Secret)
+        wrapper = wrapper.wrap_info.token
+      end
+
+      # Unwrap
+      response = unwrap(wrapper)
+
+      # If nothing was there, return nil
+      if response.nil? || response.auth.nil?
+        return nil
+      end
+
+      return response.auth.client_token
+    rescue HTTPError => e
+      raise
+    end
   end
 end

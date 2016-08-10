@@ -1,9 +1,17 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
-  class Auth < Response.new(:type, :description); end
+  class Auth < Response
+    # @!attribute [r] description
+    #   Description of the auth backend.
+    #   @return [String]
+    field :description
+
+    # @!attribute [r] type
+    #   Name of the auth backend.
+    #   @return [String]
+    field :type
+  end
 
   class Sys
     # List all auths in Vault.

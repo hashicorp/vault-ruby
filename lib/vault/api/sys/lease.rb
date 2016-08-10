@@ -1,5 +1,3 @@
-require_relative "../sys"
-
 module Vault
   class Sys
     # Renew a lease with the given ID.

@@ -1,10 +1,42 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
-  class SealStatus < Response.new(:sealed, :t, :n, :progress)
-    alias_method :sealed?, :sealed
+  class SealStatus < Response
+    # @!method sealed?
+    #   Returns if the Vault is sealed.
+    #
+    #   @example Check if the Vault is sealed
+    #     status.sealed? #=> true
+    #
+    #   @return [Boolean]
+    field :sealed, as: :sealed?
+
+    # @!attribute t
+    #   Threshold of keys required to unseal the Vault.
+    #
+    #   @example Get the threshold of keys
+    #     status.t #=> 3
+    #
+    #   @return [Fixnum]
+    field :t
+
+    # @!attribute n
+    #   Total number of unseal keys.
+    #
+    #   @example Get the total number of keys
+    #     status.n #=> 5
+    #
+    #   @return [Fixnum]
+    field :n
+
+    # @!attribute progress
+    #   Number of keys that have been entered.
+    #
+    #   @example Get the current unseal progress
+    #     status.progress #=> 2
+    #
+    #   @return [Fixnum]
+    field :progress
   end
 
   class Sys
