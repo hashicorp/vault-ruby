@@ -20,7 +20,7 @@ module Vault
 
     # This enables the auth tls cert backend
     def enable
-      client.sys.enable_auth('cert', 'cert', 'Allow to login via TLS certificate')
+      client.sys.enable_auth('cert', 'cert', 'Allow login via TLS certificate')
     end
 
     def enabled?
@@ -44,7 +44,6 @@ module Vault
     rescue HTTPError => e
       return [] if e.code == 404
       raise
-      []
     end
 
     # Get the certificate by the given name. If a certificate does not exist by that name,
@@ -72,7 +71,7 @@ module Vault
     # @param [String] name
     #   the name of the certificate
     # @param [Vault::Certificate] certificate
-    #   the certificate defintion
+    #   the certificate definition
     #
     # @return [true]
     def put_certificate(name, certificate)
