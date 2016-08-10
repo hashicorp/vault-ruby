@@ -10,7 +10,12 @@ module Vault
     after(:context) { vault_test_client.auth_tls.disable }
 
     describe "certificates" do
-      let(:certificate) { Certificate.new('kaelumania-cert', RSpec::SampleCertificate.cert, "default", 3600) }
+      let(:certificate) do
+        Certificate.new(display_name: 'kaelumania-cert',
+                        certificate: RSpec::SampleCertificate.cert,
+                        policies: "default",
+                        ttl: 3600) 
+      end 
 
       it 'can be added' do
         expect(subject.put_certificate('kaelumania', certificate)).to be_truthy
@@ -24,8 +29,6 @@ module Vault
       end
 
       it 'can be listed' do
-        pending
-
         expect(subject.put_certificate('kaelumania', certificate)).to be_truthy
         expect(subject.certificates).to include 'kaelumania'
       end
