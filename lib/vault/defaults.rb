@@ -47,7 +47,7 @@ module Vault
         end
 
         if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
-          return VAULT_DISK_TOKEN.read
+          return VAULT_DISK_TOKEN.read.chomp
         end
 
         nil
@@ -126,6 +126,11 @@ module Vault
       # Verify SSL requests (default: true)
       # @return [true, false]
       def ssl_verify
+        # Vault CLI uses this envvar, so accept it by precedence
+        if !ENV["VAULT_SKIP_VERIFY"].nil?
+          return false
+        end
+
         if ENV["VAULT_SSL_VERIFY"].nil?
           true
         else

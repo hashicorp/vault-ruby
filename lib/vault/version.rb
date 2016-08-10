@@ -1,3 +1,3 @@
 module Vault
-  VERSION = "0.3.0.dev"
+  VERSION = "0.5.0.dev"
 end

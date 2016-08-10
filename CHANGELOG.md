@@ -1,17 +1,35 @@
 # Vault Ruby Changelog
 
-## v0.3.0.dev (Unreleased)
+## v0.5.0.dev (Unreleased)
+
+## v0.5.0 (August 16, 2016)
+
+NEW FEATURES
+
+- Add TTL wrapping to logical and auth backends
+- Support passing PGP keys to init
+
+BUG FIXES
+
+- New API documentation
+- Remove recursive requires
+
+## v0.4.0 (March 31, 2016)
 
 NEW FEATURES
 
 - Add LDAP authentication method [GH-61]
 - Add GitHub authentication method [GH-37]
+- Add `create_orphan` method [GH-65]
+- Add `lookup` and `lookup_self` for tokens
+- Accept `VAULT_SKIP_VERIFY` environment variable [GH-66]
 
 BUG FIXES
 
 - Prefer `VAULT_TOKEN` environment variable over disk to mirror Vault's own
   behavior [GH-98]
 - Do not duplicate query parameters on HEAD/GET requests [GH-62]
+- Yield exception in `with_retries` [GH-68]
 
 ## v0.3.0 (February 16, 2016)
 

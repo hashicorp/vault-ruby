@@ -30,11 +30,11 @@ module Vault
         @user_id = "3b87be76-95cf-493a-a61b-7d5fc70870ad"
 
         vault_test_client.sys.enable_auth("app-id", "app-id", nil)
-        vault_test_client.logical.write("auth/app-id/map/app-id/#{@app_id}", { value: "root" })
+        vault_test_client.logical.write("auth/app-id/map/app-id/#{@app_id}", { value: "default" })
         vault_test_client.logical.write("auth/app-id/map/user-id/#{@user_id}", { value: @app_id })
 
         vault_test_client.sys.enable_auth("new-app-id", "app-id", nil)
-        vault_test_client.logical.write("auth/new-app-id/map/app-id/#{@app_id}", { value: "root" })
+        vault_test_client.logical.write("auth/new-app-id/map/app-id/#{@app_id}", { value: "default" })
         vault_test_client.logical.write("auth/new-app-id/map/user-id/#{@user_id}", { value: @app_id })
       end
 
@@ -67,10 +67,10 @@ module Vault
         @password = "s3kr3t"
 
         vault_test_client.sys.enable_auth("userpass", "userpass", nil)
-        vault_test_client.logical.write("auth/userpass/users/#{@username}", { password: @password, policies: "root" })
+        vault_test_client.logical.write("auth/userpass/users/#{@username}", { password: @password, policies: "default" })
 
         vault_test_client.sys.enable_auth("new-userpass", "userpass", nil)
-        vault_test_client.logical.write("auth/new-userpass/users/#{@username}", { password: @password, policies: "root" })
+        vault_test_client.logical.write("auth/new-userpass/users/#{@username}", { password: @password, policies: "default" })
       end
 
       before do

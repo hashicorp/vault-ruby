@@ -16,6 +16,9 @@ module Vault
     # The name of the header used to hold the Vault token.
     TOKEN_HEADER = "X-Vault-Token".freeze
 
+    # The name of the header used to hold the wrapped request ttl.
+    WRAP_TTL_HEADER = "X-Vault-Wrap-TTL".freeze
+
     # The name of the header used for redirection.
     LOCATION_HEADER = "location".freeze
 
@@ -66,6 +69,18 @@ module Vault
       end
     end
 
+    # Creates and yields a new client object with the given token. This may be
+    # used safely in a threadsafe manner because the original client remains
+    # unchanged. The value of the block is returned.
+    #
+    # @yield [Vault::Client]
+    def with_token(token)
+      client = self.dup
+      client.token = token
+      return yield client if block_given?
+      return nil
+    end
+
     # Determine if the given options are the same as ours.
     # @return [true, false]
     def same_options?(opts)
@@ -75,6 +90,13 @@ module Vault
     # Perform a GET request.
     # @see Client#request
     def get(path, params = {}, headers = {})
+      request(:get, path, params, headers)
+    end
+
+    # Perform a LIST request.
+    # @see Client#request
+    def list(path, params = {}, headers = {})
+      params = params.merge(list: true)
       request(:get, path, params, headers)
     end
 
@@ -132,7 +154,7 @@ module Vault
       # Add the Vault token header - users could still override this on a
       # per-request basis
       if !token.nil?
-        request.add_field(TOKEN_HEADER, token)
+        headers[TOKEN_HEADER] ||= token
       end
 
       # Add headers
@@ -358,7 +380,7 @@ module Vault
       backoff_max  = options[:max_wait] || Defaults::RETRY_MAX_WAIT
 
       begin
-        return yield retries
+        return yield retries, exception
       rescue *rescued => e
         exception = e
 

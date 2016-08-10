@@ -27,6 +27,16 @@ module Vault
       end
     end
 
+    describe "#with_token" do
+      it "does not change the original client" do
+        client.token = "abcd-1234"
+        client.with_token("defg-5678") do |c|
+          expect(c.token).to_not eq("abcd-1234")
+        end
+        expect(client.token).to eq("abcd-1234")
+      end
+    end
+
     describe "#get" do
       it "delegates to the #request method" do
         expect(subject).to receive(:request).with(:get, "/foo", {}, {})

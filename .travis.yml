@@ -2,20 +2,25 @@ language: ruby
 cache: bundler
 sudo: false
 
-before_install: |-
-  wget -O vault.zip -q https://releases.hashicorp.com/vault/0.5.0-rc1/vault_0.5.0-rc1_linux_amd64.zip
-  unzip vault.zip
-  mkdir ~/bin
-  mv vault ~/bin
-  export PATH="~/bin:$PATH"
+env:
+  - VAULT_VERSION=0.6.1
+  - VAULT_VERSION=0.6.0
+  - VAULT_VERSION=0.5.3
+  - VAULT_VERSION=0.4.1
+  - VAULT_VERSION=0.3.1
+
+before_install:
+  - wget -O vault.zip -q https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
+  - unzip vault.zip
+  - mkdir ~/bin
+  - mv vault ~/bin
+  - export PATH="~/bin:$PATH"
 
 branches:
   only:
     - master
 
 rvm:
-  - 1.9.3
-  - 2.0
   - 2.1
-  - 2.2
-  - 2.3.0
+  - 2.2.5
+  - 2.3.1

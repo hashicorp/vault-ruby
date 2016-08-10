@@ -8,6 +8,8 @@ require_relative "support/vault_server"
 require_relative "support/redirect_server"
 require_relative "support/sample_certificate"
 
+TEST_VAULT_VERSION = Gem::Version.new(ENV["VAULT_VERSION"])
+
 RSpec.configure do |config|
   # Custom helper modules and extensions
 
@@ -18,8 +20,10 @@ RSpec.configure do |config|
 
   # Allow tests to isolate a specific test using +focus: true+. If nothing
   # is focused, then all tests are executed.
-  config.filter_run(focus: true)
-  config.run_all_when_everything_filtered = true
+  config.filter_run_when_matching :focus
+  config.filter_run_excluding vault: lambda { |v|
+    !Gem::Requirement.new(v).satisfied_by?(TEST_VAULT_VERSION)
+  }
 
   # Disable real connections.
   config.before(:suite) do

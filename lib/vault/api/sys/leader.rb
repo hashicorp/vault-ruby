@@ -1,13 +1,31 @@
-require_relative "../sys"
-
 module Vault
-  class LeaderStatus < Response.new(:ha_enabled, :is_self, :leader_address)
-    alias_method :ha_enabled?, :ha_enabled
-    alias_method :ha?, :ha_enabled
-    alias_method :is_self?, :is_self
-    alias_method :is_leader?, :is_self
-    alias_method :leader?, :is_self
-    alias_method :address, :leader_address
+  class LeaderStatus < Response
+    # @!method ha_enabled?
+    #   Returns whether the high-availability mode is enabled.
+    #   @return [Boolean]
+    field :ha_enabled, as: :ha_enabled?
+
+    # @!method leader?
+    #   Returns whether the Vault server queried is the leader.
+    #   @return [Boolean]
+    field :is_self, as: :leader?
+
+    # @!attribute [r] address
+    #   URL where the server is running.
+    #   @return [String]
+    field :leader_address, as: :address
+
+    # @deprecated Use {#ha_enabled?} instead
+    def ha?; ha_enabled?; end
+
+    # @deprecated Use {#leader?} instead
+    def is_leader?; leader?; end
+
+    # @deprecated Use {#leader?} instead
+    def is_self?; leader?; end
+
+    # @deprecated Use {#leader?} instead
+    def self?; leader?; end
   end
 
   class Sys

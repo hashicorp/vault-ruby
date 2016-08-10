@@ -39,7 +39,7 @@ module Vault
       end
 
       it "uses ~/.vault-token when present" do
-        File.open(token, "w") { |f| f.write("testing") }
+        File.open(token, "w") { |f| f.write("testing\n") }
         expect(Defaults.token).to eq("testing")
       end
 
@@ -50,7 +50,7 @@ module Vault
       end
 
       it "prefers the environment over local token" do
-        File.open(token, "w") { |f| f.write("testing1") }
+        File.open(token, "w") { |f| f.write("testing1\n") }
         with_stubbed_env("VAULT_TOKEN" => "testing2") do
           expect(Defaults.token).to eq("testing2")
         end
@@ -154,6 +154,12 @@ module Vault
     describe ".ssl_verify" do
       it "defaults to true" do
         expect(Defaults.ssl_verify).to be(true)
+      end
+
+      it "reads the value of ENV['VAULT_SKIP_VERIFY']" do
+        with_stubbed_env("VAULT_SKIP_VERIFY" => true) do
+          expect(Defaults.ssl_verify).to be(false)
+        end
       end
 
       it "reads the value of ENV['VAULT_SSL_VERIFY']" do

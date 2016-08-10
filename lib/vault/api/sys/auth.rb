@@ -1,9 +1,17 @@
 require "json"
 
-require_relative "../sys"
-
 module Vault
-  class Auth < Response.new(:type, :description); end
+  class Auth < Response
+    # @!attribute [r] description
+    #   Description of the auth backend.
+    #   @return [String]
+    field :description
+
+    # @!attribute [r] type
+    #   Name of the auth backend.
+    #   @return [String]
+    field :type
+  end
 
   class Sys
     # List all auths in Vault.
@@ -14,6 +22,7 @@ module Vault
     # @return [Hash<Symbol, Auth>]
     def auths
       json = client.get("/v1/sys/auth")
+      json = json[:data] if json[:data]
       return Hash[*json.map do |k,v|
         [k.to_s.chomp("/").to_sym, Auth.decode(v)]
       end.flatten]
