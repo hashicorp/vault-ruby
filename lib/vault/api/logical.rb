@@ -23,8 +23,9 @@ module Vault
     #   the path to list
     #
     # @return [Array<String>]
-    def list(path)
-      json = client.get("/v1/#{CGI.escape(path)}", list: true)
+    def list(path, options = {})
+      headers = extract_headers!(options)
+      json = client.list("/v1/#{CGI.escape(path)}", {}, headers)
       json[:data][:keys] || []
     rescue HTTPError => e
       return [] if e.code == 404
@@ -41,8 +42,9 @@ module Vault
     #   the path to read
     #
     # @return [Secret, nil]
-    def read(path)
-      json = client.get("/v1/#{CGI.escape(path)}")
+    def read(path, options = {})
+      headers = extract_headers!(options)
+      json = client.get("/v1/#{CGI.escape(path)}", {}, headers)
       return Secret.decode(json)
     rescue HTTPError => e
       return nil if e.code == 404
@@ -61,8 +63,9 @@ module Vault
     #   the data to write
     #
     # @return [Secret]
-    def write(path, data = {})
-      json = client.put("/v1/#{CGI.escape(path)}", JSON.fast_generate(data))
+    def write(path, data = {}, options = {})
+      headers = extract_headers!(options)
+      json = client.put("/v1/#{CGI.escape(path)}", JSON.fast_generate(data), headers)
       if json.nil?
         return true
       else

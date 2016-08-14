@@ -193,27 +193,5 @@ module Vault
       client.put("/v1/auth/token/revoke/#{id}", nil)
       return true
     end
-
-    private
-
-    # Removes the given header fields from options and returns the result. This
-    # modifies the given options in place.
-    #
-    # @param [Hash] options
-    #
-    # @return [Hash]
-    def extract_headers!(options = {})
-      extract = {
-        wrap_ttl: Vault::Client::WRAP_TTL_HEADER,
-      }
-
-      {}.tap do |h|
-        extract.each do |k,v|
-          if options[k]
-            h[v] = options.delete(k)
-          end
-        end
-      end
-    end
   end
 end

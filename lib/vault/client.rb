@@ -93,6 +93,13 @@ module Vault
       request(:get, path, params, headers)
     end
 
+    # Perform a LIST request.
+    # @see Client#request
+    def list(path, params = {}, headers = {})
+      params = params.merge(list: true)
+      request(:get, path, params, headers)
+    end
+
     # Perform a POST request.
     # @see Client#request
     def post(path, data = {}, headers = {})
