@@ -2,6 +2,16 @@
 
 ## v0.4.0.dev (Unreleased)
 
+NEW FEATURES
+
+- Add TTL wrapping to logical and auth backends
+- Support passing PGP keys to init
+
+BUG FIXES
+
+- New API documentation
+- Remove recursive requires
+
 ## v0.4.0 (March 31, 2016)
 
 NEW FEATURES
