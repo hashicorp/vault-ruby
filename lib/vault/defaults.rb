@@ -47,7 +47,7 @@ module Vault
         end
 
         if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
-          return VAULT_DISK_TOKEN.read
+          return VAULT_DISK_TOKEN.read.rstrip
         end
 
         nil
