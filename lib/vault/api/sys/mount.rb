@@ -27,6 +27,7 @@ module Vault
     # @return [Hash<Symbol, Mount>]
     def mounts
       json = client.get("/v1/sys/mounts")
+      json = json[:data] if json[:data]
       return Hash[*json.map do |k,v|
         [k.to_s.chomp("/").to_sym, Mount.decode(v)]
       end.flatten]

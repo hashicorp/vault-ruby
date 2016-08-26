@@ -27,6 +27,7 @@ module Vault
     # @return [Hash<Symbol, Audit>]
     def audits
       json = client.get("/v1/sys/audit")
+      json = json[:data] if json[:data]
       return Hash[*json.map do |k,v|
         [k.to_s.chomp("/").to_sym, Audit.decode(v)]
       end.flatten]
