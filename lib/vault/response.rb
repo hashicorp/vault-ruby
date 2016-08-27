@@ -62,5 +62,11 @@ module Vault
         end
       end
     end
+
+    def to_h
+      self.class.fields.each_with_object({}) do |(k, _), hash|
+        hash[k] = instance_variable_get(:"@#{k}")
+      end
+    end
   end
 end
