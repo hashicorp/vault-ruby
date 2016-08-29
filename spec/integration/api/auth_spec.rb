@@ -146,6 +146,7 @@ module Vault
           expect {
             subject.auth.tls("kaelumania.pem")
           }.to raise_error(HTTPError)
+        }.to_not change { subject.token }
       end
     end
   end
