@@ -4,7 +4,7 @@ module Vault
   describe Logical do
     subject { vault_test_client.logical }
 
-    describe "#list" do
+    describe "#list", vault: ">= 0.5" do
       it "returns the empty array when no items exist" do
         expect(subject.list("secret/that/never/existed")).to eq([])
       end
@@ -86,7 +86,7 @@ module Vault
       end
     end
 
-    describe "#unwrap" do
+    describe "#unwrap", vault: ">= 0.6" do
       it "returns the wrapped secret when it exists" do
         wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
         unwrapped = subject.unwrap(wrapped.wrap_info.token)
@@ -100,7 +100,7 @@ module Vault
       end
     end
 
-    describe "#unwrap_token" do
+    describe "#unwrap_token", vault: ">= 0.6" do
       it "returns the wrapped token when given a string" do
         wrapped = vault_test_client.auth_token.create(wrap_ttl: "5s")
         unwrapped = subject.unwrap_token(wrapped.wrap_info.token)
