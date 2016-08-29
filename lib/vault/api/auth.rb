@@ -143,25 +143,24 @@ module Vault
     # successful, the resulting token will be stored on the client and used
     # for future requests.
     #
-    # @example
-    #   Vault.auth.tls() #=> #<Vault::Secret lease_id="">
-    #   Vault.auth.tls("/path/to/my/certificate.pem") #=> #<Vault::Secret lease_id="">
+    # @example Sending raw pem contents
+    #   Vault.auth.tls(pem_contents) #=> #<Vault::Secret lease_id="">
     #
-    # @param [String] pem_file (default: the clients' configured ssl_pem_file)
-    #   the pem_file to use for the login procedure
+    # @example Reading a pem from disk
+    #   Vault.auth.tls(File.read("/path/to/my/certificate.pem")) #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] pem (default: the configured SSL pem file or contents)
+    #   The raw pem contents to use for the login procedure.
     #
     # @return [Secret]
-    def tls(pem_file = nil)
-      old_pem_file = client.ssl_pem_file
-      client.ssl_pem_file = pem_file || old_pem_file
+    def tls(pem = nil)
+      new_client = client.dup
+      new_client.ssl_pem_contents = pem if !pem.nil?
 
-      json = client.post("/v1/auth/cert/login")
+      json = new_client.post("/v1/auth/cert/login")
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
-    ensure
-      # reset ssl pem file
-      client.ssl_pem_file = old_pem_file
     end
   end
 end
