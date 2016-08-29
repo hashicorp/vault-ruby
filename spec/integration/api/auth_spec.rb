@@ -95,5 +95,53 @@ module Vault
         }.to_not change(subject, :token)
       end
     end
+
+    describe "#tls" do
+      before(:context) { vault_test_client.auth_tls.enable }
+      after(:context) { vault_test_client.auth_tls.disable }
+
+      let!(:old_token) { subject.token }
+      let(:certificate) do
+        Certificate.new(display_name: 'kaelumania-cert',
+                        certificate: RSpec::SampleCertificate.cert,
+                        policies: "default",
+                        ttl: 3600)
+      end
+
+      before do
+        allow(File).to receive(:read).with('kaelumania.pem') { RSpec::SampleCertificate.cert << RSpec::SampleCertificate.key }
+      end
+
+      after do
+        subject.token = old_token
+      end
+
+      it "authenticates and saves the token on the client" do
+        pending
+
+        subject.auth_tls.put_certificate('kaelumania', certificate)
+
+        result = subject.auth.tls('kaelumania.pem')
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
+      it "authenticates with default ssl_pem_file" do
+        pending
+
+        subject.auth_tls.put_certificate('kaelumania', certificate)
+        subject.ssl_pem_file = 'kaelumania.pem'
+
+        result = subject.auth.tls
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
+      it "raises an error if the authentication is bad" do
+        expect {
+          expect {
+            subject.auth.tls('kaelumania.pem')
+          }.to raise_error(HTTPError)
+        }.to_not change(subject, :token)
+      end
+    end
   end
 end

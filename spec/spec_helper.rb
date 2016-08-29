@@ -6,6 +6,7 @@ require "webmock/rspec"
 
 require_relative "support/vault_server"
 require_relative "support/redirect_server"
+require_relative "support/sample_certificate"
 
 TEST_VAULT_VERSION = Gem::Version.new(ENV["VAULT_VERSION"])
 

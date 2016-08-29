@@ -62,5 +62,16 @@ module Vault
         end
       end
     end
+
+    def ==(other)
+      to_h == other.to_h
+    end
+
+    def to_h
+      self.class.fields.inject({}) do |hash, (k, _)|
+        hash[k] = public_send(k)
+        hash
+      end
+    end
   end
 end
