@@ -21,7 +21,7 @@ module Vault
       }
     end
 
-    describe "#set_certificate" do
+    describe "#set_certificate", vault: ">= 0.5.3" do
       it "sets the certificate" do
         expect(subject.set_certificate("sample", certificate)).to be(true)
         result = subject.certificate("sample")
@@ -30,7 +30,7 @@ module Vault
       end
     end
 
-    describe "#certificate" do
+    describe "#certificate", vault: ">= 0.5.3" do
       it "gets the certificate" do
         subject.set_certificate("sample", certificate)
         result = subject.certificate("sample")
@@ -44,7 +44,7 @@ module Vault
       end
     end
 
-    describe "#certificates" do
+    describe "#certificates", vault: ">= 0.5.3" do
       it "lists all certificates by name" do
         subject.set_certificate("sample", certificate)
         result = subject.certificates
