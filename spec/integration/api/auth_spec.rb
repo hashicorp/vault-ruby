@@ -97,39 +97,45 @@ module Vault
     end
 
     describe "#tls" do
-      before(:context) { vault_test_client.auth_tls.enable }
-      after(:context) { vault_test_client.auth_tls.disable }
+      before(:context) do
+        vault_test_client.sys.enable_auth("cert", "cert", nil)
+      end
+
+      after(:context) do
+        vault_test_client.sys.disable_auth("cert")
+      end
 
       let!(:old_token) { subject.token }
+
       let(:certificate) do
-        Certificate.new(display_name: 'kaelumania-cert',
-                        certificate: RSpec::SampleCertificate.cert,
-                        policies: "default",
-                        ttl: 3600)
+        {
+          display_name: "sample-cert",
+          certificate:   RSpec::SampleCertificate.cert,
+          policies:      "default",
+          ttl:           3600,
+        }
       end
 
-      before do
-        allow(File).to receive(:read).with('kaelumania.pem') { RSpec::SampleCertificate.cert << RSpec::SampleCertificate.key }
-      end
+      let(:auth_cert) { RSpec::SampleCertificate.cert << RSpec::SampleCertificate.key }
 
       after do
         subject.token = old_token
       end
 
       it "authenticates and saves the token on the client" do
-        pending
+        pending "dev server does not support tls"
 
-        subject.auth_tls.put_certificate('kaelumania', certificate)
+        subject.auth_tls.set_certificate("kaelumania", certificate)
 
-        result = subject.auth.tls('kaelumania.pem')
+        result = subject.auth.tls(auth_cert)
         expect(subject.token).to eq(result.auth.client_token)
       end
 
       it "authenticates with default ssl_pem_file" do
-        pending
+        pending "dev server does not support tls"
 
-        subject.auth_tls.put_certificate('kaelumania', certificate)
-        subject.ssl_pem_file = 'kaelumania.pem'
+        subject.auth_tls.set_certificate("kaelumania", certificate)
+        subject.ssl_pem_contents = auth_cert
 
         result = subject.auth.tls
         expect(subject.token).to eq(result.auth.client_token)
@@ -138,9 +144,8 @@ module Vault
       it "raises an error if the authentication is bad" do
         expect {
           expect {
-            subject.auth.tls('kaelumania.pem')
+            subject.auth.tls("kaelumania.pem")
           }.to raise_error(HTTPError)
-        }.to_not change(subject, :token)
       end
     end
   end

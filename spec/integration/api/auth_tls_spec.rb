@@ -1,36 +1,67 @@
 require "spec_helper"
 
-require 'pry'
-
 module Vault
   describe AuthTLS do
     subject { vault_test_client.auth_tls }
 
-    before(:context) { vault_test_client.auth_tls.enable }
-    after(:context) { vault_test_client.auth_tls.disable }
+    before(:context) do
+      vault_test_client.sys.enable_auth("cert", "cert", nil)
+    end
 
-    describe "certificates" do
-      let(:certificate) do
-        Certificate.new(display_name: 'kaelumania-cert',
-                        certificate: RSpec::SampleCertificate.cert,
-                        policies: "default",
-                        ttl: 3600) 
-      end 
+    after(:context) do
+      vault_test_client.sys.disable_auth("cert")
+    end
 
-      it 'can be added' do
-        expect(subject.put_certificate('kaelumania', certificate)).to be_truthy
-        expect(subject.certificate('kaelumania')).to eq certificate
+    let(:certificate) do
+      {
+        display_name: "sample-cert",
+        certificate:   RSpec::SampleCertificate.cert,
+        policies:      "default",
+        ttl:           3600,
+      }
+    end
+
+    describe "#set_certificate" do
+      it "sets the certificate" do
+        expect(subject.set_certificate("sample", certificate)).to be(true)
+        result = subject.certificate("sample")
+        expect(result).to be_a(Vault::Secret)
+        expect(result.data).to eq(certificate)
+      end
+    end
+
+    describe "#certificate" do
+      it "gets the certificate" do
+        subject.set_certificate("sample", certificate)
+        result = subject.certificate("sample")
+        expect(result).to be_a(Vault::Secret)
+        expect(result.data).to eq(certificate)
       end
 
-      it 'can be deleted' do
-        expect(subject.put_certificate('kaelumania', certificate)).to be_truthy
-        expect(subject.delete_certificate('kaelumania')).to be_truthy
-        expect(subject.certificate('kaelumania')).to be_nil
+      it "returns nil when the certificate does not exist" do
+        result = subject.certificate("nope-nope-nope")
+        expect(result).to be(nil)
+      end
+    end
+
+    describe "#certificates" do
+      it "lists all certificates by name" do
+        subject.set_certificate("sample", certificate)
+        result = subject.certificates
+        expect(result).to include("sample")
+      end
+    end
+
+    describe "#delete_certificate" do
+      it "deletes a certificate" do
+        subject.set_certificate("sample", certificate)
+        expect(subject.delete_certificate("sample")).to be(true)
       end
 
-      it 'can be listed' do
-        expect(subject.put_certificate('kaelumania', certificate)).to be_truthy
-        expect(subject.certificates).to include 'kaelumania'
+      it "does nothing if a certificate does not exist" do
+        expect {
+          subject.delete_certificate("nope-nope-nope")
+        }.to_not raise_error
       end
     end
   end
