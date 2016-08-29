@@ -202,8 +202,8 @@ module Vault
         connection.ciphers = ssl_ciphers
 
         # Custom pem files, no problem!
-        if ssl_pem_file
-          pem = File.read(ssl_pem_file)
+        pem = ssl_pem_contents || ssl_pem_file ? File.read(ssl_pem_file) : nil
+        if pem
           connection.cert = OpenSSL::X509::Certificate.new(pem)
           connection.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
           connection.verify_mode = OpenSSL::SSL::VERIFY_PEER

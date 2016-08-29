@@ -119,6 +119,14 @@ module Vault
       end
     end
 
+    describe ".ssl_pem_contents" do
+      it "defaults to ENV['VAULT_SSL_PEM_CONTENTS']" do
+        with_stubbed_env("VAULT_SSL_PEM_CONTENTS" => "abcd-1234") do
+          expect(Defaults.ssl_pem_contents).to eq("abcd-1234")
+        end
+      end
+    end
+
     describe ".ssl_pem_file" do
       it "defaults to ENV['VAULT_SSL_CERT']" do
         with_stubbed_env("VAULT_SSL_CERT" => "~/path/to/cert") do

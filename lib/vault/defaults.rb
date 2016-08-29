@@ -98,10 +98,18 @@ module Vault
         ENV["VAULT_SSL_CIPHERS"] || SSL_CIPHERS
       end
 
+      # The raw contents (as a string) for the pem file. To specify the path to
+      # the pem file, use {#ssl_pem_file} instead. This value is preferred over
+      # the value for {#ssl_pem_file}, if set.
+      # @return [String, nil]
+      def ssl_pem_contents
+        ENV["VAULT_SSL_PEM_CONTENTS"]
+      end
+
       # The path to a pem on disk to use with custom SSL verification
       # @return [String, nil]
       def ssl_pem_file
-        ENV["VAULT_SSL_CERT"]
+        ENV["VAULT_SSL_CERT"] || ENV["VAULT_SSL_PEM_FILE"]
       end
 
       # Passphrase to the pem file on disk to use with custom SSL verification
