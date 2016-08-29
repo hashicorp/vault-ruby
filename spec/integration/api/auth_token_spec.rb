@@ -4,6 +4,13 @@ module Vault
   describe AuthToken do
     subject { vault_test_client }
 
+    describe "#accessors", vault: ">= 0.6.1" do
+      it "lists all accessors" do
+        result = subject.auth_token.accessors
+        expect(result).to be_a(Vault::Secret)
+      end
+    end
+
     describe "#create" do
       it "creates a new token" do
         result = subject.auth_token.create
@@ -65,6 +72,15 @@ module Vault
         result = subject.auth_token.lookup(subject.token)
         expect(result).to be_a(Vault::Secret)
         expect(result.data[:id]).to eq(subject.token)
+      end
+    end
+
+    describe "#lookup_accessor", vault: ">= 0.6.1" do
+      it "retrieves accessor information" do
+        accessor = subject.auth_token.create.auth.accessor
+        result = subject.auth_token.lookup_accessor(accessor)
+        expect(result).to be_a(Vault::Secret)
+        expect(result.data[:accessor]).to eq(accessor)
       end
     end
 

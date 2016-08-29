@@ -15,6 +15,19 @@ module Vault
   end
 
   class AuthToken < Request
+    # Lists all token accessors.
+    #
+    # @example Listing token accessors
+    #   result = Vault.auth_token.accessors #=> #<Vault::Secret>
+    #   result.data[:keys] #=> ["476ea048-ded5-4d07-eeea-938c6b4e43ec", "bb00c093-b7d3-b0e9-69cc-c4d85081165b"]
+    #
+    # @return [Array<Secret>]
+    def accessors(options = {})
+      headers = extract_headers!(options)
+      json = client.list("/v1/auth/token/accessors", options, headers)
+      return Secret.decode(json)
+    end
+
     # Create an authentication token. Note that the parameters specified below
     # are not validated and passed directly to the Vault server. Depending on
     # the version of Vault in operation, some of these options may not work, and
@@ -96,6 +109,17 @@ module Vault
     # @return [Secret]
     def lookup(token)
       json = client.get("/v1/auth/token/lookup/#{CGI.escape(token)}")
+      return Secret.decode(json)
+    end
+
+    # Lookup information about the given token accessor.
+    #
+    # @example
+    #   Vault.auth_token.lookup_accessor("acbd-...") #=> #<Vault::Secret lease_id="">
+    def lookup_accessor(accessor)
+      json = client.post("/v1/auth/token/lookup-accessor", JSON.fast_generate(
+        accessor: accessor,
+      ))
       return Secret.decode(json)
     end
 
