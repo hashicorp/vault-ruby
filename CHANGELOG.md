@@ -1,6 +1,22 @@
 # Vault Ruby Changelog
 
-## v0.5.0.dev (Unreleased)
+## v0.6.0.dev (Unreleased)
+
+## v0.6.0 (August 30, 2016)
+
+NEW FEATURES
+
+- Add support for Vault 0.6.1 APIs
+- Add new token `accessors` API method
+- Add TLS authentication endpoints
+
+BUG FIXES
+
+- Restore old `to_h` behavior on response objects
+
+IMPROVEMENTS
+
+- Bootstrap full testing harness against old Vault versions
 
 ## v0.5.0 (August 16, 2016)
 
