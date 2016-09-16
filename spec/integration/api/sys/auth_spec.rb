@@ -24,7 +24,7 @@ module Vault
       end
     end
 
-    describe "#put_auth_tune" do
+    describe "#put_auth_tune", vault: ">= 0.6.1" do
       it "writes a config" do
         subject.enable_auth("put_auth_tune", "github")
         expect(subject.put_auth_tune("put_auth_tune", "default_lease_ttl" => 123, "max_lease_ttl" => 456)).to be(true)
@@ -34,7 +34,7 @@ module Vault
       end
     end
 
-    describe "#auth_tune" do
+    describe "#auth_tune", vault: ">= 0.6.1" do
       it "reads a config" do
         subject.enable_auth("auth_tune", "github")
         cfg = subject.auth_tune("auth_tune")
