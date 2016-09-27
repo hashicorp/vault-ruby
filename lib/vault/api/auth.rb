@@ -74,6 +74,30 @@ module Vault
       return secret
     end
 
+    # Authenticate via the "approle" authentication method. If authentication is
+    # successful, the resulting token will be stored on the client and used for
+    # future requests.
+    #
+    # @example
+    #   Vault.auth.approle(
+    #     "db02de05-fa39-4855-059b-67221c5c2f63",
+    #     "6a174c20-f6de-a53c-74d2-6018fcceff64",
+    #   ) #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role_id
+    # @param [String] secret_id (default: nil)
+    #   It is required when `bind_secret_id` is enabled for the specified role_id
+    #
+    # @return [Secret]
+    def approle(role_id, secret_id=nil)
+      payload = { role_id: role_id }
+      payload[:secret_id] = secret_id if secret_id
+      json = client.post("/v1/auth/approle/login", JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
     # Authenticate via the "userpass" authentication method. If authentication
     # is successful, the resulting token will be stored on the client and used
     # for future requests.
