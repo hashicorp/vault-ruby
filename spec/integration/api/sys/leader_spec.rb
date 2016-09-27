@@ -16,5 +16,12 @@ module Vault
         expect(result.address).to eq("")
       end
     end
+
+    describe "#step_down", vault: ">= 0.5.3" do
+      it "steps down if leader" do
+        result = subject.step_down
+        expect(result).to be(true)
+      end
+    end
   end
 end
