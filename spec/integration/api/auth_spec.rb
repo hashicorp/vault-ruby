@@ -61,6 +61,66 @@ module Vault
       end
     end
 
+    describe "#approle", vault: ">= 0.6.1" do
+      before(:context) do
+        @approle  = "sample-role-name"
+        vault_test_client.sys.enable_auth("approle", "approle", nil)
+      end
+
+      after(:context) do
+        vault_test_client.sys.disable_auth("approle")
+      end
+
+      before do
+        subject.token = nil
+      end
+
+      context "when approle has default settings" do
+        before(:context) do
+          vault_test_client.approle.set_role(@approle)
+          @role_id = vault_test_client.approle.role_id(@approle)
+          @secret_id = vault_test_client.approle.create_secret_id(@approle).data[:secret_id]
+        end
+
+        after(:context) do
+          vault_test_client.approle.delete_role(@approle)
+        end
+
+        it "authenticates and saves the token on the client" do
+          result = subject.auth.approle(@role_id, @secret_id)
+          expect(subject.token).to eq(result.auth.client_token)
+        end
+
+        it "raises an error if the authentication is bad" do
+          expect {
+            expect {
+              subject.auth.approle("nope", "bad")
+            }.to raise_error(HTTPError)
+          }.to_not change(subject, :token)
+        end
+      end
+
+      context "when approle has 'bind_secret_id' disabled" do
+        before(:context) do
+          opts = {
+            bind_secret_id: false,
+            bound_cidr_list: "127.0.0.1/32"
+          }
+          vault_test_client.approle.set_role(@approle, opts)
+          @role_id = vault_test_client.approle.role_id(@approle)
+        end
+
+        after(:context) do
+          vault_test_client.approle.delete_role(@approle)
+        end
+
+        it "authenticates w/o secret_id and saves the token on the client" do
+          result = subject.auth.approle(@role_id)
+          expect(subject.token).to eq(result.auth.client_token)
+        end
+      end
+    end
+
     describe "#userpass" do
       before(:context) do
         @username = "sethvargo"
