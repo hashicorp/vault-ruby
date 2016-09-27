@@ -39,5 +39,10 @@ module Vault
       json = client.get("/v1/sys/leader")
       return LeaderStatus.decode(json)
     end
+
+    def step_down
+      client.put("/v1/sys/step-down", nil)
+      return true
+    end
   end
 end
