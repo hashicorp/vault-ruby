@@ -194,6 +194,7 @@ module Vault
       if uri.scheme == "https"
         # Turn on SSL
         connection.use_ssl = true
+        connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
         # Vault requires TLS1.2
         connection.ssl_version = "TLSv1_2"
@@ -206,7 +207,6 @@ module Vault
         if pem
           connection.cert = OpenSSL::X509::Certificate.new(pem)
           connection.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
-          connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
         # Use custom CA cert for verification
