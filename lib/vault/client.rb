@@ -180,6 +180,19 @@ module Vault
       # crazy strange conditionals.
       connection = Net::HTTP::Persistent.new(name: "vault-ruby")
 
+      if proxy_address
+        proxy_uri = URI "http://#{proxy_address}"
+
+        proxy_uri.port = proxy_port if proxy_port
+
+        if proxy_username
+          proxy_uri.user = proxy_username
+          proxy_uri.password = proxy_password
+        end
+
+        connection.proxy = proxy_uri
+      end
+
       # Use a custom open timeout
       if open_timeout || timeout
         connection.open_timeout = (open_timeout || timeout).to_i
