@@ -181,7 +181,7 @@ module Vault
       connection = Net::HTTP::Persistent.new(name: "vault-ruby")
 
       if proxy_address
-        proxy_uri = URI "http://#{proxy_address}"
+        proxy_uri = URI.parse "http://#{proxy_address}"
 
         proxy_uri.port = proxy_port if proxy_port
 
