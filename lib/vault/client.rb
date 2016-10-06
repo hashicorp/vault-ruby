@@ -1,7 +1,8 @@
 require "cgi"
 require "json"
-require "net/http/persistent"
 require "uri"
+
+require_relative "vendor/net/http/persistent"
 
 require_relative "configurable"
 require_relative "errors"
