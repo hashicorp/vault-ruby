@@ -1,7 +1,6 @@
 require "cgi"
 require "json"
-require "net/http"
-require "net/https"
+require "net/http/persistent"
 require "uri"
 
 require_relative "configurable"
@@ -53,6 +52,8 @@ module Vault
       # only add them if they are defiend
       a << Net::ReadTimeout if defined?(Net::ReadTimeout)
       a << Net::OpenTimeout if defined?(Net::OpenTimeout)
+
+      a << Net::HTTP::Persistent::Error
     end.freeze
 
     include Vault::Configurable
@@ -177,8 +178,7 @@ module Vault
       # Create the HTTP connection object - since the proxy information defaults
       # to +nil+, we can just pass it to the initializer method instead of doing
       # crazy strange conditionals.
-      connection = Net::HTTP.new(uri.host, uri.port,
-        proxy_address, proxy_port, proxy_username, proxy_password)
+      connection = Net::HTTP::Persistent.new(name: "vault-ruby")
 
       # Use a custom open timeout
       if open_timeout || timeout
@@ -192,8 +192,6 @@ module Vault
 
       # Apply SSL, if applicable
       if uri.scheme == "https"
-        # Turn on SSL
-        connection.use_ssl = true
         connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
         # Vault requires TLS1.2
@@ -234,22 +232,20 @@ module Vault
       begin
         # Create a connection using the block form, which will ensure the socket
         # is properly closed in the event of an error.
-        connection.start do |http|
-          response = http.request(request)
+        response = connection.request(uri, request)
 
-          case response
-          when Net::HTTPRedirection
-            # On a redirect of a GET or HEAD request, the URL already contains
-            # the data as query string parameters.
-            if [:head, :get].include?(verb)
-              data = {}
-            end
-            request(verb, response[LOCATION_HEADER], data, headers)
-          when Net::HTTPSuccess
-            success(response)
-          else
-            error(response)
+        case response
+        when Net::HTTPRedirection
+          # On a redirect of a GET or HEAD request, the URL already contains
+          # the data as query string parameters.
+          if [:head, :get].include?(verb)
+            data = {}
           end
+          request(verb, response[LOCATION_HEADER], data, headers)
+        when Net::HTTPSuccess
+          success(response)
+        else
+          error(response)
         end
       rescue *RESCUED_EXCEPTIONS => e
         raise HTTPConnectionError.new(address, e)
