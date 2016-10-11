@@ -23,7 +23,7 @@ module Vault
 
           client = described_class.new(address: address, token: "foo", read_timeout: 0.01)
 
-          expect { client.request(:get, "/", {}, {}) }.to raise_error(HTTPConnectionError)
+          expect { client.get("/", {}, {}) }.to raise_error(HTTPConnectionError)
         end
       end
 
@@ -32,7 +32,7 @@ module Vault
 
         client = described_class.new(address: address, token: "foo")
 
-        expect { client.request(:get, "/", {}, {}) }.to raise_error(HTTPConnectionError)
+        expect { client.get("/", {}, {}) }.to raise_error(HTTPConnectionError)
       end
 
       it "raises an error when a token was missing" do
