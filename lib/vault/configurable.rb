@@ -18,6 +18,7 @@ module Vault
         :ssl_pem_passphrase,
         :ssl_ca_cert,
         :ssl_ca_path,
+        :ssl_cert_store,
         :ssl_verify,
         :ssl_timeout,
         :timeout,
