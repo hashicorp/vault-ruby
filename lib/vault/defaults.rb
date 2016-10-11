@@ -123,6 +123,13 @@ module Vault
       def ssl_ca_cert
         ENV["VAULT_CACERT"]
       end
+
+      # The CA cert store to use for certificate verification
+      # @return [OpenSSL::X509::Store, nil]
+      def ssl_cert_store
+        nil
+      end
+
       #
       # The path to the directory on disk holding CA certs to use
       # for certificate verification
