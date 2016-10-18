@@ -182,9 +182,10 @@ module Vault
     def secret_id(role_name, secret_id)
       opts = { secret_id: secret_id }
       json = client.post("/v1/auth/approle/role/#{CGI.escape(role_name)}/secret-id/lookup", JSON.fast_generate(opts), {})
+      return nil unless json
       return Secret.decode(json)
     rescue HTTPError => e
-      if e.code == 404
+      if e.code == 404 || e.code == 405
         begin
           json = client.get("/v1/auth/approle/role/#{CGI.escape(role_name)}/secret-id/#{CGI.escape(secret_id)}")
           return Secret.decode(json)
