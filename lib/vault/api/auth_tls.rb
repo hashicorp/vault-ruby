@@ -42,7 +42,7 @@ module Vault
     # @return [true]
     def set_certificate(name, options = {})
       headers = extract_headers!(options)
-      client.post("/v1/auth/cert/certs/#{CGI.escape(name)}", JSON.fast_generate(options), headers)
+      client.post("/v1/auth/cert/certs/#{encode_path(name)}", JSON.fast_generate(options), headers)
       return true
     end
 
@@ -54,7 +54,7 @@ module Vault
     #
     # @return [Secret, nil]
     def certificate(name)
-      json = client.get("/v1/auth/cert/certs/#{CGI.escape(name)}")
+      json = client.get("/v1/auth/cert/certs/#{encode_path(name)}")
       return Secret.decode(json)
     rescue HTTPError => e
       return nil if e.code == 404
@@ -85,7 +85,7 @@ module Vault
     # @param [String] name
     #   the name of the certificate
     def delete_certificate(name)
-      client.delete("/v1/auth/cert/certs/#{CGI.escape(name)}")
+      client.delete("/v1/auth/cert/certs/#{encode_path(name)}")
       return true
     end
   end

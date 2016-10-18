@@ -48,7 +48,7 @@ module Vault
       payload = { type: type }
       payload[:description] = description if !description.nil?
 
-      client.post("/v1/sys/mounts/#{CGI.escape(path)}", JSON.fast_generate(payload))
+      client.post("/v1/sys/mounts/#{encode_path(path)}", JSON.fast_generate(payload))
       return true
     end
 
@@ -62,7 +62,7 @@ module Vault
     # @param [Hash] data
     #   the data to write
     def mount_tune(path, data = {})
-      json = client.post("/v1/sys/mounts/#{CGI.escape(path)}/tune", JSON.fast_generate(data))
+      json = client.post("/v1/sys/mounts/#{encode_path(path)}/tune", JSON.fast_generate(data))
       return true
     end
 
@@ -77,7 +77,7 @@ module Vault
     #
     # @return [true]
     def unmount(path)
-      client.delete("/v1/sys/mounts/#{CGI.escape(path)}")
+      client.delete("/v1/sys/mounts/#{encode_path(path)}")
       return true
     end
 

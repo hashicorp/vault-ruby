@@ -26,7 +26,7 @@ module Vault
     #
     # @return [Help]
     def help(path)
-      json = self.get("/v1/#{CGI.escape(path)}", help: 1)
+      json = self.get("/v1/#{EncodePath.encode_path(path)}", help: 1)
       return Help.decode(json)
     end
   end

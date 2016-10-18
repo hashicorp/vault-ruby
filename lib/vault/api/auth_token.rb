@@ -95,7 +95,7 @@ module Vault
     # @return [Secret]
     def create_with_role(name, options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/auth/token/create/#{CGI.escape(name)}", JSON.fast_generate(options), headers)
+      json = client.post("/v1/auth/token/create/#{encode_path(name)}", JSON.fast_generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -108,7 +108,7 @@ module Vault
     #
     # @return [Secret]
     def lookup(token)
-      json = client.get("/v1/auth/token/lookup/#{CGI.escape(token)}")
+      json = client.get("/v1/auth/token/lookup/#{encode_path(token)}")
       return Secret.decode(json)
     end
 

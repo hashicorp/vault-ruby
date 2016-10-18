@@ -51,7 +51,7 @@ module Vault
     #
     # @return [true]
     def enable_audit(path, type, description, options = {})
-      client.put("/v1/sys/audit/#{CGI.escape(path)}", JSON.fast_generate(
+      client.put("/v1/sys/audit/#{encode_path(path)}", JSON.fast_generate(
         type:        type,
         description: description,
         options:     options,
@@ -67,7 +67,7 @@ module Vault
     #
     # @return [true]
     def disable_audit(path)
-      client.delete("/v1/sys/audit/#{CGI.escape(path)}")
+      client.delete("/v1/sys/audit/#{encode_path(path)}")
       return true
     end
   end

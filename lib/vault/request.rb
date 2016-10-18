@@ -37,5 +37,7 @@ module Vault
         end
       end
     end
+
+    include EncodePath
   end
 end
