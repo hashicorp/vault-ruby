@@ -125,6 +125,10 @@ module Vault
         @nhp.ca_path = ssl_ca_path
       end
 
+      if ssl_cert_store
+        @nhp.cert_store = ssl_cert_store
+      end
+
       # Naughty, naughty, naughty! Don't blame me when someone hops in
       # and executes a MITM attack!
       if !ssl_verify
