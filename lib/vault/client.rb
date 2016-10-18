@@ -109,7 +109,7 @@ module Vault
       @nhp.ciphers = ssl_ciphers
 
       # Custom pem files, no problem!
-      pem = ssl_pem_contents || ssl_pem_file ? File.read(ssl_pem_file) : nil
+      pem = ssl_pem_contents || (ssl_pem_file ? File.read(ssl_pem_file) : nil)
       if pem
         @nhp.cert = OpenSSL::X509::Certificate.new(pem)
         @nhp.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
