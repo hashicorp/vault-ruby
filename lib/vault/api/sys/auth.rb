@@ -13,6 +13,18 @@ module Vault
     field :type
   end
 
+  class AuthConfig < Response
+    # @!attribute [r] default_lease_ttl
+    #   The default time-to-live.
+    #   @return [String]
+    field :default_lease_ttl
+
+    # @!attribute [r] max_lease_ttl
+    #   The maximum time-to-live.
+    #   @return [String]
+    field :max_lease_ttl
+  end
+
   class Sys
     # List all auths in Vault.
     #
@@ -62,6 +74,43 @@ module Vault
     def disable_auth(path)
       client.delete("/v1/sys/auth/#{CGI.escape(path)}")
       return true
+    end
+
+    # Read the given auth path's configuration.
+    #
+    # @example
+    #   Vault.sys.auth_tune("github") #=> #<Vault::AuthConfig "default_lease_ttl"=3600, "max_lease_ttl"=7200>
+    #
+    # @param [String] path
+    #   the path to retrieve configuration for
+    #
+    # @return [AuthConfig]
+    #   configuration of the given auth path
+    def auth_tune(path)
+      json = client.get("/v1/sys/auth/#{CGI.escape(path)}/tune")
+      return AuthConfig.decode(json)
+    rescue HTTPError => e
+      return nil if e.code == 404
+      raise
+    end
+
+    # Write the given auth path's configuration.
+    #
+    # @example
+    #   Vault.sys.auth_tune("github", "default_lease_ttl" => 600, "max_lease_ttl" => 1200 ) #=>  true
+    #
+    # @param [String] path
+    #   the path to retrieve configuration for
+    #
+    # @return [AuthConfig]
+    #   configuration of the given auth path
+    def put_auth_tune(path, config = {})
+      json = client.put("/v1/sys/auth/#{CGI.escape(path)}/tune", JSON.fast_generate(config))
+      if json.nil?
+        return true
+      else
+        return Secret.decode(json)
+      end
     end
   end
 end
