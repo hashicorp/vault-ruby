@@ -18,6 +18,8 @@ module Vault
 
     private
 
+    include EncodePath
+
     # Removes the given header fields from options and returns the result. This
     # modifies the given options in place.
     #
@@ -37,7 +39,5 @@ module Vault
         end
       end
     end
-
-    include EncodePath
   end
 end
