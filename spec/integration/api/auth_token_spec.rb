@@ -29,7 +29,7 @@ module Vault
       end
     end
 
-    describe "#create_orphan", vault: ">= 0.4" do
+    describe "#create_orphan" do
       it "creates an orphaned token" do
         result = subject.auth_token.create_orphan
         expect(result).to be_a(Vault::Secret)
@@ -92,7 +92,7 @@ module Vault
       end
     end
 
-    describe "#renew_self", vault: ">= 0.4" do
+    describe "#renew_self" do
       it "renews the calling token" do
         token = subject.auth_token.create(policies: ["default"])
         subject.auth.token(token.auth.client_token)
@@ -102,7 +102,7 @@ module Vault
       end
     end
 
-    describe "#revoke_self", vault: ">= 0.4" do
+    describe "#revoke_self" do
       it "revokes the calling token" do
         token = subject.auth_token.create(policies: ["default"])
         subject.auth.token(token.auth.client_token)

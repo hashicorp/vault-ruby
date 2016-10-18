@@ -4,7 +4,7 @@ module Vault
   describe Logical do
     subject { vault_test_client.logical }
 
-    describe "#list", vault: ">= 0.5" do
+    describe "#list" do
       it "returns the empty array when no items exist" do
         expect(subject.list("secret/that/never/existed")).to eq([])
       end
