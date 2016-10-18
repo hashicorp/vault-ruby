@@ -69,6 +69,67 @@ module Vault
         value = options.key?(key) ? options[key] : Defaults.public_send(key)
         instance_variable_set(:"@#{key}", value)
       end
+
+      @nhp = Net::HTTP::Persistent.new(name: "vault-ruby")
+
+      if proxy_address
+        proxy_uri = URI.parse "http://#{proxy_address}"
+
+        proxy_uri.port = proxy_port if proxy_port
+
+        if proxy_username
+          proxy_uri.user = proxy_username
+          proxy_uri.password = proxy_password
+        end
+
+        @nhp.proxy = proxy_uri
+      end
+
+      # Use a custom open timeout
+      if open_timeout || timeout
+        @nhp.open_timeout = (open_timeout || timeout).to_i
+      end
+
+      # Use a custom read timeout
+      if read_timeout || timeout
+        @nhp.read_timeout = (read_timeout || timeout).to_i
+      end
+
+      @nhp.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+      # Vault requires TLS1.2
+      @nhp.ssl_version = "TLSv1_2"
+
+      # Only use secure ciphers
+      @nhp.ciphers = ssl_ciphers
+
+      # Custom pem files, no problem!
+      pem = ssl_pem_contents || ssl_pem_file ? File.read(ssl_pem_file) : nil
+      if pem
+        @nhp.cert = OpenSSL::X509::Certificate.new(pem)
+        @nhp.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
+      end
+
+      # Use custom CA cert for verification
+      if ssl_ca_cert
+        @nhp.ca_file = ssl_ca_cert
+      end
+
+      # Use custom CA path that contains CA certs
+      if ssl_ca_path
+        @nhp.ca_path = ssl_ca_path
+      end
+
+      # Naughty, naughty, naughty! Don't blame me when someone hops in
+      # and executes a MITM attack!
+      if !ssl_verify
+        @nhp.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+
+      # Use custom timeout for connecting and verifying via SSL
+      if ssl_timeout || timeout
+        @nhp.ssl_timeout = (ssl_timeout || timeout).to_i
+      end
     end
 
     # Creates and yields a new client object with the given token. This may be
@@ -176,77 +237,10 @@ module Vault
         end
       end
 
-      # Create the HTTP connection object - since the proxy information defaults
-      # to +nil+, we can just pass it to the initializer method instead of doing
-      # crazy strange conditionals.
-      connection = Net::HTTP::Persistent.new(name: "vault-ruby")
-
-      if proxy_address
-        proxy_uri = URI.parse "http://#{proxy_address}"
-
-        proxy_uri.port = proxy_port if proxy_port
-
-        if proxy_username
-          proxy_uri.user = proxy_username
-          proxy_uri.password = proxy_password
-        end
-
-        connection.proxy = proxy_uri
-      end
-
-      # Use a custom open timeout
-      if open_timeout || timeout
-        connection.open_timeout = (open_timeout || timeout).to_i
-      end
-
-      # Use a custom read timeout
-      if read_timeout || timeout
-        connection.read_timeout = (read_timeout || timeout).to_i
-      end
-
-      # Apply SSL, if applicable
-      if uri.scheme == "https"
-        connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
-
-        # Vault requires TLS1.2
-        connection.ssl_version = "TLSv1_2"
-
-        # Only use secure ciphers
-        connection.ciphers = ssl_ciphers
-
-        # Custom pem files, no problem!
-        pem = ssl_pem_contents || ssl_pem_file ? File.read(ssl_pem_file) : nil
-        if pem
-          connection.cert = OpenSSL::X509::Certificate.new(pem)
-          connection.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
-        end
-
-        # Use custom CA cert for verification
-        if ssl_ca_cert
-          connection.ca_file = ssl_ca_cert
-        end
-
-        # Use custom CA path that contains CA certs
-        if ssl_ca_path
-          connection.ca_path = ssl_ca_path
-        end
-
-        # Naughty, naughty, naughty! Don't blame me when someone hops in
-        # and executes a MITM attack!
-        if !ssl_verify
-          connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
-
-        # Use custom timeout for connecting and verifying via SSL
-        if ssl_timeout || timeout
-          connection.ssl_timeout = (ssl_timeout || timeout).to_i
-        end
-      end
-
       begin
         # Create a connection using the block form, which will ensure the socket
         # is properly closed in the event of an error.
-        response = connection.request(uri, request)
+        response = @nhp.request(uri, request)
 
         case response
         when Net::HTTPRedirection
