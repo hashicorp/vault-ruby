@@ -7,8 +7,6 @@ env:
   - VAULT_VERSION=0.6.1
   - VAULT_VERSION=0.6.0
   - VAULT_VERSION=0.5.3
-  - VAULT_VERSION=0.4.1
-  - VAULT_VERSION=0.3.1
 
 before_install:
   - wget -O vault.zip -q https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
