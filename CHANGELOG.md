@@ -1,6 +1,22 @@
 # Vault Ruby Changelog
 
-## v0.6.0.dev (Unreleased)
+## v0.7.0 (October 18, 2016)
+
+DEPRECATIONS
+
+- Vault versions older than 0.5.3 are no longer tested
+
+NEW FEATURES
+
+- Add support for AppRole
+- Expose the auth/tune API
+- Add support for leader step down
+- Use persistent connections to Vault to speed up requests
+- Add support for a custom ssl certificate store
+
+BUG FIXES
+
+- Allow for spaces in secret names properly
 
 ## v0.6.0 (August 30, 2016)
 
