@@ -57,6 +57,11 @@ module Vault
       a << Net::HTTP::Persistent::Error
     end.freeze
 
+    # Indicates a requested operation is not possible due to security
+    # concerns.
+    class SecurityError < RuntimeError
+    end
+
     include Vault::Configurable
 
     # Create a new Client with the given options. Any options given take
@@ -210,6 +215,10 @@ module Vault
       # Build the URI and request object from the given information
       uri = build_uri(verb, path, data)
       request = class_for_request(verb).new(uri.request_uri)
+
+      if proxy_address and uri.scheme.downcase == "https"
+        raise SecurityError, "no direct https connection to vault"
+      end
 
       # Get a list of headers
       headers = DEFAULT_HEADERS.merge(headers)
