@@ -117,7 +117,7 @@ module Vault
     # @return [Secret]
     def userpass(username, password, options = {})
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/userpass/login/#{CGI.escape(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/userpass/login/#{encode_path(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -139,7 +139,7 @@ module Vault
     # @return [Secret]
     def ldap(username, password, options = {})
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/ldap/login/#{CGI.escape(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/ldap/login/#{encode_path(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret

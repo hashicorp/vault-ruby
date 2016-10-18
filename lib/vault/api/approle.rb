@@ -58,7 +58,7 @@ module Vault
     # @return [true]
     def set_role(name, options = {})
       headers = extract_headers!(options)
-      client.post("/v1/auth/approle/role/#{CGI.escape(name)}", JSON.fast_generate(options), headers)
+      client.post("/v1/auth/approle/role/#{encode_path(name)}", JSON.fast_generate(options), headers)
       return true
     end
 
@@ -70,7 +70,7 @@ module Vault
     #
     # @return [Secret, nil]
     def role(name)
-      json = client.get("/v1/auth/approle/role/#{CGI.escape(name)}")
+      json = client.get("/v1/auth/approle/role/#{encode_path(name)}")
       return Secret.decode(json)
     rescue HTTPError => e
       return nil if e.code == 404
@@ -100,7 +100,7 @@ module Vault
     #
     # @return [Secret, nil]
     def role_id(name)
-      json = client.get("/v1/auth/approle/role/#{CGI.escape(name)}/role-id")
+      json = client.get("/v1/auth/approle/role/#{encode_path(name)}/role-id")
       return Secret.decode(json).data[:role_id]
     rescue HTTPError => e
       return nil if e.code == 404
@@ -115,7 +115,7 @@ module Vault
     # @return [true]
     def set_role_id(name, role_id)
       options = { role_id: role_id }
-      client.post("/v1/auth/approle/role/#{CGI.escape(name)}/role-id", JSON.fast_generate(options))
+      client.post("/v1/auth/approle/role/#{encode_path(name)}/role-id", JSON.fast_generate(options))
       return true
     end
 
@@ -128,7 +128,7 @@ module Vault
     # @param [String] name
     #   the name of the certificate
     def delete_role(name)
-      client.delete("/v1/auth/approle/role/#{CGI.escape(name)}")
+      client.delete("/v1/auth/approle/role/#{encode_path(name)}")
       return true
     end
 
@@ -160,9 +160,9 @@ module Vault
     def create_secret_id(role_name, options = {})
       headers = extract_headers!(options)
       if options[:secret_id]
-        json = client.post("/v1/auth/approle/role/#{CGI.escape(role_name)}/custom-secret-id", JSON.fast_generate(options), headers)
+        json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/custom-secret-id", JSON.fast_generate(options), headers)
       else
-        json = client.post("/v1/auth/approle/role/#{CGI.escape(role_name)}/secret-id", JSON.fast_generate(options), headers)
+        json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id", JSON.fast_generate(options), headers)
       end
       return Secret.decode(json)
     end
@@ -181,13 +181,13 @@ module Vault
     # @return [Secret, nil]
     def secret_id(role_name, secret_id)
       opts = { secret_id: secret_id }
-      json = client.post("/v1/auth/approle/role/#{CGI.escape(role_name)}/secret-id/lookup", JSON.fast_generate(opts), {})
+      json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id/lookup", JSON.fast_generate(opts), {})
       return nil unless json
       return Secret.decode(json)
     rescue HTTPError => e
       if e.code == 404 || e.code == 405
         begin
-          json = client.get("/v1/auth/approle/role/#{CGI.escape(role_name)}/secret-id/#{CGI.escape(secret_id)}")
+          json = client.get("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id/#{encode_path(secret_id)}")
           return Secret.decode(json)
         rescue HTTPError => e
           return nil if e.code == 404
@@ -208,7 +208,7 @@ module Vault
     # @return [Array<String>]
     def secret_id_accessors(role_name, options = {})
       headers = extract_headers!(options)
-      json = client.list("/v1/auth/approle/role/#{CGI.escape(role_name)}/secret-id", options, headers)
+      json = client.list("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id", options, headers)
       return Secret.decode(json).data[:keys] || []
     rescue HTTPError => e
       return [] if e.code == 404

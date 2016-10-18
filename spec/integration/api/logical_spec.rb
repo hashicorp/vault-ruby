@@ -4,7 +4,7 @@ module Vault
   describe Logical do
     subject { vault_test_client.logical }
 
-    describe "#list", vault: ">= 0.5" do
+    describe "#list" do
       it "returns the empty array when no items exist" do
         expect(subject.list("secret/that/never/existed")).to eq([])
       end
@@ -61,6 +61,15 @@ module Vault
         secret = subject.read("secret/b:@c%n-write")
         expect(secret).to be
         expect(secret.data).to eq(bacon: true)
+      end
+
+      it "respects spaces properly" do
+        key = 'secret/sub/"Test Group"'
+        subject.write(key, foo: "bar")
+        expect(subject.list("secret/sub")).to eq(['"Test Group"'])
+        secret = subject.read(key)
+        expect(secret).to be
+        expect(secret.data).to eq(foo:"bar")
       end
     end
 

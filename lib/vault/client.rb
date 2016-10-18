@@ -7,6 +7,7 @@ require_relative "vendor/net/http/persistent"
 require_relative "configurable"
 require_relative "errors"
 require_relative "version"
+require_relative "encode"
 
 module Vault
   class Client
