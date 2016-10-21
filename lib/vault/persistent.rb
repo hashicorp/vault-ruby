@@ -1080,7 +1080,6 @@ application:
     connection.ca_path = @ca_path if @ca_path
 
     if @ca_file or @ca_path then
-      connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
       connection.verify_callback = @verify_callback if @verify_callback
     end
 
