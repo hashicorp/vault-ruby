@@ -1,5 +1,5 @@
 module Vault
-class Net::HTTP::Persistent::TimedStackMulti < ConnectionPool::TimedStack # :nodoc:
+class PersistentHTTP::TimedStackMulti < ConnectionPool::TimedStack # :nodoc:
 
   def initialize(size = 0, &block)
     super

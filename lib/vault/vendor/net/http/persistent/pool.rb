@@ -1,5 +1,5 @@
 module Vault
-class Net::HTTP::Persistent::Pool < Vault::ConnectionPool # :nodoc:
+class PersistentHTTP::Pool < Vault::ConnectionPool # :nodoc:
 
   attr_reader :available # :nodoc:
   attr_reader :key # :nodoc:
@@ -7,7 +7,7 @@ class Net::HTTP::Persistent::Pool < Vault::ConnectionPool # :nodoc:
   def initialize(options = {}, &block)
     super
 
-    @available = Net::HTTP::Persistent::TimedStackMulti.new(@size, &block)
+    @available = PersistentHTTP::TimedStackMulti.new(@size, &block)
     @key = :"current-#{@available.object_id}"
   end
 

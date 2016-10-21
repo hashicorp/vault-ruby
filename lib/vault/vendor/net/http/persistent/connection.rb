@@ -3,7 +3,7 @@
 # connection's lifetime.
 
 module Vault
-class Net::HTTP::Persistent::Connection # :nodoc:
+class PersistentHTTP::Connection # :nodoc:
 
   attr_accessor :http
 
@@ -28,7 +28,7 @@ class Net::HTTP::Persistent::Connection # :nodoc:
   end
 
   def reset
-    @last_use = Net::HTTP::Persistent::EPOCH
+    @last_use = PersistentHTTP::EPOCH
     @requests = 0
   end
 

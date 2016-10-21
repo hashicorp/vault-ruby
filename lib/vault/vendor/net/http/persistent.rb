@@ -13,18 +13,18 @@ autoload :OpenSSL, 'openssl'
 ##
 # Persistent connections for Net::HTTP
 #
-# Net::HTTP::Persistent maintains persistent connections across all the
+# PersistentHTTP maintains persistent connections across all the
 # servers you wish to talk to.  For each host:port you communicate with a
 # single persistent connection is created.
 #
-# Multiple Net::HTTP::Persistent objects will share the same set of
+# Multiple PersistentHTTP objects will share the same set of
 # connections.
 #
 # For each thread you start a new connection will be created.  A
-# Net::HTTP::Persistent connection will not be shared across threads.
+# PersistentHTTP connection will not be shared across threads.
 #
 # You can shut down the HTTP connections when done by calling #shutdown.  You
-# should name your Net::HTTP::Persistent object if you intend to call this
+# should name your PersistentHTTP object if you intend to call this
 # method.
 #
 # Example:
@@ -33,7 +33,7 @@ autoload :OpenSSL, 'openssl'
 #
 #   uri = URI 'http://example.com/awesome/web/service'
 #
-#   http = Net::HTTP::Persistent.new 'my_app_name'
+#   http = PersistentHTTP.new 'my_app_name'
 #
 #   # perform a GET
 #   response = http.request uri
@@ -153,14 +153,14 @@ autoload :OpenSSL, 'openssl'
 #   uri = URI 'http://example.com/awesome/web/service'
 #   post_uri = uri + 'create'
 #
-#   http = Net::HTTP::Persistent.new 'my_app_name'
+#   http = PersistentHTTP.new 'my_app_name'
 #
 #   post = Net::HTTP::Post.new post_uri.path
 #   # ... fill in POST request
 #
 #   begin
 #     response = http.request post_uri, post
-#   rescue Net::HTTP::Persistent::Error
+#   rescue PersistentHTTP::Error
 #
 #     # POST failed, make a new request to verify the server did not process
 #     # the request
@@ -177,7 +177,7 @@ autoload :OpenSSL, 'openssl'
 #
 # === Connection Termination
 #
-# If you are done using the Net::HTTP::Persistent instance you may shut down
+# If you are done using the PersistentHTTP instance you may shut down
 # all the connections in the current thread with #shutdown.  This is not
 # recommended for normal use, it should only be used when it will be several
 # minutes before you make another HTTP request.
@@ -188,7 +188,7 @@ autoload :OpenSSL, 'openssl'
 # when the thread terminates.
 
 module Vault
-class Net::HTTP::Persistent
+class PersistentHTTP
 
   ##
   # The beginning of Time
@@ -206,7 +206,7 @@ class Net::HTTP::Persistent
   DEFAULT_POOL_SIZE = Process.getrlimit(Process::RLIMIT_NOFILE).first / 4
 
   ##
-  # The version of Net::HTTP::Persistent you are using
+  # The version of PersistentHTTP you are using
 
   VERSION = '3.0.0'
 
@@ -226,7 +226,7 @@ class Net::HTTP::Persistent
   ].compact
 
   ##
-  # Error class for errors raised by Net::HTTP::Persistent.  Various
+  # Error class for errors raised by PersistentHTTP.  Various
   # SystemCallErrors are re-raised with a human-readable message under this
   # class.
 
@@ -483,7 +483,7 @@ class Net::HTTP::Persistent
   attr_accessor :retry_change_requests
 
   ##
-  # Creates a new Net::HTTP::Persistent.
+  # Creates a new PersistentHTTP.
   #
   # Set +name+ to keep your connections apart from everybody else's.  Not
   # required currently, but highly recommended.  Your library name should be
@@ -523,8 +523,8 @@ class Net::HTTP::Persistent
     @socket_options << [Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1] if
       Socket.const_defined? :TCP_NODELAY
 
-    @pool = Net::HTTP::Persistent::Pool.new size: pool_size do |http_args|
-      Net::HTTP::Persistent::Connection.new Net::HTTP, http_args, @ssl_generation
+    @pool = PersistentHTTP::Pool.new size: pool_size do |http_args|
+      PersistentHTTP::Connection.new Net::HTTP, http_args, @ssl_generation
     end
 
     @certificate        = nil

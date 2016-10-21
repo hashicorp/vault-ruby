@@ -55,7 +55,7 @@ module Vault
       a << Net::ReadTimeout if defined?(Net::ReadTimeout)
       a << Net::OpenTimeout if defined?(Net::OpenTimeout)
 
-      a << Net::HTTP::Persistent::Error
+      a << PersistentHTTP::Error
     end.freeze
 
     # Indicates a requested operation is not possible due to security
@@ -76,7 +76,7 @@ module Vault
         instance_variable_set(:"@#{key}", value)
       end
 
-      @nhp = Net::HTTP::Persistent.new(name: "vault-ruby")
+      @nhp = PersistentHTTP.new(name: "vault-ruby")
 
       if proxy_address
         proxy_uri = URI.parse "http://#{proxy_address}"
