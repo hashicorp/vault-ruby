@@ -1,5 +1,14 @@
 # Vault Ruby Changelog
 
+## v0.7.1 (October 21, 2016)
+
+BUG FIXES
+
+- Properly vendor Net::HTTP::Persistent so that it doesn't collide
+  with net-http-persistent
+- Fix behavior where `verify_mode` was forced to `VERIFY_PEER`
+  if a custom CA was set
+
 ## v0.7.0 (October 18, 2016)
 
 DEPRECATIONS
