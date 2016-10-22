@@ -1,3 +1,5 @@
+# Vendored and modified from github.com/drbrain/net-http-persistent
+#
 require 'net/http'
 require 'uri'
 require 'cgi' # for escaping
