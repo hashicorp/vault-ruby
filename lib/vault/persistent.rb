@@ -205,7 +205,7 @@ class PersistentHTTP
   ##
   # The default connection pool size is 1/4 the allowed open files.
 
-  DEFAULT_POOL_SIZE = Process.getrlimit(Process::RLIMIT_NOFILE).first / 4
+  DEFAULT_POOL_SIZE = 16
 
   ##
   # The version of PersistentHTTP you are using
