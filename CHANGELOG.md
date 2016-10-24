@@ -1,5 +1,12 @@
 # Vault Ruby Changelog
 
+## v0.7.2 (October 24, 2016)
+
+BUG FIXES
+
+- Set the default pool size to 16 rather than calculating from
+  the number of available file descriptors.
+
 ## v0.7.1 (October 21, 2016)
 
 BUG FIXES
