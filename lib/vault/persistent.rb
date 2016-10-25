@@ -505,7 +505,7 @@ class PersistentHTTP
   # Defaults to 1/4 the number of allowed file handles.  You can have no more
   # than this many threads with active HTTP transactions.
 
-  def initialize name: nil, proxy: nil, pool_size: DEFAULT_POOL_SIZE
+  def initialize name=nil, proxy=nil, pool_size=DEFAULT_POOL_SIZE
     @name = name
 
     @debug_output     = nil
