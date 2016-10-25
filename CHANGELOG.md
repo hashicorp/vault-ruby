@@ -1,5 +1,13 @@
 # Vault Ruby Changelog
 
+## v0.7.3 (October 25, 2016)
+
+BUG FIXES
+
+- Allow options to be set on `Vault` as well as any `Vault::Client`
+  instance to be used properly.
+- Remove Ruby 2.0 syntax in favor of Ruby 1.9
+
 ## v0.7.2 (October 24, 2016)
 
 BUG FIXES
