@@ -75,71 +75,84 @@ module Vault
         instance_variable_set(:"@#{key}", value)
       end
 
-      @nhp = PersistentHTTP.new(name: "vault-ruby")
+      @lock = Mutex.new
+      @nhp = nil
+    end
 
-      if proxy_address
-        proxy_uri = URI.parse "http://#{proxy_address}"
+    def pool
+      @lock.synchronize do
+        return @nhp if @nhp
 
-        proxy_uri.port = proxy_port if proxy_port
+        @nhp = PersistentHTTP.new(name: "vault-ruby")
 
-        if proxy_username
-          proxy_uri.user = proxy_username
-          proxy_uri.password = proxy_password
+        if proxy_address
+          proxy_uri = URI.parse "http://#{proxy_address}"
+
+          proxy_uri.port = proxy_port if proxy_port
+
+          if proxy_username
+            proxy_uri.user = proxy_username
+            proxy_uri.password = proxy_password
+          end
+
+          @nhp.proxy = proxy_uri
         end
 
-        @nhp.proxy = proxy_uri
-      end
+        # Use a custom open timeout
+        if open_timeout || timeout
+          @nhp.open_timeout = (open_timeout || timeout).to_i
+        end
 
-      # Use a custom open timeout
-      if open_timeout || timeout
-        @nhp.open_timeout = (open_timeout || timeout).to_i
-      end
+        # Use a custom read timeout
+        if read_timeout || timeout
+          @nhp.read_timeout = (read_timeout || timeout).to_i
+        end
 
-      # Use a custom read timeout
-      if read_timeout || timeout
-        @nhp.read_timeout = (read_timeout || timeout).to_i
-      end
+        @nhp.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-      @nhp.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        # Vault requires TLS1.2
+        @nhp.ssl_version = "TLSv1_2"
 
-      # Vault requires TLS1.2
-      @nhp.ssl_version = "TLSv1_2"
+        # Only use secure ciphers
+        @nhp.ciphers = ssl_ciphers
 
-      # Only use secure ciphers
-      @nhp.ciphers = ssl_ciphers
+        # Custom pem files, no problem!
+        pem = ssl_pem_contents || (ssl_pem_file ? File.read(ssl_pem_file) : nil)
+        if pem
+          @nhp.cert = OpenSSL::X509::Certificate.new(pem)
+          @nhp.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
+        end
 
-      # Custom pem files, no problem!
-      pem = ssl_pem_contents || (ssl_pem_file ? File.read(ssl_pem_file) : nil)
-      if pem
-        @nhp.cert = OpenSSL::X509::Certificate.new(pem)
-        @nhp.key = OpenSSL::PKey::RSA.new(pem, ssl_pem_passphrase)
-      end
+        # Use custom CA cert for verification
+        if ssl_ca_cert
+          @nhp.ca_file = ssl_ca_cert
+        end
 
-      # Use custom CA cert for verification
-      if ssl_ca_cert
-        @nhp.ca_file = ssl_ca_cert
-      end
+        # Use custom CA path that contains CA certs
+        if ssl_ca_path
+          @nhp.ca_path = ssl_ca_path
+        end
 
-      # Use custom CA path that contains CA certs
-      if ssl_ca_path
-        @nhp.ca_path = ssl_ca_path
-      end
+        if ssl_cert_store
+          @nhp.cert_store = ssl_cert_store
+        end
 
-      if ssl_cert_store
-        @nhp.cert_store = ssl_cert_store
-      end
+        # Naughty, naughty, naughty! Don't blame me when someone hops in
+        # and executes a MITM attack!
+        if !ssl_verify
+          @nhp.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
 
-      # Naughty, naughty, naughty! Don't blame me when someone hops in
-      # and executes a MITM attack!
-      if !ssl_verify
-        @nhp.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      end
+        # Use custom timeout for connecting and verifying via SSL
+        if ssl_timeout || timeout
+          @nhp.ssl_timeout = (ssl_timeout || timeout).to_i
+        end
 
-      # Use custom timeout for connecting and verifying via SSL
-      if ssl_timeout || timeout
-        @nhp.ssl_timeout = (ssl_timeout || timeout).to_i
+        @nhp
       end
     end
+
+    private :pool
 
     # Creates and yields a new client object with the given token. This may be
     # used safely in a threadsafe manner because the original client remains
@@ -253,7 +266,7 @@ module Vault
       begin
         # Create a connection using the block form, which will ensure the socket
         # is properly closed in the event of an error.
-        response = @nhp.request(uri, request)
+        response = pool.request(uri, request)
 
         case response
         when Net::HTTPRedirection
