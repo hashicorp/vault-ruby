@@ -151,7 +151,7 @@ module Vault
       return Secret.decode(json)
     end
 
-    # Renews a lease associated with the callign token.
+    # Renews a lease associated with the calling token.
     #
     # @example
     #   Vault.auth_token.renew_self #=> #<Vault::Secret lease_id="">
