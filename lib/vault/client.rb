@@ -166,10 +166,41 @@ module Vault
       return nil
     end
 
-    # Determine if the given options are the same as ours.
-    # @return [true, false]
-    def same_options?(opts)
-      options.hash == opts.hash
+    # Execute the given block with retries and exponential backoff.
+    #
+    # @param [Array<Exception>] rescued
+    #   the list of exceptions to rescue
+    def with_retries(*rescued, &block)
+      options      = rescued.last.is_a?(Hash) ? rescued.pop : {}
+      exception    = nil
+      retries      = 0
+
+      max_attempts = options[:attempts] || Defaults::RETRY_ATTEMPTS
+      backoff_base = options[:base]     || Defaults::RETRY_BASE
+      backoff_max  = options[:max_wait] || Defaults::RETRY_MAX_WAIT
+
+      begin
+        return yield retries, exception
+      rescue *rescued => e
+        exception = e
+
+        retries += 1
+        raise if retries > max_attempts
+
+        # Calculate the exponential backoff combined with an element of
+        # randomness.
+        backoff = [backoff_base * (2 ** (retries - 1)), backoff_max].min
+        backoff = backoff * (0.5 * (1 + Kernel.rand))
+
+        # Ensure we are sleeping at least the minimum interval.
+        backoff = [backoff_base, backoff].max
+
+        # Exponential backoff.
+        Kernel.sleep(backoff)
+
+        # Now retry
+        retry
+      end
     end
 
     # Perform a GET request.
@@ -208,6 +239,14 @@ module Vault
     def delete(path, params = {}, headers = {})
       request(:delete, path, params, headers)
     end
+
+    # Determine if the given options are the same as ours.
+    # @return [true, false]
+    def same_options?(opts)
+      options.hash == opts.hash
+    end
+
+    private
 
     # Make an HTTP request with the given verb, data, params, and headers. If
     # the response has a return type of JSON, the JSON is automatically parsed
@@ -394,43 +433,6 @@ module Vault
       end
 
       raise klass.new(address, response, [response.body])
-    end
-
-    # Execute the given block with retries and exponential backoff.
-    #
-    # @param [Array<Exception>] rescued
-    #   the list of exceptions to rescue
-    def with_retries(*rescued, &block)
-      options      = rescued.last.is_a?(Hash) ? rescued.pop : {}
-      exception    = nil
-      retries      = 0
-
-      max_attempts = options[:attempts] || Defaults::RETRY_ATTEMPTS
-      backoff_base = options[:base]     || Defaults::RETRY_BASE
-      backoff_max  = options[:max_wait] || Defaults::RETRY_MAX_WAIT
-
-      begin
-        return yield retries, exception
-      rescue *rescued => e
-        exception = e
-
-        retries += 1
-        raise if retries > max_attempts
-
-        # Calculate the exponential backoff combined with an element of
-        # randomness.
-        backoff = [backoff_base * (2 ** (retries - 1)), backoff_max].min
-        backoff = backoff * (0.5 * (1 + Kernel.rand))
-
-        # Ensure we are sleeping at least the minimum interval.
-        backoff = [backoff_base, backoff].max
-
-        # Exponential backoff.
-        Kernel.sleep(backoff)
-
-        # Now retry
-        retry
-      end
     end
   end
 end

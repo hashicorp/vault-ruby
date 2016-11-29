@@ -81,7 +81,7 @@ module Vault
     describe "#to_query_string" do
       it "converts spaces to + characters" do
         params = { emoji: "sad panda" }
-        expect(subject.to_query_string(params)).to eq("emoji=sad+panda")
+        expect(subject.send(:to_query_string, params)).to eq("emoji=sad+panda")
       end
     end
 
