@@ -163,6 +163,27 @@ module Vault
       return secret
     end
 
+    # Authenticate via the AWS EC2 authentication method. If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.aws_ec2("read-only", "pkcs7", "vault-nonce") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] pkcs7
+    #   pkcs7 returned by the instance identity document (with line breaks removed)
+    # @param [String] nonce
+    #
+    # @return [Secret]
+    def aws_ec2(role, pkcs7, nonce)
+      payload = { role: role, pkcs7: pkcs7, nonce: nonce }
+      json = client.post('/v1/auth/aws-ec2/login', JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
     # Authenticate via a TLS authentication method. If authentication is
     # successful, the resulting token will be stored on the client and used
     # for future requests.
