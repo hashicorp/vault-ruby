@@ -3,6 +3,8 @@ cache: bundler
 sudo: false
 
 env:
+  - VAULT_VERSION=0.6.4
+  - VAULT_VERSION=0.6.3
   - VAULT_VERSION=0.6.2
   - VAULT_VERSION=0.6.1
   - VAULT_VERSION=0.6.0
