@@ -13,9 +13,9 @@ module Vault
       )
 
       expect(instance.to_h).to eq({
-          a: "a",
-          b: "b",
-          d: nil,
+        a: "a",
+        b: "b",
+        d: nil,
       })
     end
 
@@ -32,6 +32,25 @@ module Vault
 
       expect(instance.to_h).to eq({
         a: { d: "a" },
+      })
+    end
+
+    it "does not hash nested array values" do
+      instance = Class.new(Response) do
+        field :a
+        field :b
+      end.new(
+        a: ["foo", "bar"],
+        b: {
+          c: ["zip", "zap"],
+        },
+      )
+
+      expect(instance.to_h).to eq({
+        a: ["foo", "bar"],
+        b: {
+          c: ["zip", "zap"],
+        },
       })
     end
   end
