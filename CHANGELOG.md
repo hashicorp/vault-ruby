@@ -2,6 +2,10 @@
 
 ## v0.7.4 (Unreleased)
 
+BUG FIXES
+
+- Do not convert arrays in #to_h [GH-125]
+
 IMPROVEMENTS
 
 - Support new init API options [GH-127]
