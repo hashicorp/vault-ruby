@@ -1,5 +1,12 @@
 # Vault Ruby Changelog
 
+## v0.7.4 (Unreleased)
+
+IMPROVEMENTS
+
+- Support new init API options [GH-127]
+- Return base64-encoded keys in init response [GH-128]
+
 ## v0.7.3 (October 25, 2016)
 
 BUG FIXES
