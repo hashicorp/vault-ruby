@@ -6,6 +6,7 @@ module Vault
       @keys ||= [
         :address,
         :token,
+        :hostname,
         :open_timeout,
         :proxy_address,
         :proxy_password,

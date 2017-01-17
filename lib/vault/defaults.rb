@@ -53,6 +53,12 @@ module Vault
         nil
       end
 
+      # The SNI host to use when connecting to Vault via TLS.
+      # @return [String, nil]
+      def hostname
+        ENV["VAULT_TLS_SERVER_NAME"]
+      end
+
       # The number of seconds to wait when trying to open a connection before
       # timing out
       # @return [String, nil]
