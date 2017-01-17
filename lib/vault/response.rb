@@ -74,7 +74,7 @@ module Vault
           h[k] = self.public_send(opts[:as])
         end
 
-        if !h[k].nil? && h[k].respond_to?(:to_h)
+        if !h[k].nil? && !h[k].is_a?(Array) && h[k].respond_to?(:to_h)
           h[k] = h[k].to_h
         end
 
