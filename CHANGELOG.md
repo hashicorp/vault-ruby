@@ -2,6 +2,14 @@
 
 ## v0.7.4 (Unreleased)
 
+BREAKING CHANGES
+
+- Use PUT/POST for all functions that involve tokens [GH-117]. For Vault 0.6+,
+  this will work as-expected. For older Vault versions, you will need to use an
+  older client library which uses the URL instead. This is deprecated in Vault
+  because the URL would include the token, thus revealing it in request logs.
+  These new methods place the token in the body instead.
+
 BUG FIXES
 
 - Do not convert arrays in #to_h [GH-125]
