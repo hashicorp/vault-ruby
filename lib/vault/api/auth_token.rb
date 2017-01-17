@@ -105,10 +105,14 @@ module Vault
     #   Vault.auth_token.lookup_self("abcd-...") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] token
+    # @param [Hash] options
     #
     # @return [Secret]
-    def lookup(token)
-      json = client.get("/v1/auth/token/lookup/#{encode_path(token)}")
+    def lookup(token, options = {})
+      headers = extract_headers!(options)
+      json = client.post("/v1/auth/token/lookup", JSON.fast_generate(
+        token: token,
+      ), headers)
       return Secret.decode(json)
     end
 
@@ -116,10 +120,14 @@ module Vault
     #
     # @example
     #   Vault.auth_token.lookup_accessor("acbd-...") #=> #<Vault::Secret lease_id="">
-    def lookup_accessor(accessor)
+    #
+    # @param [String] accessor
+    # @param [Hash] options
+    def lookup_accessor(accessor, options = {})
+      headers = extract_headers!(options)
       json = client.post("/v1/auth/token/lookup-accessor", JSON.fast_generate(
         accessor: accessor,
-      ))
+      ), headers)
       return Secret.decode(json)
     end
 
