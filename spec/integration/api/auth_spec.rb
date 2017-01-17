@@ -201,7 +201,7 @@ module Vault
         expect(subject.token).to eq(result.auth.client_token)
       end
 
-      it "raises an error if the authentication is bad" do
+      it "raises an error if the authentication is bad", vault: "> 0.6.1" do
         subject.sys.disable_auth("cert")
 
         expect {
