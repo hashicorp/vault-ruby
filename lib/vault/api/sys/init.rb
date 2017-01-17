@@ -7,6 +7,11 @@ module Vault
     #   @return [Array<String>]
     field :keys
 
+    # @!attribute [r] keys_base64
+    #   List of unseal keys, base64-encoded
+    #   @return [Array<String>]
+    field :keys_base64
+
     # @!attribute [r] root_token
     #   Initial root token.
     #   @return [String]
