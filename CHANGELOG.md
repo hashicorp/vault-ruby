@@ -10,6 +10,7 @@ IMPROVEMENTS
 
 - Support new init API options [GH-127]
 - Return base64-encoded keys in init response [GH-128]
+- Add support for `#hostname` for specifying SNI hostname to validate [GH-112]
 
 ## v0.7.3 (October 25, 2016)
 

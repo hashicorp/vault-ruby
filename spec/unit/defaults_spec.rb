@@ -57,6 +57,14 @@ module Vault
       end
     end
 
+    describe ".hostname" do
+      it "defaults to ENV['VAULT_TLS_SERVER_NAME']" do
+        with_stubbed_env("VAULT_TLS_SERVER_NAME" => "www.foo.com") do
+          expect(Defaults.hostname).to eq("www.foo.com")
+        end
+      end
+    end
+
     describe ".open_timeout" do
       it "defaults to ENV['VAULT_OPEN_TIMEOUT']" do
         with_stubbed_env("VAULT_OPEN_TIMEOUT" => "30") do

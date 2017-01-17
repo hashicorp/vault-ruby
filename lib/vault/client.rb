@@ -85,6 +85,10 @@ module Vault
 
         @nhp = PersistentHTTP.new(name: "vault-ruby")
 
+        if hostname
+          @nhp.hostname = hostname
+        end
+
         if proxy_address
           proxy_uri = URI.parse "http://#{proxy_address}"
 
