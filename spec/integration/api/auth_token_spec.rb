@@ -1,10 +1,10 @@
 require "spec_helper"
 
 module Vault
-  describe AuthToken do
+  describe AuthToken, vault: ">= 0.6.1" do
     subject { vault_test_client }
 
-    describe "#accessors", vault: ">= 0.6.1" do
+    describe "#accessors" do
       it "lists all accessors" do
         result = subject.auth_token.accessors
         expect(result).to be_a(Vault::Secret)
@@ -19,7 +19,7 @@ module Vault
         expect(result.auth.client_token).to be
       end
 
-      it "creates a new token as a wrapped response", vault: ">= 0.6" do
+      it "creates a new token as a wrapped response" do
         ttl = 50
         result = subject.auth_token.create(wrap_ttl: ttl)
         expect(result).to be_a(Vault::Secret)
@@ -37,7 +37,7 @@ module Vault
         expect(result.auth.client_token).to be
       end
 
-      it "creates an orphaned token as a wrapped response", vault: ">= 0.6" do
+      it "creates an orphaned token as a wrapped response" do
         ttl = 50
         result = subject.auth_token.create_orphan(wrap_ttl: ttl)
         expect(result).to be_a(Vault::Secret)
@@ -47,7 +47,7 @@ module Vault
       end
     end
 
-    describe "#create_with_role", vault: ">= 0.6" do
+    describe "#create_with_role" do
       it "creates a token attached to a role" do
         vault_test_client.logical.write("auth/token/roles/default")
         result = subject.auth_token.create_with_role("default")
@@ -75,7 +75,7 @@ module Vault
       end
     end
 
-    describe "#lookup_accessor", vault: ">= 0.6.1" do
+    describe "#lookup_accessor" do
       it "retrieves accessor information" do
         accessor = subject.auth_token.create.auth.accessor
         result = subject.auth_token.lookup_accessor(accessor)
@@ -118,15 +118,57 @@ module Vault
     end
 
     describe "#revoke_orphan" do
-      it "revokes all orphans"
+      it "revokes the token, but not children" do
+        token = subject.auth_token.create.auth.client_token
+
+        child = subject.with_token(token) do |c|
+          c.auth_token.create.auth.client_token
+        end
+
+        result = subject.auth_token.revoke_orphan(token)
+        expect(result).to be(true)
+
+        result = subject.auth_token.lookup(child)
+        expect(result).to be_a(Vault::Secret)
+      end
     end
 
-    describe "#revoke_prefix" do
-      it "revokes all with the prefix"
+    describe "#revoke_accessor" do
+      it "revokes the accessor"
     end
 
-    describe "#revoke_tree" do
-      it "revokes the tree"
+    describe "#revoke" do
+      it "revokes a token" do
+        token = subject.auth_token.create.auth.client_token
+
+        result = subject.auth_token.revoke(token)
+        expect(result).to be(true)
+
+        expect {
+          subject.auth_token.lookup(token)
+        }.to raise_error { |e|
+          expect(e.code).to eq(403)
+        }
+      end
+
+      it "revokes the tree" do
+        original_token = subject.token
+
+        parent = subject.auth_token.create.auth.client_token
+
+        subject.auth.token(parent)
+        child = subject.auth_token.create.auth.client_token
+        subject.auth.token(original_token)
+
+        result = subject.auth_token.revoke(parent)
+        expect(result).to be(true)
+
+        expect {
+          subject.auth_token.lookup(child)
+        }.to raise_error { |e|
+          expect(e.code).to eq(403)
+        }
+      end
     end
   end
 end

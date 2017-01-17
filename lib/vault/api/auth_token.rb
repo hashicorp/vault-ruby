@@ -147,15 +147,17 @@ module Vault
     # @example
     #   Vault.auth_token.renew("abcd-1234") #=> #<Vault::Secret lease_id="">
     #
-    # @param [String] id
-    #   the auth id
+    # @param [String] token
+    #   the auth token
     # @param [Fixnum] increment
     #
     # @return [Secret]
-    def renew(id, increment = 0)
-      json = client.put("/v1/auth/token/renew/#{id}", JSON.fast_generate(
+    def renew(token, increment = 0, options = {})
+      headers = extract_headers!(options)
+      json = client.put("/v1/auth/token/renew", JSON.fast_generate(
+        token: token,
         increment: increment,
-      ))
+      ), headers)
       return Secret.decode(json)
     end
 
@@ -167,10 +169,11 @@ module Vault
     # @param [Fixnum] increment
     #
     # @return [Secret]
-    def renew_self(increment = 0)
+    def renew_self(increment = 0, options = {})
+      headers = extract_headers!(options)
       json = client.put("/v1/auth/token/renew-self", JSON.fast_generate(
         increment: increment,
-      ))
+      ), headers)
       return Secret.decode(json)
     end
 
@@ -189,41 +192,51 @@ module Vault
     # @example
     #   Vault.auth_token.revoke_orphan("abcd-1234") #=> true
     #
-    # @param [String] id
-    #   the auth id
+    # @param [String] token
+    #   the token to revoke
     #
     # @return [true]
-    def revoke_orphan(id)
-      client.put("/v1/auth/token/revoke-orphan/#{id}", nil)
+    def revoke_orphan(token, options = {})
+      headers = extract_headers!(options)
+      client.put("/v1/auth/token/revoke-orphan", JSON.fast_generate(
+        token: token,
+      ), headers)
       return true
     end
 
-    # Revoke all auth at the given prefix.
+    # Revoke exactly the orphans at the id.
     #
     # @example
-    #   Vault.auth_token.revoke_prefix("abcd-1234") #=> true
+    #   Vault.auth_token.revoke_accessor("abcd-1234") #=> true
     #
-    # @param [String] prefix
-    #   the prefix to revoke
+    # @param [String] accessor
+    #   the accessor to revoke
     #
     # @return [true]
-    def revoke_prefix(prefix)
-      client.put("/v1/auth/token/revoke-prefix/#{prefix}", nil)
+    def revoke_accessor(accessor, options = {})
+      headers = extract_headers!(options)
+      client.put("/v1/auth/accessor/revoke-accessor", JSON.fast_generate(
+        accessor: accessor,
+      ), headers)
       return true
     end
 
-    # Revoke all auths in the tree.
+    # Revoke the token and all its children.
     #
     # @example
-    #   Vault.auth_token.revoke_tree("abcd-1234") #=> true
+    #   Vault.auth_token.revoke("abcd-1234") #=> true
     #
-    # @param [String] id
-    #   the auth id
+    # @param [String] token
+    #   the auth token
     #
     # @return [true]
-    def revoke_tree(id)
-      client.put("/v1/auth/token/revoke/#{id}", nil)
+    def revoke(token, options = {})
+      headers = extract_headers!(options)
+      client.put("/v1/auth/token/revoke", JSON.fast_generate(
+        token: token,
+      ), headers)
       return true
     end
+    alias_method :revoke_tree, :revoke
   end
 end
