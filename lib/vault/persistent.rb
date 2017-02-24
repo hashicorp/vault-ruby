@@ -642,7 +642,10 @@ class PersistentHTTP
 
     raise Error, "host down: #{address}:#{port}"
   ensure
-    @pool.checkin net_http_args
+    # Only perform checkin if we successfully checked a connection out
+    if connection
+      @pool.checkin net_http_args
+    end
   end
 
   ##
