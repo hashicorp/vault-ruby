@@ -13,6 +13,7 @@ BREAKING CHANGES
 BUG FIXES
 
 - Do not convert arrays in #to_h [GH-125]
+- Prevent mismatched checkout/checkin from the connection pool
 
 IMPROVEMENTS
 
