@@ -1,6 +1,6 @@
 # Vault Ruby Changelog
 
-## v0.7.4 (Unreleased)
+## v0.8.0 (March 3, 2017)
 
 BREAKING CHANGES
 
@@ -13,7 +13,7 @@ BREAKING CHANGES
 BUG FIXES
 
 - Do not convert arrays in #to_h [GH-125]
-- Prevent mismatched checkout/checkin from the connection pool
+- Prevent mismatched checkout/checkin from the connection pool; this will avoid masking errors that occur on pool checkout.
 
 IMPROVEMENTS
 
