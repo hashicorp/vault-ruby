@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.9.0 (March 10, 2017)
+
+IMPROVEMENTS
+
+- The pool size used to talk with vault is now configurable. Using `Vault.pool_size` or the env var `VAULT_POOL_SIZE`.
+
 ## v0.8.0 (March 3, 2017)
 
 BREAKING CHANGES
