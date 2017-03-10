@@ -83,7 +83,7 @@ module Vault
       @lock.synchronize do
         return @nhp if @nhp
 
-        @nhp = PersistentHTTP.new(name: "vault-ruby")
+        @nhp = PersistentHTTP.new("vault-ruby", nil, pool_size)
 
         if hostname
           @nhp.hostname = hostname

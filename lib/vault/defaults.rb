@@ -26,6 +26,9 @@ module Vault
     # The maximum amount of time for a single exponential backoff to sleep.
     RETRY_MAX_WAIT = 2.0
 
+    # The default size of the connection pool
+    DEFAULT_POOL_SIZE = 16
+
     class << self
       # The list of calculated options for this configurable.
       # @return [Hash]
@@ -64,6 +67,16 @@ module Vault
       # @return [String, nil]
       def open_timeout
         ENV["VAULT_OPEN_TIMEOUT"]
+      end
+
+      # The size of the connection pool to communicate with Vault
+      # @return Integer
+      def pool_size
+        if var = ENV["VAULT_POOL_SIZE"]
+          return var.to_i
+        else
+          DEFAULT_POOL_SIZE
+        end
       end
 
       # The HTTP Proxy server address as a string
