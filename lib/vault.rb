@@ -1,8 +1,8 @@
 module Vault
+  require_relative "vault/errors"
   require_relative "vault/client"
   require_relative "vault/configurable"
   require_relative "vault/defaults"
-  require_relative "vault/errors"
   require_relative "vault/response"
   require_relative "vault/version"
 

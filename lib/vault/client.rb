@@ -409,6 +409,8 @@ module Vault
       exception    = nil
       retries      = 0
 
+      rescued = Defaults::RETRIED_EXCEPTIONS if rescued.empty?
+
       max_attempts = options[:attempts] || Defaults::RETRY_ATTEMPTS
       backoff_base = options[:base]     || Defaults::RETRY_BASE
       backoff_max  = options[:max_wait] || Defaults::RETRY_MAX_WAIT

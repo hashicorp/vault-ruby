@@ -29,6 +29,10 @@ module Vault
     # The default size of the connection pool
     DEFAULT_POOL_SIZE = 16
 
+    # The set of exceptions that are detect and retried by default
+    # with `with_retries`
+    RETRIED_EXCEPTIONS = [HTTPServerError]
+
     class << self
       # The list of calculated options for this configurable.
       # @return [Hash]
