@@ -1,5 +1,6 @@
-require_relative "../response"
 require "time"
+
+require_relative "../response"
 
 module Vault
   # Secret is a representation of a secret from Vault. Almost all data returned
