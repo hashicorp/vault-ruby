@@ -154,6 +154,16 @@ module Vault
             end
           }.to raise_error(Vault::HTTPServerError)
         end
+
+        it "is detected by default on #{code}" do
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: code, body: "#{code}")
+          expect {
+            subject.with_retries(options) do
+              subject.get("/")
+            end
+          }.to raise_error(Vault::HTTPServerError)
+        end
       end
     end
   end
