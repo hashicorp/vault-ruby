@@ -1,3 +1,5 @@
+require "time"
+
 require_relative "../response"
 
 module Vault
