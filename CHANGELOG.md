@@ -1,5 +1,17 @@
 # Vault Ruby Changelog
 
+## v0.10.0 (April 19, 2017)
+
+IMPROVEMENTS
+
+- `#with_retries` now defaults to checking `HTTPServerError` if called without
+  an error classes
+
+BUG FIXES
+
+- Don't randomly fail when parsing with Time.parse [GH-140]
+
+
 ## v0.9.0 (March 10, 2017)
 
 IMPROVEMENTS
@@ -18,7 +30,7 @@ BREAKING CHANGES
 
 BUG FIXES
 
-- Do not convert arrays in #to_h [GH-125]
+- Do not convert arrays in `#to_h` [GH-125]
 - Prevent mismatched checkout/checkin from the connection pool; this will avoid masking errors that occur on pool checkout.
 
 IMPROVEMENTS
