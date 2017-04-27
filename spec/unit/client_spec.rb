@@ -38,8 +38,8 @@ module Vault
     end
 
     describe "#get" do
-      it "delegates to the #request method" do
-        expect(subject).to receive(:request).with(:get, "/foo", {}, {})
+      it "delegates to the #request_with_retries method" do
+        expect(subject).to receive(:request_with_retries).with(:get, "/foo", {}, {})
         subject.get("/foo")
       end
     end
@@ -56,8 +56,8 @@ module Vault
     describe "#put" do
       let(:data) { double }
 
-      it "delegates to the #request method" do
-        expect(subject).to receive(:request).with(:put, "/foo", data, {})
+      it "delegates to the #request_with_retries method" do
+        expect(subject).to receive(:request_with_retries).with(:put, "/foo", data, {})
         subject.put("/foo", data)
       end
     end
@@ -72,8 +72,8 @@ module Vault
     end
 
     describe "#delete" do
-      it "delegates to the #request method" do
-        expect(subject).to receive(:request).with(:delete, "/foo", {}, {})
+      it "delegates to the #request_with_retries method" do
+        expect(subject).to receive(:request_with_retries).with(:delete, "/foo", {}, {})
         subject.delete("/foo")
       end
     end
@@ -82,6 +82,22 @@ module Vault
       it "converts spaces to + characters" do
         params = { emoji: "sad panda" }
         expect(subject.to_query_string(params)).to eq("emoji=sad+panda")
+      end
+    end
+
+    context "#request_with_retries" do
+      let(:retry_options) { { :retry_options => [Vault::HTTPServerError, :attempts => 1, :base => 0.00] } }
+
+      it "delegates to #request method when :retry_options is nil" do
+        expect(subject).to receive(:request).with(:get, "/foo", {}, {})
+        subject.request_with_retries(:get, "/foo")
+      end
+
+      it "delegates to #request method composed in #with_retry block when :retry_options is not nil" do
+        allow(subject).to receive(:options).and_return(subject.options.merge(retry_options))
+        expect(subject).to receive(:request).with(:get, "/foo", {}, {})
+        expect(subject).to receive(:with_retries).with(retry_options[:retry_options]).and_call_original
+        subject.request_with_retries(:get, "/foo")
       end
     end
 
