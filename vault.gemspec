@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Vault::VERSION
   spec.authors       = ["Seth Vargo"]
   spec.email         = ["sethvargo@gmail.com"]
-  spec.licenses      = ["MPLv2"]
+  spec.licenses      = ["MPL-2.0"]
 
   spec.summary       = "Vault is a Ruby API client for interacting with a Vault server."
   spec.description   = spec.summary
