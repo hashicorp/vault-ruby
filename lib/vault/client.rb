@@ -189,6 +189,21 @@ module Vault
       request(:get, path, params, headers)
     end
 
+    # Perform LIST requests to recursively iterate over a directory.
+    # @see Client#request
+    def list_recursive(path, params = {}, headers = {}, root = true)
+      keys = list(path).flat_map do |p|
+        full = "#{path}#{p}".dup
+        if full.end_with?("/")
+          list_recursive(full, params, headers, false)
+        else
+          full
+        end
+      end
+      keys.each { |k| k.slice!(0, path.size) } if root
+      keys
+    end
+
     # Perform a POST request.
     # @see Client#request
     def post(path, data = {}, headers = {})
