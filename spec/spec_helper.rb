@@ -72,3 +72,7 @@ def with_stubbed_env(env = {})
 ensure
   ENV.replace(old)
 end
+
+def with_stubbed_config(values = {})
+   return values
+end

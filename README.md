@@ -75,6 +75,14 @@ client_1 = Vault::Client.new(address: "https://vault.mycompany.com")
 client_2 = Vault::Client.new(address: "https://other-vault.mycompany.com")
 ```
 
+Configuration options may be read from a YAML file located at ~/.vault.yaml or /etc/vault/.vault.yaml with order of precedence being ENV variables -> Config File -> Defaults:
+
+```yaml
+address: https://vault.mycompany.com:8200
+token: abcd-1234
+ssl_verify: false
+```
+
 ### Making requests
 All of the methods and API calls are heavily documented with examples inline using YARD. In order to keep the examples versioned with the code, the README only lists a few examples for using the Vault gem. Please see the inline documentation for the full API documentation. The tests in the 'spec' directory are an additional source of examples.
 
