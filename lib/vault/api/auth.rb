@@ -194,15 +194,21 @@ module Vault
     # @example Reading a pem from disk
     #   Vault.auth.tls(File.read("/path/to/my/certificate.pem")) #=> #<Vault::Secret lease_id="">
     #
+    # @example Sending to a cert authentication backend mounted at a custom location
+    #   Vault.auth.tls(pem_contents, 'custom/location') #=> #<Vault::Secret lease_id="">
+    #
     # @param [String] pem (default: the configured SSL pem file or contents)
     #   The raw pem contents to use for the login procedure.
     #
+    # @param [String] path (default: 'cert')
+    #   The path to the auth backend to use for the login procedure.
+    #
     # @return [Secret]
-    def tls(pem = nil)
+    def tls(pem = nil, path = 'cert')
       new_client = client.dup
       new_client.ssl_pem_contents = pem if !pem.nil?
 
-      json = new_client.post("/v1/auth/cert/login")
+      json = new_client.post("/v1/auth/#{path}/login")
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
