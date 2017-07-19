@@ -208,7 +208,7 @@ module Vault
       new_client = client.dup
       new_client.ssl_pem_contents = pem if !pem.nil?
 
-      json = new_client.post("/v1/auth/#{path}/login")
+      json = new_client.post("/v1/auth/#{CGI.escape(path)}/login")
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
