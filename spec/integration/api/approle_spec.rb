@@ -31,6 +31,7 @@ module Vault
         secret_id_num_uses: 10,
         secret_id_ttl:      3600,
         token_max_ttl:      0,
+        token_num_users:    0,
         token_ttl:          0,
         policies:           ["default"],
         period:             1800
