@@ -24,20 +24,6 @@ module Vault
       }
     end
 
-    let(:role_res) do
-      {
-        bind_secret_id:     true,
-        bound_cidr_list:    "",
-        secret_id_num_uses: 10,
-        secret_id_ttl:      3600,
-        token_max_ttl:      0,
-        token_num_users:    0,
-        token_ttl:          0,
-        policies:           ["default"],
-        period:             1800
-      }
-    end
-
     before do
       vault_test_client.approle.set_role(@approle)
     end
@@ -57,7 +43,10 @@ module Vault
         subject.set_role(@approle, role)
         result = subject.role(@approle)
         expect(result).to be_a(Vault::Secret)
-        expect(result.data).to eq(role_res)
+        expect(result.data[:policies]).to eq(["default"])
+        expect(result.data[:period]).to eq(1800)
+        expect(result.data[:secret_id_ttl]).to eq(3600)
+        expect(result.data[:secret_id_num_uses]).to eq(10)
       end
 
       it "returns nil when the AppRole does not exist" do
