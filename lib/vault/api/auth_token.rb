@@ -102,7 +102,7 @@ module Vault
     # Lookup information about the current token.
     #
     # @example
-    #   Vault.auth_token.lookup_self("abcd-...") #=> #<Vault::Secret lease_id="">
+    #   Vault.auth_token.lookup("abcd-...") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] token
     # @param [Hash] options
