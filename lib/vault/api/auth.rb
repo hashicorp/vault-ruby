@@ -1,3 +1,5 @@
+require "aws-sdk"
+require "base64"
 require "json"
 
 require_relative "secret"
@@ -13,6 +15,10 @@ module Vault
   end
 
   class Authenticate < Request
+
+    # canary header used for aws_ec2_iam
+    IAM_SERVER_ID_HEADER = "canaryHeaderValue".freeze
+
     # Authenticate via the "token" authentication method. This authentication
     # method is a bit bizarre because you already have a token, but hey,
     # whatever floats your boat.
@@ -181,6 +187,48 @@ module Vault
       # Set a custom nonce if client is providing one
       payload[:nonce] = nonce if nonce
       json = client.post('/v1/auth/aws-ec2/login', JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
+    # Authenticate via the AWS EC2 authentication method (IAM method). If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.aws_ec2_iam("dev-role-iam", "vault.example.com") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] iam_auth_header_vaule
+    #
+    # @return [Secret]
+    def aws_ec2_iam(role, iam_auth_header_vaule)
+      svc = Aws::STS::Client.new(region: 'global')
+
+      sts_request = svc.build_request('get_caller_identity')
+      sts_request.context.http_request.headers[IAM_SERVER_ID_HEADER] = iam_auth_header_vaule unless iam_auth_header_vaule.nil?
+      sts_request.send_request
+
+      headers_hash = sts_request.context.http_request.headers.to_h
+      # Go http.Header expects values to be arrays!
+      # See https://github.com/hashicorp/vault/blob/a6153bfbacfffc4be83cd9c151cccdb19af90ea1/builtin/credential/aws/path_login.go#L1097
+      # and https://golang.org/pkg/net/http/#Header
+      headers_hash.each{ |k, v| headers_hash[k] = [v] }
+
+      request_method = sts_request.context.http_request.http_method
+      request_endpoint = Base64.strict_encode64(sts_request.context.http_request.endpoint.to_s)
+      request_headers = Base64.strict_encode64(headers_hash.to_json)
+      request_body = Base64.strict_encode64(sts_request.context.http_request.body_contents)
+
+      payload = {
+        role: role,
+        iam_http_request_method: request_method,
+        iam_request_url: request_endpoint,
+        iam_request_headers: request_headers,
+        iam_request_body: request_body
+      }
+      json = client.post('/v1/auth/aws/login', JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
