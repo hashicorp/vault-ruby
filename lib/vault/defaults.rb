@@ -122,9 +122,9 @@ module Vault
         ENV["VAULT_SSL_CIPHERS"] || SSL_CIPHERS
       end
 
-      # The raw contents (as a string) for the pem file, Base64-encoded or unencoded.
-      # To specify the path to the pem file, use {#ssl_pem_file} instead.
-      # This value is preferred over the value for {#ssl_pem_file}, if set.
+      # The raw contents (as a string) for the pem file. To specify the path to
+      # the pem file, use {#ssl_pem_file} instead. This value is preferred over
+      # the value for {#ssl_pem_file}, if set.
       # @return [String, nil]
       def ssl_pem_contents
         if ENV["VAULT_SSL_PEM_CONTENTS_BASE64"]
