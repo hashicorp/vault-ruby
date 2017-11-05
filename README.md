@@ -53,6 +53,10 @@ Vault.configure do |config|
   # Custom SSL PEM, also read as ENV["VAULT_SSL_CERT"]
   config.ssl_pem_file = "/path/on/disk.pem"
 
+  # As an alternative to a pem file, you can provide the raw PEM string, also read in the following order of preference:
+  # ENV["VAULT_SSL_PEM_CONTENTS_BASE64"] then ENV["VAULT_SSL_PEM_CONTENTS"]
+  config.ssl_pem_contents = "-----BEGIN ENCRYPTED..."
+
   # Use SSL verification, also read as ENV["VAULT_SSL_VERIFY"]
   config.ssl_verify = false
 
