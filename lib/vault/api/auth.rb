@@ -1,3 +1,5 @@
+require "aws-sigv4"
+require "base64"
 require "json"
 
 require_relative "secret"
@@ -13,6 +15,10 @@ module Vault
   end
 
   class Authenticate < Request
+
+    # canary header used for aws_ec2_iam
+    IAM_SERVER_ID_HEADER = "canaryHeaderValue".freeze
+
     # Authenticate via the "token" authentication method. This authentication
     # method is a bit bizarre because you already have a token, but hey,
     # whatever floats your boat.
@@ -181,6 +187,67 @@ module Vault
       # Set a custom nonce if client is providing one
       payload[:nonce] = nonce if nonce
       json = client.post('/v1/auth/aws-ec2/login', JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
+    # Authenticate via the AWS EC2 authentication method (IAM method). If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.aws_ec2_iam("dev-role-iam", "vault.example.com") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] iam_auth_header_vaule
+    #
+    # @return [Secret]
+    def aws_ec2_iam(role, iam_auth_header_value)
+      aws_meta_data_host = 'http://169.254.169.254'
+      document_uri = URI.join(aws_meta_data_host, '/latest/dynamic/instance-identity/document')
+      document_api_response = Net::HTTP.get(document_uri)
+      document = JSON.parse(document_api_response)
+
+      role_base_uri = URI.join(aws_meta_data_host, '/latest/meta-data/iam/security-credentials/')
+      aws_role_name = Net::HTTP.get(role_base_uri)
+
+      credentials_uri = URI.join(aws_meta_data_host, role_base_uri, aws_role_name)
+      credentials_api_response = Net::HTTP.get(credentials_uri)
+      credentials = JSON.parse(credentials_api_response)
+
+      request_body = 'Action=GetCallerIdentity&Version=2011-06-15'
+      request_url = 'https://sts.amazonaws.com/'
+      request_method = 'POST'
+      iam_auth_header_value ||= IAM_SERVER_ID_HEADER
+
+      vault_headers = {
+        'User-Agent' => Vault::Client::USER_AGENT,
+        'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+        'X-Vault-AWSIAM-Server-Id' => iam_auth_header_value
+      }
+
+      sig4_headers = Aws::Sigv4::Signer.new(
+        service: 'iam',
+        region: document['region'],
+        access_key_id: credentials['AccessKeyId'],
+        secret_access_key: credentials['SecretAccessKey']
+      ).sign_request(
+        http_method: request_method,
+        url: request_url,
+        headers: vault_headers,
+        body: request_body
+      ).headers
+
+      payload = {
+        role: role,
+        iam_http_request_method: request_method,
+        iam_request_url: Base64.strict_encode64(request_url),
+        iam_request_headers: Base64.strict_encode64(vault_headers.merge(sig4_headers).to_json),
+        iam_request_body: Base64.strict_encode64(request_body)
+      }
+
+      json = client.post('/v1/auth/aws/login', JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
