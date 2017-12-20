@@ -200,10 +200,10 @@ module Vault
     #   Vault.auth.aws_ec2_iam("dev-role-iam", "vault.example.com") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] role
-    # @param [String] iam_auth_header_vaule
+    # @param [String] iam_auth_header_value optional
     #
     # @return [Secret]
-    def aws_ec2_iam(role, iam_auth_header_value)
+    def aws_ec2_iam(role, iam_auth_header_value = IAM_SERVER_ID_HEADER)
       aws_meta_data_host = 'http://169.254.169.254'
       document_uri = URI.join(aws_meta_data_host, '/latest/dynamic/instance-identity/document')
       document_api_response = Net::HTTP.get(document_uri)
@@ -219,7 +219,6 @@ module Vault
       request_body = 'Action=GetCallerIdentity&Version=2011-06-15'
       request_url = 'https://sts.amazonaws.com/'
       request_method = 'POST'
-      iam_auth_header_value ||= IAM_SERVER_ID_HEADER
 
       vault_headers = {
         'User-Agent' => Vault::Client::USER_AGENT,
