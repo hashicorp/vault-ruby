@@ -1,5 +1,3 @@
-require "aws-sigv4"
-require "base64"
 require "json"
 
 require_relative "secret"
@@ -192,8 +190,9 @@ module Vault
       return secret
     end
 
-    # Authenticate via the AWS EC2 authentication method (IAM method). If authentication is
-    # successful, the resulting token will be stored on the client and used
+    # Authenticate via the AWS EC2 authentication method (IAM method). Credentials & region are retrieved via
+    # the AWS Instnace Metadata API. 
+    # If authentication is successful, the resulting token will be stored on the client and used
     # for future requests.
     #
     # @example
@@ -205,52 +204,47 @@ module Vault
     # @return [Secret]
     def aws_ec2_iam(role, iam_auth_header_value = IAM_SERVER_ID_HEADER)
       aws_meta_data_host = 'http://169.254.169.254'
-      document_uri = URI.join(aws_meta_data_host, '/latest/dynamic/instance-identity/document')
-      document_api_response = Net::HTTP.get(document_uri)
-      document = JSON.parse(document_api_response)
+
+      document_uri  = URI.join(aws_meta_data_host, '/latest/dynamic/instance-identity/document')
+      document_json = Net::HTTP.get(document_uri)
+      document      = JSON.parse(document_json)
+      region        = document['region']
 
       role_base_uri = URI.join(aws_meta_data_host, '/latest/meta-data/iam/security-credentials/')
       aws_role_name = Net::HTTP.get(role_base_uri)
 
       credentials_uri = URI.join(aws_meta_data_host, role_base_uri, aws_role_name)
-      credentials_api_response = Net::HTTP.get(credentials_uri)
-      credentials = JSON.parse(credentials_api_response)
 
-      request_body = 'Action=GetCallerIdentity&Version=2011-06-15'
-      request_url = 'https://sts.amazonaws.com/'
-      request_method = 'POST'
+      return aws_iam(role, region, credentials_uri, iam_auth_header_value)
+    end
 
-      vault_headers = {
-        'User-Agent' => Vault::Client::USER_AGENT,
-        'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
-        'X-Vault-AWSIAM-Server-Id' => iam_auth_header_value
-      }
+    # Authenticate via the AWS ECS authentication method (IAM method). Credentials & region are retrieved via
+    # the ECS_CONTAINER_METADATA_FILE and AWS_CONTAINER_CREDENTIALS API.
+    # If authentication is successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.aws_ecs_iam("dev-role-iam", "vault.example.com") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] iam_auth_header_value optional
+    #
+    # @return [Secret]
+    def aws_ecs_iam(role, iam_auth_header_value = IAM_SERVER_ID_HEADER)
+      unless ENV['ECS_CONTAINER_METADATA_FILE']
+        raise 'missing env ECS_CONTAINER_METADATA_FILE. You may need to enable it by setting ECS_ENABLE_CONTAINER_METADATA' 
+      end
+      unless ENV['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']
+        raise "missing env AWS_CONTAINER_CREDENTIALS_RELATIVE_URI. Are you sure you're running this withing an ECS task?" 
+      end
 
-      sig4_headers = Aws::Sigv4::Signer.new(
-        service: 'sts',
-        region: document['region'],
-        access_key_id: credentials['AccessKeyId'],
-        secret_access_key: credentials['SecretAccessKey'],
-        session_token: credentials['Token']
-      ).sign_request(
-        http_method: request_method,
-        url: request_url,
-        headers: vault_headers,
-        body: request_body
-      ).headers
+      document_json = File.read(ENV['ECS_CONTAINER_METADATA_FILE'])
+      document      = JSON.parse(document_json)
+      region        = document['ContainerInstanceARN'].split(':')[3]
 
-      payload = {
-        role: role,
-        iam_http_request_method: request_method,
-        iam_request_url: Base64.strict_encode64(request_url),
-        iam_request_headers: Base64.strict_encode64(vault_headers.merge(sig4_headers).to_json),
-        iam_request_body: Base64.strict_encode64(request_body)
-      }
+      credentials_uri = URI("http://169.254.170.2#{ENV['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI']}")
 
-      json = client.post('/v1/auth/aws/login', JSON.fast_generate(payload))
-      secret = Secret.decode(json)
-      client.token = secret.auth.client_token
-      return secret
+      return aws_iam(role, region, credentials_uri, iam_auth_header_value)
     end
 
     # Authenticate via a TLS authentication method. If authentication is
@@ -278,6 +272,52 @@ module Vault
       new_client.ssl_pem_contents = pem if !pem.nil?
 
       json = new_client.post("/v1/auth/#{CGI.escape(path)}/login")
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
+    private
+
+    def aws_iam(role, region, credentials_uri, iam_auth_header_value)
+      require "aws-sigv4"
+      require "base64"
+
+      credentials_api_response = Net::HTTP.get(credentials_uri)
+      credentials = JSON.parse(credentials_api_response)
+
+      request_body   = 'Action=GetCallerIdentity&Version=2011-06-15'
+      request_url    = 'https://sts.amazonaws.com/'
+      request_method = 'POST'
+
+      vault_headers = {
+        'User-Agent' => Vault::Client::USER_AGENT,
+        'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+        'X-Vault-AWSIAM-Server-Id' => iam_auth_header_value
+      }
+
+      sig4_headers = Aws::Sigv4::Signer.new(
+        service: 'sts',
+        region: region,
+        access_key_id: credentials['AccessKeyId'],
+        secret_access_key: credentials['SecretAccessKey'],
+        session_token: credentials['Token']
+      ).sign_request(
+        http_method: request_method,
+        url: request_url,
+        headers: vault_headers,
+        body: request_body
+      ).headers
+
+      payload = {
+        role: role,
+        iam_http_request_method: request_method,
+        iam_request_url: Base64.strict_encode64(request_url),
+        iam_request_headers: Base64.strict_encode64(vault_headers.merge(sig4_headers).to_json),
+        iam_request_body: Base64.strict_encode64(request_body)
+      }
+
+      json = client.post('/v1/auth/aws/login', JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
