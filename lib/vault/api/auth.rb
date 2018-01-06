@@ -215,7 +215,7 @@ module Vault
       vault_headers = {
         'User-Agent' => Vault::Client::USER_AGENT,
         'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
-        'X-Vault-AWSIAM-Server-Id' => iam_auth_header_value
+        'X-Vault-AWS-IAM-Server-ID' => iam_auth_header_value
       }
 
       sig4_headers = Aws::Sigv4::Signer.new(
