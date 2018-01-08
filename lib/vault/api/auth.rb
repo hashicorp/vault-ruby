@@ -195,21 +195,25 @@ module Vault
     # for future requests.
     #
     # @example
-    #   Vault.auth.aws_ecs_iam("dev-role-iam", "us-east-1", Aws::AssumeRoleCredentials.new, "vault.example.com") #=> #<Vault::Secret lease_id="">
+    #   Vault.auth.aws_ecs_iam("dev-role-iam", Aws::AssumeRoleCredentials.new, "https://sts.us-east-2.amazonaws.com", "vault.example.com") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] role
-    # @param [String] region
     # @param [CredentialProvider] credentials_provider
     #   https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/CredentialProvider.html
+    # @param [String] sts_endpoint optional
+    #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     # @param [String] iam_auth_header_value optional
     #
     # @return [Secret]
-    def aws_iam(role, region, credentials_provider, iam_auth_header_value = IAM_SERVER_ID_HEADER)
+    def aws_iam(role, credentials_provider, sts_endpoint = 'https://sts.amazonaws.com', iam_auth_header_value = IAM_SERVER_ID_HEADER)
       require "aws-sigv4"
       require "base64"
 
+      valid_sts_endpoint = %r{https:\/\/sts.?(.*).amazonaws.com}.match(sts_endpoint)
+      raise "Unable to parse STS endpoint #{sts_url}" unless valid_sts_endpoint
+      region = valid_sts_endpoint[1].empty? ? 'us-east-1' : valid_sts_endpoint[1]
+
       request_body   = 'Action=GetCallerIdentity&Version=2011-06-15'
-      request_url    = 'https://sts.amazonaws.com/'
       request_method = 'POST'
 
       vault_headers = {
@@ -224,7 +228,7 @@ module Vault
         credentials_provider: credentials_provider
       ).sign_request(
         http_method: request_method,
-        url: request_url,
+        url: sts_endpoint,
         headers: vault_headers,
         body: request_body
       ).headers
@@ -232,7 +236,7 @@ module Vault
       payload = {
         role: role,
         iam_http_request_method: request_method,
-        iam_request_url: Base64.strict_encode64(request_url),
+        iam_request_url: Base64.strict_encode64(sts_url),
         iam_request_headers: Base64.strict_encode64(vault_headers.merge(sig4_headers).to_json),
         iam_request_body: Base64.strict_encode64(request_body)
       }
