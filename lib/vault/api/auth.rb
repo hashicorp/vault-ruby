@@ -191,17 +191,17 @@ module Vault
     # for future requests.
     #
     # @example
-    #   Vault.auth.aws_ecs_iam("dev-role-iam", Aws::AssumeRoleCredentials.new, "https://sts.us-east-2.amazonaws.com", "vault.example.com") #=> #<Vault::Secret lease_id="">
+    #   Vault.auth.aws_ecs_iam("dev-role-iam", Aws::AssumeRoleCredentials.new, "vault.example.com", "https://sts.us-east-2.amazonaws.com") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] role
     # @param [CredentialProvider] credentials_provider
     #   https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/CredentialProvider.html
-    # @param [String] sts_endpoint optional
-    #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     # @param [String] iam_auth_header_value optional
     #   As of Jan 2018, Vault will accept ANY or NO header, but this is subject to change and should not be relied upon
+    # @param [String] sts_endpoint optional
+    #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     # @return [Secret]
-    def aws_iam(role, credentials_provider, sts_endpoint = 'https://sts.amazonaws.com', iam_auth_header_value = nil)
+    def aws_iam(role, credentials_provider, iam_auth_header_value = nil, sts_endpoint = 'https://sts.amazonaws.com')
       require "aws-sigv4"
       require "base64"
 
