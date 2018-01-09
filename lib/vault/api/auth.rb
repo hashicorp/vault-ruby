@@ -205,6 +205,8 @@ module Vault
       require "aws-sigv4"
       require "base64"
 
+      # STS in the China (Beijing) region (cn-north-1) is sts.cn-north-1.amazonaws.com.cn
+      # Take care changing below regex with that edge case in mind
       valid_sts_endpoint = %r{https:\/\/sts.?(.*).amazonaws.com}.match(sts_endpoint)
       raise "Unable to parse STS endpoint #{sts_url}" unless valid_sts_endpoint
       region = valid_sts_endpoint[1].empty? ? 'us-east-1' : valid_sts_endpoint[1]
