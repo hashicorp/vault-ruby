@@ -13,10 +13,6 @@ module Vault
   end
 
   class Authenticate < Request
-
-    # canary header used for aws_ec2_iam
-    IAM_SERVER_ID_HEADER = "canaryHeaderValue".freeze
-
     # Authenticate via the "token" authentication method. This authentication
     # method is a bit bizarre because you already have a token, but hey,
     # whatever floats your boat.
@@ -203,9 +199,9 @@ module Vault
     # @param [String] sts_endpoint optional
     #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     # @param [String] iam_auth_header_value optional
-    #
+    #   As of Jan 2018, Vault will accept ANY or NO header, but this is subject to change and should not be relied upon
     # @return [Secret]
-    def aws_iam(role, credentials_provider, sts_endpoint = 'https://sts.amazonaws.com', iam_auth_header_value = IAM_SERVER_ID_HEADER)
+    def aws_iam(role, credentials_provider, sts_endpoint = 'https://sts.amazonaws.com', iam_auth_header_value = nil)
       require "aws-sigv4"
       require "base64"
 
@@ -218,9 +214,10 @@ module Vault
 
       vault_headers = {
         'User-Agent' => Vault::Client::USER_AGENT,
-        'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
-        'X-Vault-AWS-IAM-Server-ID' => iam_auth_header_value
+        'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8'
       }
+
+      vault_headers['X-Vault-AWS-IAM-Server-ID'] = iam_auth_header_value if iam_auth_header_value
 
       sig4_headers = Aws::Sigv4::Signer.new(
         service: 'sts',
