@@ -1,4 +1,5 @@
 require "spec_helper"
+require "aws-sigv4"
 
 module Vault
   describe Auth do
@@ -209,6 +210,40 @@ module Vault
             subject.auth.tls(auth_cert)
           }.to raise_error(HTTPError)
         }.to_not change { subject.token }
+      end
+    end
+
+    describe "#aws_iam" do
+      before(:context) do
+        vault_test_client.sys.enable_auth("aws", "aws", nil)
+      end
+
+      after(:context) do
+        vault_test_client.sys.disable_auth("aws")
+      end
+
+      let!(:old_token) { subject.token }
+      let(:credentials_provider) do
+        double(
+          credentials:
+            double(access_key_id: 'very', secret_access_key: 'secure', session_token: 'thing')
+        )
+      end
+      let(:secret) { double(auth: double(client_token: 'a great token')) }
+
+      after do
+        subject.token = old_token
+      end
+
+      it "authenticates and saves the token on the client", vault: "> 0.7.3" do
+        expect(subject).to receive(:post).and_return 'huzzah!'
+        expect(Secret).to receive(:decode).and_return secret
+        expect(::Aws::Sigv4::Signer).to(
+          receive(:new).with(
+            service: 'sts', region: 'cn-north-1', credentials_provider: credentials_provider
+          ).and_call_original
+        )
+        subject.auth.aws_iam('yabba', credentials_provider, 'canary_header', 'https://sts.cn-north-1.amazonaws.com.cn')
       end
     end
   end
