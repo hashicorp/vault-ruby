@@ -208,7 +208,7 @@ module Vault
       # STS in the China (Beijing) region (cn-north-1) is sts.cn-north-1.amazonaws.com.cn
       # Take care changing below regex with that edge case in mind
       valid_sts_endpoint = %r{https:\/\/sts.?(.*).amazonaws.com}.match(sts_endpoint)
-      raise "Unable to parse STS endpoint #{sts_url}" unless valid_sts_endpoint
+      raise "Unable to parse STS endpoint #{sts_endpoint}" unless valid_sts_endpoint
       region = valid_sts_endpoint[1].empty? ? 'us-east-1' : valid_sts_endpoint[1]
 
       request_body   = 'Action=GetCallerIdentity&Version=2011-06-15'
@@ -235,7 +235,7 @@ module Vault
       payload = {
         role: role,
         iam_http_request_method: request_method,
-        iam_request_url: Base64.strict_encode64(sts_url),
+        iam_request_url: Base64.strict_encode64(sts_endpoint),
         iam_request_headers: Base64.strict_encode64(vault_headers.merge(sig4_headers).to_json),
         iam_request_body: Base64.strict_encode64(request_body)
       }
