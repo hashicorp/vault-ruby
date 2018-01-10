@@ -186,6 +186,29 @@ module Vault
       return secret
     end
 
+    # Authenticate via the GCP authentication method. If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.gcp("read-only", "jwt", "gcp") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] jwt
+    #   jwt returned by the instance identity metadata
+    # @param [String] path optional
+    #   the path were the gcp auth backend is mounted
+    #
+    # @return [Secret]
+    def gcp(role, jwt, path = 'gcp')
+      payload = { role: role, jwt: jwt }
+      # Set a custom nonce if client is providing one
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
     # Authenticate via a TLS authentication method. If authentication is
     # successful, the resulting token will be stored on the client and used
     # for future requests.
