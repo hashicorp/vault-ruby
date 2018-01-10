@@ -197,7 +197,7 @@ module Vault
     # @param [CredentialProvider] credentials_provider
     #   https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/CredentialProvider.html
     # @param [String] iam_auth_header_value optional
-    #   As of Jan 2018, Vault will accept ANY or NO header, but this is subject to change and should not be relied upon
+    #   As of Jan 2018, Vault will accept ANY or NO header if none is configured by the Vault server admin
     # @param [String] sts_endpoint optional
     #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     # @return [Secret]
