@@ -216,6 +216,7 @@ module Vault
     describe "#aws_iam" do
       before(:context) do
         vault_test_client.sys.enable_auth("aws", "aws", nil)
+        vault_test_client.sys.put_auth_tune("aws", "iam_server_id_header_value" => "iam_header_canary")
       end
 
       after(:context) do
@@ -243,7 +244,7 @@ module Vault
             service: 'sts', region: 'cn-north-1', credentials_provider: credentials_provider
           ).and_call_original
         )
-        subject.auth.aws_iam('yabba', credentials_provider, 'canary_header', 'https://sts.cn-north-1.amazonaws.com.cn')
+        subject.auth.aws_iam('yabba', credentials_provider, 'iam_header_canary', 'https://sts.cn-north-1.amazonaws.com.cn')
       end
     end
   end
