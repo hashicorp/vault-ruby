@@ -272,9 +272,15 @@ module Vault
 
     private
 
+    # Parse an AWS region from a STS endpoint
+    # STS in the China (Beijing) region (cn-north-1) is sts.cn-north-1.amazonaws.com.cn
+    # Take care changing below regex with that edge case in mind
+    #
+    # @param [String] sts_endpoint
+    #   The raw pem contents to use for the login procedure.
+    #
+    # @return [String] aws region
     def region_from_sts_endpoint(sts_endpoint)
-      # STS in the China (Beijing) region (cn-north-1) is sts.cn-north-1.amazonaws.com.cn
-      # Take care changing below regex with that edge case in mind
       valid_sts_endpoint = %r{https:\/\/sts\.?(.*).amazonaws.com}.match(sts_endpoint)
       raise "Unable to parse STS endpoint #{sts_endpoint}" unless valid_sts_endpoint
       valid_sts_endpoint[1].empty? ? 'us-east-1' : valid_sts_endpoint[1]
