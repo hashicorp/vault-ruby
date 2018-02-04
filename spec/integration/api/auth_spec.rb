@@ -213,10 +213,10 @@ module Vault
       end
     end
 
-    describe "#aws_iam" do
+    describe "#aws_iam", vault: "> 0.7.3" do
       before(:context) do
         vault_test_client.sys.enable_auth("aws", "aws", nil)
-        vault_test_client.sys.put_auth_tune("aws", "iam_server_id_header_value" => "iam_header_canary")
+        vault_test_client.post("/v1/auth/aws/config/client", JSON.fast_generate("iam_server_id_header_value" => "iam_header_canary"))
       end
 
       after(:context) do
@@ -236,7 +236,18 @@ module Vault
         subject.token = old_token
       end
 
-      it "authenticates and saves the token on the client", vault: "> 0.7.3" do
+      it "does not authenticate if iam_server_id_header_value does not match" do
+        expect(::Aws::Sigv4::Signer).to(
+          receive(:new).with(
+            service: 'sts', region: 'cn-north-1', credentials_provider: credentials_provider
+          ).and_call_original
+        )
+        expect do
+          subject.auth.aws_iam('a_rolename', credentials_provider, 'mismatched_iam_header', 'https://sts.cn-north-1.amazonaws.com.cn') 
+        end.to raise_error(Vault::HTTPClientError, /expected iam_header_canary but got mismatched_iam_header/)
+      end
+
+      it "authenticates and saves the token on the client" do
         expect(subject).to receive(:post).and_return 'huzzah!'
         expect(Secret).to receive(:decode).and_return secret
         expect(::Aws::Sigv4::Signer).to(
@@ -244,7 +255,7 @@ module Vault
             service: 'sts', region: 'cn-north-1', credentials_provider: credentials_provider
           ).and_call_original
         )
-        subject.auth.aws_iam('yabba', credentials_provider, 'iam_header_canary', 'https://sts.cn-north-1.amazonaws.com.cn')
+        subject.auth.aws_iam('a_rolename', credentials_provider, 'iam_header_canary', 'https://sts.cn-north-1.amazonaws.com.cn')
       end
     end
   end
