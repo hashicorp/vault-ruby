@@ -186,7 +186,7 @@ module Vault
       return secret
     end
 
-    # Authenticate via IAM EC2 method by providing a AWS CredentialProvider (either ECS, AssumeRole, etc.)
+    # Authenticate via AWS IAM auth method by providing a AWS CredentialProvider (either ECS, AssumeRole, etc.)
     # If authentication is successful, the resulting token will be stored on the client and used
     # for future requests.
     #
@@ -277,7 +277,7 @@ module Vault
     # Take care changing below regex with that edge case in mind
     #
     # @param [String] sts_endpoint
-    #   The raw pem contents to use for the login procedure.
+    #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     #
     # @return [String] aws region
     def region_from_sts_endpoint(sts_endpoint)
