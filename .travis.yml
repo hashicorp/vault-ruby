@@ -19,6 +19,10 @@ branches:
   only:
     - master
 
+script:
+  - bundle exec rspec
+  - bundle exec rubocop
+
 rvm:
   - 2.2
   - 2.3
