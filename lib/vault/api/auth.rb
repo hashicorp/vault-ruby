@@ -174,13 +174,15 @@ module Vault
     # @param [String] pkcs7
     #   pkcs7 returned by the instance identity document (with line breaks removed)
     # @param [String] nonce optional
+    # @param [String] route optional
     #
     # @return [Secret]
-    def aws_ec2(role, pkcs7, nonce = nil)
+    def aws_ec2(role, pkcs7, nonce = nil, route = nil)
+      route ||= '/v1/auth/aws-ec2/login'
       payload = { role: role, pkcs7: pkcs7 }
       # Set a custom nonce if client is providing one
       payload[:nonce] = nonce if nonce
-      json = client.post('/v1/auth/aws-ec2/login', JSON.fast_generate(payload))
+      json = client.post(route, JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
