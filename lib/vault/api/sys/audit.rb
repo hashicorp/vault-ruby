@@ -19,7 +19,7 @@ module Vault
   end
 
   class Sys
-    # List all audis for the vault.
+    # List all audits for the vault.
     #
     # @example
     #   Vault.sys.audits #=> { :file => #<Audit> }
@@ -69,6 +69,23 @@ module Vault
     def disable_audit(path)
       client.delete("/v1/sys/audit/#{encode_path(path)}")
       return true
+    end
+
+    # Generates a HMAC verifier for a given input.
+    #
+    # @example
+    #   Vault.sys.audit_hash("file-audit", "my input") #=> "hmac-sha256:30aa7de18a5e90bbc1063db91e7c387b32b9fa895977eb8c177bbc91e7d7c542"
+    #
+    # @param [String] path
+    #   the path of the audit backend
+    # @param [String] input
+    #   the input to generate a HMAC for
+    #
+    # @return [String]
+    def audit_hash(path, input)
+      json = client.post("/v1/sys/audit-hash/#{encode_path(path)}", JSON.fast_generate(input: input))
+      json = json[:data] if json[:data]
+      json[:hash]
     end
   end
 end
