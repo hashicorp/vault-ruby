@@ -79,6 +79,16 @@ client_1 = Vault::Client.new(address: "https://vault.mycompany.com")
 client_2 = Vault::Client.new(address: "https://other-vault.mycompany.com")
 ```
 
+And if you want to authenticate with a `AWS EC2` :
+
+```ruby
+    # Export VAULT_ADDR to ENV then
+    # Get the pkcs7 value from AWS
+    signature = `curl http://169.254.169.254/latest/dynamic/instance-identity/pkcs7`
+    vault_token = Vault.auth.aws_ec2(ENV['EC2_ROLE'], signature, nil)
+    vault_client = Vault::Client.new(address: ENV["VAULT_ADDR"], token: vault_token.auth.client_token)
+```
+
 ### Making requests
 All of the methods and API calls are heavily documented with examples inline using YARD. In order to keep the examples versioned with the code, the README only lists a few examples for using the Vault gem. Please see the inline documentation for the full API documentation. The tests in the 'spec' directory are an additional source of examples.
 
