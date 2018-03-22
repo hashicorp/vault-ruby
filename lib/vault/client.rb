@@ -158,6 +158,12 @@ module Vault
 
     private :pool
 
+    # Shutdown any open pool connections. Pool will be recreated upon next request.
+    def shutdown
+      @nhp.shutdown()
+      @nhp = nil
+    end
+
     # Creates and yields a new client object with the given token. This may be
     # used safely in a threadsafe manner because the original client remains
     # unchanged. The value of the block is returned.
