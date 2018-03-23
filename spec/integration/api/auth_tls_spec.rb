@@ -26,7 +26,10 @@ module Vault
         expect(subject.set_certificate("sample", certificate)).to be(true)
         result = subject.certificate("sample")
         expect(result).to be_a(Vault::Secret)
-        expect(result.data).to eq(certificate)
+        expect(result.data[:display_name]).to eq(certificate[:display_name])
+        expect(result.data[:certificate]).to eq(certificate[:certificate])
+        expect(result.data[:ttl]).to eq(certificate[:ttl])
+        expect(result.data[:policies]).to eq(certificate[:policies]).or eq([certificate[:policies]])
       end
     end
 
@@ -35,7 +38,10 @@ module Vault
         subject.set_certificate("sample", certificate)
         result = subject.certificate("sample")
         expect(result).to be_a(Vault::Secret)
-        expect(result.data).to eq(certificate)
+        expect(result.data[:display_name]).to eq(certificate[:display_name])
+        expect(result.data[:certificate]).to eq(certificate[:certificate])
+        expect(result.data[:ttl]).to eq(certificate[:ttl])
+        expect(result.data[:policies]).to eq(certificate[:policies]).or eq([certificate[:policies]])
       end
 
       it "returns nil when the certificate does not exist" do
