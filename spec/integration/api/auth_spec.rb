@@ -258,5 +258,42 @@ module Vault
         subject.auth.aws_iam('a_rolename', credentials_provider, 'iam_header_canary', 'https://sts.cn-north-1.amazonaws.com.cn')
       end
     end
+
+    describe "#gcp", vault: ">= 0.8.1" do
+      before(:context) do
+        vault_test_client.sys.enable_auth("gcp", "gcp", nil)
+        vault_test_client.post("/v1/auth/gcp/config", JSON.fast_generate("service_account" => "rspec_service_account"))
+        vault_test_client.post("/v1/auth/gcp/role/rspec_wrong_role", JSON.fast_generate("name" => "rspec_role", "project_id" => "wrong_project_id", "bound_service_accounts" => "\*", "type" => "iam"))
+        vault_test_client.post("/v1/auth/gcp/role/rspec_role", JSON.fast_generate("name" => "rspec_role", "project_id" => "project_id", "bound_service_accounts" => "\*", "type" => "iam"))
+      end
+
+      after(:context) do
+        vault_test_client.sys.disable_auth("gcp")
+      end
+
+      let!(:old_token) { subject.token }
+      
+      let(:jwt) do
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJwcm9qZWN0X2lkIjoicHJvamVjdF9pZCJ9.TmuiSHtbLMZuw_LOzKWQ2vnC7BUvu2b4CeBXdxCDCXQ"
+      end
+
+      after do
+        subject.token = old_token
+      end
+
+      it "does not authenticate if project_id does not match" do
+        pending "gcp auth requires real resources and keys"
+        
+        expect do
+          subject.auth.gcp("rspec_wrong_role", jwt)
+        end.to raise_error(Vault::HTTPClientError, /project_id doesn't match/)
+      end
+
+      it "authenticates and saves the token on the client" do
+        pending "gcp auth requires real resources and keys"
+
+        subject.auth.gcp("rspec_role", jwt)
+      end
+    end
   end
 end
