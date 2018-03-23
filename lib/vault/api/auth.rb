@@ -193,7 +193,7 @@ module Vault
     # for future requests.
     #
     # @example
-    #   Vault.auth.aws_iam("dev-role-iam", Aws::AssumeRoleCredentials.new, "vault.example.com", "https://sts.us-east-2.amazonaws.com") #=> #<Vault::Secret lease_id="">
+    #   Vault.auth.aws_iam("dev-role-iam", Aws::InstanceProfileCredentials.new, "vault.example.com", "https://sts.us-east-2.amazonaws.com") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] role
     # @param [CredentialProvider] credentials_provider
