@@ -272,7 +272,7 @@ module Vault
       end
 
       let!(:old_token) { subject.token }
-      
+
       let(:jwt) do
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJwcm9qZWN0X2lkIjoicHJvamVjdF9pZCJ9.TmuiSHtbLMZuw_LOzKWQ2vnC7BUvu2b4CeBXdxCDCXQ"
       end
@@ -283,7 +283,7 @@ module Vault
 
       it "does not authenticate if project_id does not match" do
         pending "gcp auth requires real resources and keys"
-        
+
         expect do
           subject.auth.gcp("rspec_wrong_role", jwt)
         end.to raise_error(Vault::HTTPClientError, /project_id doesn't match/)

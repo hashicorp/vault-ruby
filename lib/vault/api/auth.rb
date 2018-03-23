@@ -251,14 +251,13 @@ module Vault
     #
     # @param [String] role
     # @param [String] jwt
-    #   jwt returned by the instance identity metadata
+    #   jwt returned by the instance identity metadata, or iam api
     # @param [String] path optional
     #   the path were the gcp auth backend is mounted
     #
     # @return [Secret]
     def gcp(role, jwt, path = 'gcp')
       payload = { role: role, jwt: jwt }
-      # Set a custom nonce if client is providing one
       json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
