@@ -27,7 +27,7 @@ module Vault
       ]
     end
 
-    Vault::Configurable.keys.each(&method(:attr_accessor))
+    attr_accessor *Vault::Configurable.keys
 
     # Configure yields self for block-style configuration.
     #
