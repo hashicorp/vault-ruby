@@ -53,6 +53,10 @@ Vault.configure do |config|
   # Custom SSL PEM, also read as ENV["VAULT_SSL_CERT"]
   config.ssl_pem_file = "/path/on/disk.pem"
 
+  # As an alternative to a pem file, you can provide the raw PEM string, also read in the following order of preference:
+  # ENV["VAULT_SSL_PEM_CONTENTS_BASE64"] then ENV["VAULT_SSL_PEM_CONTENTS"]
+  config.ssl_pem_contents = "-----BEGIN ENCRYPTED..."
+
   # Use SSL verification, also read as ENV["VAULT_SSL_VERIFY"]
   config.ssl_verify = false
 
@@ -73,6 +77,16 @@ If you do not want the Vault singleton, or if you need to communicate with multi
 ```ruby
 client_1 = Vault::Client.new(address: "https://vault.mycompany.com")
 client_2 = Vault::Client.new(address: "https://other-vault.mycompany.com")
+```
+
+And if you want to authenticate with a `AWS EC2` :
+
+```ruby
+    # Export VAULT_ADDR to ENV then
+    # Get the pkcs7 value from AWS
+    signature = `curl http://169.254.169.254/latest/dynamic/instance-identity/pkcs7`
+    vault_token = Vault.auth.aws_ec2(ENV['EC2_ROLE'], signature, nil)
+    vault_client = Vault::Client.new(address: ENV["VAULT_ADDR"], token: vault_token.auth.client_token)
 ```
 
 ### Making requests

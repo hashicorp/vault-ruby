@@ -16,6 +16,7 @@ end
 
 require_relative "sys/audit"
 require_relative "sys/auth"
+require_relative "sys/health"
 require_relative "sys/init"
 require_relative "sys/leader"
 require_relative "sys/lease"

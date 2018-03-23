@@ -128,9 +128,22 @@ module Vault
     end
 
     describe ".ssl_pem_contents" do
-      it "defaults to ENV['VAULT_SSL_PEM_CONTENTS']" do
+      it "defaults to ENV['VAULT_SSL_PEM_CONTENTS_BASE64']" do
+        with_stubbed_env("VAULT_SSL_PEM_CONTENTS_BASE64" => "YWJjZC0xMjM0\n") do
+          expect(Defaults.ssl_pem_contents).to eq("abcd-1234")
+        end
+      end
+
+      it "falls back to ENV['VAULT_SSL_PEM_CONTENTS']" do
         with_stubbed_env("VAULT_SSL_PEM_CONTENTS" => "abcd-1234") do
           expect(Defaults.ssl_pem_contents).to eq("abcd-1234")
+        end
+      end
+
+      it "returns nil if neither ENV['VAULT_SSL_PEM_CONTENTS'] \
+          nor ENV['VAULT_SSL_PEM_CONTENTS_BASE64'] are present" do
+        with_stubbed_env("VAULT_SSL_PEM_CONTENTS" => nil, "VAULT_SSL_PEM_CONTENTS_BASE64" => nil) do
+          expect(Defaults.ssl_pem_contents).to eq(nil)
         end
       end
     end

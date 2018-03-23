@@ -1,10 +1,20 @@
 # Vault Ruby Changelog
 
+## v0.11.0 (March 19, 2018)
+
+IMPROVEMENTS
+
+- Access to health has been added.
+- Added ability to handle a Base64 encoded PEM (useful for certs in environment variables)
+- Added IAM EC2 authentication support
+- Add custom mount path support to TLS authentication
+
 ## v0.10.1 (May 8, 2017)
 
 IMPROVEMENTS
 
 - `vault-ruby` is licensed under Mozilla Public License 2.0, and has been for over 2 years. This patch release updates the gemspec to use the correct SPDX ID string for reporting this license, but **no change to the licensing of this gem has occurred**.
+
 
 ## v0.10.0 (April 19, 2017)
 
