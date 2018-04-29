@@ -2,6 +2,7 @@
 *.gem
 *.rbc
 /.config
+/.vscode
 /coverage/
 /InstalledFiles
 /pkg/
