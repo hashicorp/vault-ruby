@@ -155,9 +155,9 @@ module Vault
     # @param [String] github_token
     #
     # @return [Secret]
-    def github(github_token)
+    def github(github_token, path="/v1/auth/github/login")
       payload = {token: github_token}
-      json = client.post("/v1/auth/github/login", JSON.fast_generate(payload))
+      json = client.post(path, JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
