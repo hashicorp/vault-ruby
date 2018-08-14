@@ -1,5 +1,19 @@
 # Vault Ruby Changelog
 
+## v0.12.0 (August 14, 2018)
+
+IMPROVEMENTS
+
+- Expose the github login path as an optional argument
+- Support HTTP basic auth [GH-181]
+- Expose the AWS IAM path to use [GH-180]
+- Add GCP Auth [GH-173]
+- Add shutdown functionality to close persistent connections [GH-175]
+
+BUG FIXES
+
+- Specifing the hostname for SNI didn't work. The functionality has been disabled for now.
+
 ## v0.11.0 (March 19, 2018)
 
 IMPROVEMENTS
