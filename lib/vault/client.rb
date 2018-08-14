@@ -242,6 +242,9 @@ module Vault
       # Build the URI and request object from the given information
       uri = build_uri(verb, path, data)
       request = class_for_request(verb).new(uri.request_uri)
+      if uri.userinfo()
+        request.basic_auth uri.user, uri.password
+      end
 
       if proxy_address and uri.scheme.downcase == "https"
         raise SecurityError, "no direct https connection to vault"
