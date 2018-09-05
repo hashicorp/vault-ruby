@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.12.1 (September 05, 2018)
+
+IMPROVEMENTS
+
+- Added support for defining a namespace when initializing the client. Full API support for namespaces not included.
+
 ## v0.12.0 (August 14, 2018)
 
 IMPROVEMENTS

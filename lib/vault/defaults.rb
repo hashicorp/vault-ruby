@@ -11,6 +11,10 @@ module Vault
     # @return [String]
     VAULT_DISK_TOKEN = Pathname.new("#{ENV["HOME"]}/.vault-token").expand_path.freeze
 
+    # Namespace from env variable
+    # @return [String]
+    VAULT_NAMESPACE = ENV["VAULT_NAMESPACE"]
+
     # The list of SSL ciphers to allow. You should not change this value unless
     # you absolutely know what you are doing!
     # @return [String]
@@ -59,6 +63,13 @@ module Vault
         end
 
         nil
+      end
+
+
+      # Vault Namespacem if any.
+      # @return [String, nil]
+      def namespace
+        ENV["VAULT_NAMESPACE"]
       end
 
       # The SNI host to use when connecting to Vault via TLS.

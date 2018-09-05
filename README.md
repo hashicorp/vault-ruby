@@ -28,6 +28,8 @@ Start a Vault client:
 ```ruby
 Vault.address = "http://127.0.0.1:8200" # Also reads from ENV["VAULT_ADDR"]
 Vault.token   = "abcd-1234" # Also reads from ENV["VAULT_TOKEN"]
+# Optional - if using the Namespace enterprise feature
+# Vault.namespace   = "my-namespace" # Also reads from ENV["VAULT_NAMESPACE"]
 
 Vault.sys.mounts #=> { :secret => #<struct Vault::Mount type="generic", description="generic secret storage"> }
 ```
@@ -43,6 +45,8 @@ Vault.configure do |config|
 
   # The token to authenticate with Vault, also read as ENV["VAULT_TOKEN"]
   config.token = "abcd-1234"
+  # Optional - if using the Namespace enterprise feature
+  # config.namespace   = "my-namespace" # Also reads from ENV["VAULT_NAMESPACE"]
 
   # Proxy connection information, also read as ENV["VAULT_PROXY_(thing)"]
   config.proxy_address  = "..."
