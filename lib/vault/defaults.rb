@@ -14,7 +14,7 @@ module Vault
     # The list of SSL ciphers to allow. You should not change this value unless
     # you absolutely know what you are doing!
     # @return [String]
-    SSL_CIPHERS = "TLSv1.2:!aNULL:!eNULL".freeze
+    SSL_CIPHERS = RUBY_PLATFORM == 'java' ? "TLSv1.0:!aNULL:!eNULL".freeze : "TLSv1.2:!aNULL:!eNULL".freeze
 
     # The default number of attempts.
     # @return [Fixnum]
