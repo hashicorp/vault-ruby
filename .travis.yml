@@ -4,6 +4,9 @@ language: ruby
 cache: bundler
 
 env:
+  - VAULT_VERSION=0.11.4
+  - VAULT_VERSION=0.10.4
+  - VAULT_VERSION=0.9.6
   - VAULT_VERSION=0.8.3
   - VAULT_VERSION=0.7.3
   - VAULT_VERSION=0.6.5
