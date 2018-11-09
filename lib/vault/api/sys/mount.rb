@@ -44,8 +44,8 @@ module Vault
     #   the type of mount
     # @param [String] description
     #   a human-friendly description (optional)
-    def mount(path, type, description = nil)
-      payload = { type: type }
+    def mount(path, type, description = nil, options = {})
+      payload = options.merge type: type
       payload[:description] = description if !description.nil?
 
       client.post("/v1/sys/mounts/#{encode_path(path)}", JSON.fast_generate(payload))
