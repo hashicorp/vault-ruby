@@ -18,13 +18,13 @@ module Vault
 
       it "handles redirections properly in PUT requests" do
         redirected_client.post("/v1/secret/data/redirect", { data: { works: true } }.to_json)
-        expect(vault_test_client.versioned_logical.read('secret', 'redirect').data[:works]).to eq(true)
+        expect(vault_test_client.logical(:versioned).read('secret', 'redirect').data[:works]).to eq(true)
       end
 
       it "handles redirections properly in DELETE requests" do
-        vault_test_client.versioned_logical.write('secret', 'redirect', { deleted: false })
+        vault_test_client.logical(:versioned).write('secret', 'redirect', { deleted: false })
         redirected_client.delete("/v1/secret/data/redirect")
-        expect(vault_test_client.versioned_logical.read('secret', 'redirect')).to be_nil
+        expect(vault_test_client.logical(:versioned).read('secret', 'redirect')).to be_nil
       end
 
       it "handles redirections properly in POST requests" do
