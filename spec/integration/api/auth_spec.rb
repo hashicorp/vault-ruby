@@ -244,7 +244,7 @@ module Vault
         )
         expect do
           subject.auth.aws_iam('a_rolename', credentials_provider, 'mismatched_iam_header', 'https://sts.cn-north-1.amazonaws.com.cn') 
-        end.to raise_error(Vault::HTTPClientError, /expected iam_header_canary but got mismatched_iam_header/)
+        end.to raise_error(Vault::HTTPClientError, /expected "?iam_header_canary"? but got "?mismatched_iam_header"?/)
       end
 
       it "authenticates and saves the token on the client" do
