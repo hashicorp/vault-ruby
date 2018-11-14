@@ -9,13 +9,13 @@ module RSpec
     end
 
     def self.address
-      'http://127.0.0.1:8201/'
+      'http://127.0.0.1:8202/'
     end
 
     def self.start
       @server ||= begin
                     server = WEBrick::HTTPServer.new(
-                      Port: 8201,
+                      Port: 8202,
                       Logger: WEBrick::Log.new("/dev/null"),
                       AccessLogs: [],
                     )
