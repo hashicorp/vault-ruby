@@ -261,6 +261,8 @@ module Vault
 
     describe "#gcp", vault: ">= 0.8.1" do
       before(:context) do
+        skip "gcp auth requires real resources and keys"
+
         vault_test_client.sys.enable_auth("gcp", "gcp", nil)
         vault_test_client.post("/v1/auth/gcp/config", JSON.fast_generate("service_account" => "rspec_service_account"))
         vault_test_client.post("/v1/auth/gcp/role/rspec_wrong_role", JSON.fast_generate("name" => "rspec_role", "project_id" => "wrong_project_id", "bound_service_accounts" => "\*", "type" => "iam"))
