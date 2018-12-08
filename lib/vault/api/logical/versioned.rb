@@ -13,6 +13,8 @@ module Vault
       # @example
       #   Vault.logical.list("secret") #=> [#<Vault::Secret>, #<Vault::Secret>, ...]
       #
+      # @param [String] mount
+      #   the mount point for the secret engine
       # @param [String] path
       #   the path to list
       #
@@ -32,6 +34,8 @@ module Vault
       # @example
       #   Vault.logical.read("secret/password") #=> #<Vault::Secret lease_id="">
       #
+      # @param [String] mount
+      #   the mount point for the secret engine
       # @param [String] path
       #   the path to read
       #
@@ -51,6 +55,8 @@ module Vault
       # @example
       #   Vault.logical.write("secret/password", value: "secret") #=> #<Vault::Secret lease_id="">
       #
+      # @param [String] mount
+      #   the mount point for the secret engine
       # @param [String] path
       #   the path to write
       # @param [Hash] data
@@ -73,6 +79,8 @@ module Vault
       # @example
       #   Vault.logical.delete("secret/password") #=> true
       #
+      # @param [String] mount
+      #   the mount point for the secret engine
       # @param [String] path
       #   the path to delete
       #
