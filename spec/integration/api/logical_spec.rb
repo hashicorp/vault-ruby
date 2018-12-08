@@ -38,6 +38,13 @@ module Vault
           expect(secret).to be
           expect(secret.data).to eq(foo: "bar")
         end
+
+        it "returns the secret metadata" do
+          subject.write("secret", "b:@c%n-read", foo: "bar")
+          secret = subject.read("secret", "b:@c%n-read")
+          expect(secret).to be
+          expect(secret.metadata.keys).to match_array([:created_time, :deletion_time, :version, :destroyed])
+        end
       end
 
       describe "#write" do
