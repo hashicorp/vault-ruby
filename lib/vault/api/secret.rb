@@ -32,6 +32,18 @@ module Vault
     #   @return [Hash<Symbol, Object>]
     field :data, freeze: true
 
+    # @!attribute [r] metadata
+    #   Read-only metadata information related to the secret.
+    #
+    #   @example Reading metadata
+    #     secret = Vault.logical(:versioned).read("secret", "foo")
+    #     secret.metadata[:created_time] #=> "2018-12-08T04:22:54.168065Z"
+    #     secret.metadata[:version]      #=> 1
+    #     secret.metadata[:destroyed]    #=> false
+    #
+    #   @return [Hash<Symbol, Object>]
+    field :metadata, freeze: true
+
     # @!attribute [r] lease_duration
     #   The number of seconds this lease is valid. If this number is 0 or nil,
     #   the secret does not expire.
