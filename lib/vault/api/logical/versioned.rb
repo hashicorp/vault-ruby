@@ -32,7 +32,7 @@ module Vault
       # will be returned.
       #
       # @example
-      #   Vault.logical.read("secret/password") #=> #<Vault::Secret lease_id="">
+      #   Vault.logical.read("secret", "password") #=> #<Vault::Secret lease_id="">
       #
       # @param [String] mount
       #   the mount point for the secret engine
@@ -53,7 +53,7 @@ module Vault
       # data must be a {Hash}!
       #
       # @example
-      #   Vault.logical.write("secret/password", value: "secret") #=> #<Vault::Secret lease_id="">
+      #   Vault.logical.write("secret", "password", value: "secret") #=> #<Vault::Secret lease_id="">
       #
       # @param [String] mount
       #   the mount point for the secret engine
@@ -77,7 +77,7 @@ module Vault
       # will still return true.
       #
       # @example
-      #   Vault.logical.delete("secret/password") #=> true
+      #   Vault.logical.delete("secret", "password") #=> true
       #
       # @param [String] mount
       #   the mount point for the secret engine
