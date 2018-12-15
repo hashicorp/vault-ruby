@@ -4,15 +4,25 @@ module Vault
   describe Logical do
     subject { vault_test_client.logical }
 
+    before(:context) do
+      vault_test_client.sys.mount(
+        "unversioned", "kv", "v1 KV", options: {version: "1"}
+      )
+    end
+
+    after(:context) do
+      vault_test_client.sys.unmount("unversioned")
+    end
+
     describe "#list" do
       it "returns the empty array when no items exist" do
-        expect(subject.list("secret/that/never/existed")).to eq([])
+        expect(subject.list("unversioned/that/never/existed")).to eq([])
       end
 
       it "returns all secrets" do
-        subject.write("secret/test-list-1", foo: "bar")
-        subject.write("secret/test-list-2", foo: "bar")
-        secrets = subject.list("secret")
+        subject.write("unversioned/test-list-1", foo: "bar")
+        subject.write("unversioned/test-list-2", foo: "bar")
+        secrets = subject.list("unversioned")
         expect(secrets).to be_a(Array)
         expect(secrets).to include("test-list-1")
         expect(secrets).to include("test-list-2")
@@ -21,19 +31,19 @@ module Vault
 
     describe "#read" do
       it "returns nil with the thing does not exist" do
-        expect(subject.read("secret/foo/bar/zip")).to be(nil)
+        expect(subject.read("unversioned/foo/bar/zip")).to be(nil)
       end
 
       it "returns the secret when it exists" do
-        subject.write("secret/test-read", foo: "bar")
-        secret = subject.read("secret/test-read")
+        subject.write("unversioned/test-read", foo: "bar")
+        secret = subject.read("unversioned/test-read")
         expect(secret).to be
         expect(secret.data).to eq(foo: "bar")
       end
 
       it "allows special characters" do
-        subject.write("secret/b:@c%n-read", foo: "bar")
-        secret = subject.read("secret/b:@c%n-read")
+        subject.write("unversioned/b:@c%n-read", foo: "bar")
+        secret = subject.read("unversioned/b:@c%n-read")
         expect(secret).to be
         expect(secret.data).to eq(foo: "bar")
       end
@@ -41,32 +51,32 @@ module Vault
 
     describe "#write" do
       it "creates and returns the secret" do
-        subject.write("secret/test-write", zip: "zap")
-        result = subject.read("secret/test-write")
+        subject.write("unversioned/test-write", zip: "zap")
+        result = subject.read("unversioned/test-write")
         expect(result).to be
         expect(result.data).to eq(zip: "zap")
       end
 
       it "overwrites existing secrets" do
-        subject.write("secret/test-overwrite", zip: "zap")
-        subject.write("secret/test-overwrite", bacon: true)
-        result = subject.read("secret/test-overwrite")
+        subject.write("unversioned/test-overwrite", zip: "zap")
+        subject.write("unversioned/test-overwrite", bacon: true)
+        result = subject.read("unversioned/test-overwrite")
         expect(result).to be
         expect(result.data).to eq(bacon: true)
       end
 
       it "allows special characters" do
-        subject.write("secret/b:@c%n-write", foo: "bar")
-        subject.write("secret/b:@c%n-write", bacon: true)
-        secret = subject.read("secret/b:@c%n-write")
+        subject.write("unversioned/b:@c%n-write", foo: "bar")
+        subject.write("unversioned/b:@c%n-write", bacon: true)
+        secret = subject.read("unversioned/b:@c%n-write")
         expect(secret).to be
         expect(secret.data).to eq(bacon: true)
       end
 
       it "respects spaces properly" do
-        key = 'secret/sub/"Test Group"'
+        key = 'unversioned/sub/"Test Group"'
         subject.write(key, foo: "bar")
-        expect(subject.list("secret/sub")).to eq(['"Test Group"'])
+        expect(subject.list("unversioned/sub")).to eq(['"Test Group"'])
         secret = subject.read(key)
         expect(secret).to be
         expect(secret.data).to eq(foo:"bar")
@@ -75,22 +85,22 @@ module Vault
 
     describe "#delete" do
       it "deletes the secret" do
-        subject.write("secret/delete", foo: "bar")
-        expect(subject.delete("secret/delete")).to be(true)
-        expect(subject.read("secret/delete")).to be(nil)
+        subject.write("unversioned/delete", foo: "bar")
+        expect(subject.delete("unversioned/delete")).to be(true)
+        expect(subject.read("unversioned/delete")).to be(nil)
       end
 
       it "allows special characters" do
-        subject.write("secret/b:@c%n-delete", foo: "bar")
-        expect(subject.delete("secret/b:@c%n-delete")).to be(true)
-        expect(subject.read("secret/b:@c%n-delete")).to be(nil)
+        subject.write("unversioned/b:@c%n-delete", foo: "bar")
+        expect(subject.delete("unversioned/b:@c%n-delete")).to be(true)
+        expect(subject.read("unversioned/b:@c%n-delete")).to be(nil)
       end
 
       it "does not error if the secret does not exist" do
         expect {
-          subject.delete("secret/delete")
-          subject.delete("secret/delete")
-          subject.delete("secret/delete")
+          subject.delete("unversioned/delete")
+          subject.delete("unversioned/delete")
+          subject.delete("unversioned/delete")
         }.to_not raise_error
       end
     end
@@ -104,7 +114,7 @@ module Vault
         expect(unwrapped.auth.client_token).to be
 
         vault_test_client.with_token(unwrapped.auth.client_token) do |client|
-          expect { client.logical.read("secret/test") }.to_not raise_error
+          expect { client.logical.read("unversioned/test") }.to_not raise_error
         end
       end
     end
@@ -117,7 +127,7 @@ module Vault
         expect(unwrapped).to be
 
         vault_test_client.with_token(unwrapped) do |client|
-          expect { client.logical.read("secret/test") }.to_not raise_error
+          expect { client.logical.read("unversioned/test") }.to_not raise_error
         end
       end
 
@@ -128,7 +138,7 @@ module Vault
         expect(unwrapped).to be
 
         vault_test_client.with_token(unwrapped) do |client|
-          expect { client.logical.read("secret/test") }.to_not raise_error
+          expect { client.logical.read("unversioned/test") }.to_not raise_error
         end
       end
 
