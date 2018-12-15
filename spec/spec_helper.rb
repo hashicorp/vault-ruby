@@ -59,6 +59,10 @@ def vault_redirect_test_client
   )
 end
 
+def versioned_kv_by_default?
+  Gem::Requirement.new(">= 0.10").satisfied_by?(TEST_VAULT_VERSION)
+end
+
 def with_stubbed_env(env = {})
   old = ENV.to_hash
   env.each do |k,v|
