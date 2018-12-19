@@ -63,6 +63,8 @@ def versioned_kv_by_default?
   Gem::Requirement.new(">= 0.10").satisfied_by?(TEST_VAULT_VERSION)
 end
 
+alias :has_options_for_mount? :versioned_kv_by_default?
+
 def with_stubbed_env(env = {})
   old = ENV.to_hash
   env.each do |k,v|

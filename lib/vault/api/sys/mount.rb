@@ -16,6 +16,11 @@ module Vault
     #   Type of the mount.
     #   @return [String]
     field :type
+
+    # @!attribute [r] options
+    #   Options of the mount.
+    #   @return [String]
+    field :options
   end
 
   class Sys < Request
@@ -44,6 +49,8 @@ module Vault
     #   the type of mount
     # @param [String] description
     #   a human-friendly description (optional)
+    # @param [Hash] options
+    #   mount type specific options that are passed to the backend (optional)
     def mount(path, type, description = nil, options = {})
       payload = options.merge type: type
       payload[:description] = description if !description.nil?
