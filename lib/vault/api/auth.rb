@@ -29,12 +29,13 @@ module Vault
     #
     # @param [String] new_token
     #   the new token to try to authenticate and store on the client
-    #
+    # @param [String] path (default: 'token')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def token(new_token)
+    def token(new_token, path = 'token')
       old_token    = client.token
       client.token = new_token
-      json = client.get("/v1/auth/token/lookup-self")
+      json = client.get("/v1/auth/#{CGI.escape(path)}/lookup-self")
       secret = Secret.decode(json)
       return secret
     rescue
@@ -64,11 +65,12 @@ module Vault
     # @param [Hash] options
     #   additional options to pass to the authentication call, such as a custom
     #   mount point
-    #
+    # @param [String] path (default: 'app-id')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def app_id(app_id, user_id, options = {})
+    def app_id(app_id, user_id, options = {}, path = 'app-id')
       payload = { app_id: app_id, user_id: user_id }.merge(options)
-      json = client.post("/v1/auth/app-id/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -87,12 +89,13 @@ module Vault
     # @param [String] role_id
     # @param [String] secret_id (default: nil)
     #   It is required when `bind_secret_id` is enabled for the specified role_id
-    #
+    # @param [String] path (default: 'approle')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def approle(role_id, secret_id=nil)
+    def approle(role_id, secret_id=nil, path='approle')
       payload = { role_id: role_id }
       payload[:secret_id] = secret_id if secret_id
-      json = client.post("/v1/auth/approle/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -113,11 +116,12 @@ module Vault
     # @param [Hash] options
     #   additional options to pass to the authentication call, such as a custom
     #   mount point
-    #
+    # @param [String] path (default: 'userpass')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def userpass(username, password, options = {})
+    def userpass(username, password, options = {}, path = 'userpass')
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/userpass/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login/#{encode_path(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -135,11 +139,12 @@ module Vault
     # @param [Hash] options
     #   additional options to pass to the authentication call, such as a custom
     #   mount point
-    #
+    # @param [String] path (default: 'ldap')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def ldap(username, password, options = {})
+    def ldap(username, password, options = {}, path = 'ldap')
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/ldap/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login/#{encode_path(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -255,7 +260,7 @@ module Vault
     # @param [String] role
     # @param [String] jwt
     #   jwt returned by the instance identity metadata, or iam api
-    # @param [String] path optional
+    # @param [String] path (default: 'gcp')
     #   the path were the gcp auth backend is mounted
     #
     # @return [Secret]
