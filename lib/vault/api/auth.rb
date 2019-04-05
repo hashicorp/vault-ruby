@@ -64,11 +64,12 @@ module Vault
     # @param [Hash] options
     #   additional options to pass to the authentication call, such as a custom
     #   mount point
-    #
+    # @param [String] path (default: 'app-id')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def app_id(app_id, user_id, options = {})
+    def app_id(app_id, user_id, path: 'app-id', **options)
       payload = { app_id: app_id, user_id: user_id }.merge(options)
-      json = client.post("/v1/auth/app-id/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -87,12 +88,13 @@ module Vault
     # @param [String] role_id
     # @param [String] secret_id (default: nil)
     #   It is required when `bind_secret_id` is enabled for the specified role_id
-    #
+    # @param [String] path (default: 'approle')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def approle(role_id, secret_id=nil)
+    def approle(role_id, secret_id=nil, path: 'approle')
       payload = { role_id: role_id }
       payload[:secret_id] = secret_id if secret_id
-      json = client.post("/v1/auth/approle/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -113,11 +115,12 @@ module Vault
     # @param [Hash] options
     #   additional options to pass to the authentication call, such as a custom
     #   mount point
-    #
+    # @param [String] path (default: 'userpass')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def userpass(username, password, options = {})
+    def userpass(username, password, path: 'userpass', **options)
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/userpass/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login/#{encode_path(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -135,11 +138,12 @@ module Vault
     # @param [Hash] options
     #   additional options to pass to the authentication call, such as a custom
     #   mount point
-    #
+    # @param [String] path (default: 'ldap')
+    #   The path to the auth backend to use for the login procedure.
     # @return [Secret]
-    def ldap(username, password, options = {})
+    def ldap(username, password, path: 'ldap', **options)
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/ldap/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login/#{encode_path(username)}", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -255,11 +259,11 @@ module Vault
     # @param [String] role
     # @param [String] jwt
     #   jwt returned by the instance identity metadata, or iam api
-    # @param [String] path optional
+    # @param [String] path (default: 'gcp')
     #   the path were the gcp auth backend is mounted
     #
     # @return [Secret]
-    def gcp(role, jwt, path = 'gcp')
+    def gcp(role, jwt, path: 'gcp')
       payload = { role: role, jwt: jwt }
       json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
@@ -287,7 +291,7 @@ module Vault
     #   The path to the auth backend to use for the login procedure.
     #
     # @return [Secret]
-    def tls(pem = nil, path = 'cert')
+    def tls(pem = nil, path: 'cert')
       new_client = client.dup
       new_client.ssl_pem_contents = pem if !pem.nil?
 
