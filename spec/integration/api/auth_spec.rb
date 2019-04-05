@@ -33,10 +33,6 @@ module Vault
         vault_test_client.sys.enable_auth("app-id", "app-id", nil)
         vault_test_client.logical.write("auth/app-id/map/app-id/#{@app_id}", { value: "default" })
         vault_test_client.logical.write("auth/app-id/map/user-id/#{@user_id}", { value: @app_id })
-
-        vault_test_client.sys.enable_auth("new-app-id", "app-id", nil)
-        vault_test_client.logical.write("auth/new-app-id/map/app-id/#{@app_id}", { value: "default" })
-        vault_test_client.logical.write("auth/new-app-id/map/user-id/#{@user_id}", { value: @app_id })
       end
 
       before do
@@ -48,8 +44,14 @@ module Vault
         expect(subject.token).to eq(result.auth.client_token)
       end
 
-      it "authenticates with custom options" do
-        result = subject.auth.app_id(@app_id, @user_id, mount: "new-app-id")
+      it "authenticates with custom path" do
+        @user_id = "89e2f7c1-7a4a-45ce-88ac-846b6cd4c80a"
+
+        vault_test_client.sys.enable_auth("new-app-id", "app-id", nil)
+        vault_test_client.logical.write("auth/new-app-id/map/app-id/#{@app_id}", { value: "default" })
+        vault_test_client.logical.write("auth/new-app-id/map/user-id/#{@user_id}", { value: @app_id })
+
+        result = subject.auth.app_id(@app_id, @user_id, path: "new-app-id")
         expect(subject.token).to eq(result.auth.client_token)
       end
 
@@ -92,6 +94,15 @@ module Vault
           expect(subject.token).to eq(result.auth.client_token)
         end
 
+        it "authenticates with custom path" do
+          pending "approle does not support custom paths to enable approle on dev server"
+
+          vault_test_client.sys.enable_auth("new-approle", "approle", nil)
+
+          result = subject.auth.approle(@role_id, @secret_id, path: 'new-approle')
+          expect(subject.token).to eq(result.auth.client_token)
+        end
+
         it "raises an error if the authentication is bad" do
           expect {
             expect {
@@ -129,9 +140,6 @@ module Vault
 
         vault_test_client.sys.enable_auth("userpass", "userpass", nil)
         vault_test_client.logical.write("auth/userpass/users/#{@username}", { password: @password, policies: "default" })
-
-        vault_test_client.sys.enable_auth("new-userpass", "userpass", nil)
-        vault_test_client.logical.write("auth/new-userpass/users/#{@username}", { password: @password, policies: "default" })
       end
 
       before do
@@ -143,8 +151,13 @@ module Vault
         expect(subject.token).to eq(result.auth.client_token)
       end
 
-      it "authenticates with custom options" do
-        result = subject.auth.userpass(@username, @password, mount: "new-userpass")
+      it "authenticates with custom path" do
+        @password = @password.reverse # to ensure we don't match the default path auth
+
+        vault_test_client.sys.enable_auth("new-userpass", "userpass", nil)
+        vault_test_client.logical.write("auth/new-userpass/users/#{@username}", { password: @password, policies: "default" })
+
+        result = subject.auth.userpass(@username, @password, path: "new-userpass")
         expect(subject.token).to eq(result.auth.client_token)
       end
 
@@ -202,6 +215,19 @@ module Vault
         expect(subject.token).to eq(result.auth.client_token)
       end
 
+      it "authenticates with custom path" do
+        pending "dev server does not support tls"
+        pending "auth_tls does not support custom path"
+
+        vault_test_client.sys.enable_auth("new-cert", "cert", nil)
+
+        subject.auth_tls.set_certificate("kaelumania", certificate)
+        subject.ssl_pem_file = auth_cert
+
+        result = subject.auth.tls(path: 'new-cert')
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
       it "raises an error if the authentication is bad", vault: "> 0.6.1" do
         subject.sys.disable_auth("cert")
 
@@ -243,7 +269,7 @@ module Vault
           ).and_call_original
         )
         expect do
-          subject.auth.aws_iam('a_rolename', credentials_provider, 'mismatched_iam_header', 'https://sts.cn-north-1.amazonaws.com.cn') 
+          subject.auth.aws_iam('a_rolename', credentials_provider, 'mismatched_iam_header', 'https://sts.cn-north-1.amazonaws.com.cn')
         end.to raise_error(Vault::HTTPClientError, /expected iam_header_canary but got mismatched_iam_header/)
       end
 

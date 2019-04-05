@@ -29,13 +29,12 @@ module Vault
     #
     # @param [String] new_token
     #   the new token to try to authenticate and store on the client
-    # @param [String] path (default: 'token')
-    #   The path to the auth backend to use for the login procedure.
+    #
     # @return [Secret]
-    def token(new_token, path: 'token')
+    def token(new_token)
       old_token    = client.token
       client.token = new_token
-      json = client.get("/v1/auth/#{CGI.escape(path)}/lookup-self")
+      json = client.get("/v1/auth/token/lookup-self")
       secret = Secret.decode(json)
       return secret
     rescue
