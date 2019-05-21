@@ -155,9 +155,9 @@ module Vault
     # @param [String] github_token
     #
     # @return [Secret]
-    def github(github_token)
+    def github(github_token, path="/v1/auth/github/login")
       payload = {token: github_token}
-      json = client.post("/v1/auth/github/login", JSON.fast_generate(payload))
+      json = client.post(path, JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -193,7 +193,7 @@ module Vault
     # for future requests.
     #
     # @example
-    #   Vault.auth.aws_iam("dev-role-iam", Aws::AssumeRoleCredentials.new, "vault.example.com", "https://sts.us-east-2.amazonaws.com") #=> #<Vault::Secret lease_id="">
+    #   Vault.auth.aws_iam("dev-role-iam", Aws::InstanceProfileCredentials.new, "vault.example.com", "https://sts.us-east-2.amazonaws.com") #=> #<Vault::Secret lease_id="">
     #
     # @param [String] role
     # @param [CredentialProvider] credentials_provider
@@ -202,13 +202,16 @@ module Vault
     #   As of Jan 2018, Vault will accept ANY or NO header if none is configured by the Vault server admin
     # @param [String] sts_endpoint optional
     #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
+    # @param [String] route optional
     # @return [Secret]
-    def aws_iam(role, credentials_provider, iam_auth_header_value = nil, sts_endpoint = 'https://sts.amazonaws.com')
+    def aws_iam(role, credentials_provider, iam_auth_header_value = nil, sts_endpoint = 'https://sts.amazonaws.com', route = nil)
       require "aws-sigv4"
       require "base64"
 
       request_body   = 'Action=GetCallerIdentity&Version=2011-06-15'
       request_method = 'POST'
+
+      route ||= '/v1/auth/aws/login'
 
       vault_headers = {
         'User-Agent' => Vault::Client::USER_AGENT,
@@ -236,7 +239,7 @@ module Vault
         iam_request_body: Base64.strict_encode64(request_body)
       }
 
-      json = client.post('/v1/auth/aws/login', JSON.fast_generate(payload))
+      json = client.post(route, JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret

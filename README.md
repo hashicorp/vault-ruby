@@ -117,7 +117,9 @@ For advanced users, the first argument of the block is the attempt number and th
 
 ```ruby
 Vault.with_retries(Vault::HTTPConnectionError, Vault::HTTPError) do |attempt, e|
-  log "Received exception #{e} from Vault - attempt #{attempt}"
+  if e
+    log "Received exception #{e} from Vault - attempt #{attempt}"
+  end
   Vault.logical.read("secret/bacon")
 end
 ```
