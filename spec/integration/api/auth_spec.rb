@@ -202,6 +202,16 @@ module Vault
         expect(subject.token).to eq(result.auth.client_token)
       end
 
+      it "authenticates with named ssl_pem_file" do
+        pending "dev server does not support tls"
+
+        subject.auth_tls.set_certificate("kaelumania", certificate)
+        subject.ssl_pem_file = auth_cert
+
+        result = subject.auth.tls(name: "kaelumania")
+        expect(subject.token).to eq(result.auth.client_token)
+      end
+
       it "raises an error if the authentication is bad", vault: "> 0.6.1" do
         subject.sys.disable_auth("cert")
 
