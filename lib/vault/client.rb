@@ -237,7 +237,14 @@ module Vault
     def request(verb, path, data = {}, headers = {})
       # Build the URI and request object from the given information
       uri = build_uri(verb, path, data)
-      request = class_for_request(verb).new(uri.request_uri)
+      request_class = class_for_request(verb)
+
+      if request_class.nil? # Support Verbs not in Net::HTTP
+        request = Net::HTTPGenericRequest.new(verb.to_s.upcase,false, true, uri.request_uri)
+      else
+        request = request_class.new(uri.request_uri)
+      end
+
       if uri.userinfo()
         request.basic_auth uri.user, uri.password
       end
@@ -335,7 +342,11 @@ module Vault
     #
     # @return [Class]
     def class_for_request(verb)
-      Net::HTTP.const_get(verb.to_s.capitalize)
+      begin
+        Net::HTTP.const_get(verb.to_s.capitalize)
+      rescue NameError # The contsant doesn't exist
+        nil
+      end
     end
 
     # Convert the given hash to a list of query string parameters. Each key and
