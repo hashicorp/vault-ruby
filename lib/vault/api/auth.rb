@@ -287,11 +287,13 @@ module Vault
     #   The path to the auth backend to use for the login procedure.
     #
     # @return [Secret]
-    def tls(pem = nil, path = 'cert')
+    def tls(pem = nil, path = 'cert', name = nil)
       new_client = client.dup
       new_client.ssl_pem_contents = pem if !pem.nil?
+      
+      payload = name.nil? ? {} : { name: name }
 
-      json = new_client.post("/v1/auth/#{CGI.escape(path)}/login")
+      json = new_client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
