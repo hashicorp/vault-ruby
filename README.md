@@ -157,6 +157,7 @@ Vault.sys.seal_status
 
 #### Create a Secret
 ```ruby
+# Note: the following is for writing to the KV version 1 secrets engine. If using other secrets engines (including KV version 2), please see documentation https://www.vaultproject.io/api/secret/index.html
 Vault.logical.write("secret/bacon", delicious: true, cooktime: "11")
 #=> #<Vault::Secret lease_id="">
 ```
