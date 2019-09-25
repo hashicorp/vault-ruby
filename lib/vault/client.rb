@@ -156,7 +156,7 @@ module Vault
 
     # Shutdown any open pool connections. Pool will be recreated upon next request.
     def shutdown
-      @nhp.shutdown()
+      @nhp.shutdown() if @nhp
       @nhp = nil
     end
 

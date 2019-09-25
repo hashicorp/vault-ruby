@@ -111,6 +111,25 @@ module Vault
           server.close
         end
       end
+
+      it "does not raise error if the pool is empty" do
+        TCPServer.open('localhost', 0) do |server|
+          Thread.new do
+            loop do
+              client = server.accept
+              sleep 0.25
+              client.close
+            end
+          end
+
+          address = "http://%s:%s" % ["localhost", server.addr[1]]
+
+          client = described_class.new(address: address, token: "foo")
+
+          # exercise
+          expect(client.shutdown).to eq(nil)
+        end
+      end
     end
   end
 end
