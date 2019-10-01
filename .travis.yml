@@ -4,13 +4,9 @@ language: ruby
 cache: bundler
 
 env:
-  - VAULT_VERSION=0.11.4
-  - VAULT_VERSION=0.10.4
-  - VAULT_VERSION=0.9.6
-  - VAULT_VERSION=0.8.3
-  - VAULT_VERSION=0.7.3
-  - VAULT_VERSION=0.6.5
-  - VAULT_VERSION=0.5.3
+  - VAULT_VERSION=1.2.3
+  - VAULT_VERSION=1.1.5
+  - VAULT_VERSION=0.11.6
 
 before_install:
   - curl -sLo vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
@@ -24,6 +20,6 @@ branches:
     - master
 
 rvm:
-  - 2.2
-  - 2.3
   - 2.4
+  - 2.5
+  - 2.6

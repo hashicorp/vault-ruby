@@ -8,6 +8,10 @@ require_relative "support/vault_server"
 require_relative "support/redirect_server"
 require_relative "support/sample_certificate"
 
+if ENV["VAULT_VERSION"].nil?
+  raise "VAULT_VERSION not set, please set with the version information"
+end
+
 TEST_VAULT_VERSION = Gem::Version.new(ENV["VAULT_VERSION"])
 
 RSpec.configure do |config|
