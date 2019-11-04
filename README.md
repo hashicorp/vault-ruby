@@ -85,7 +85,8 @@ And if you want to authenticate with a `AWS EC2` :
     # Export VAULT_ADDR to ENV then
     # Get the pkcs7 value from AWS
     signature = `curl http://169.254.169.254/latest/dynamic/instance-identity/pkcs7`
-    vault_token = Vault.auth.aws_ec2(ENV['EC2_ROLE'], signature, nil)
+    iam_role = `curl http://169.254.169.254/latest/meta-data/iam/security-credentials/`
+    vault_token = Vault.auth.aws_ec2(iam_role, signature, nil)
     vault_client = Vault::Client.new(address: ENV["VAULT_ADDR"], token: vault_token.auth.client_token)
 ```
 
