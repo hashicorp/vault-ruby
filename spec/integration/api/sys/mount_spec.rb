@@ -12,6 +12,17 @@ module Vault
         expect(sys.type).to eq("system")
         expect(sys.description).to include("system endpoints")
       end
+
+      it "shows options for mounts" do
+        next unless versioned_kv_by_default?
+
+        expect(subject.mount("mounts_kv1", "kv", "KV1", options: {version: "1"})).to be(true)
+
+        expect(subject.mounts).to be
+        secretsv2 = subject.mounts[:mounts_kv1]
+        expect(secretsv2).to be_a(Mount)
+        expect(secretsv2.options).to eq(:version => "1")
+      end
     end
 
     describe "#mount" do
@@ -21,6 +32,15 @@ module Vault
         expect(result).to be_a(Mount)
         expect(result.type).to eq("aws")
         expect(result.description).to eq("")
+      end
+
+      it "allows mounting with options" do
+        expect(subject.mount("test_kv1", "kv", "KV1", options: {version: "1"})).to be(true)
+        result = subject.mounts[:test_kv1]
+        expect(result).to be_a(Mount)
+        expect(result.type).to eq("kv")
+        expect(result.description).to eq("KV1")
+        expect(result.options).to eq(:version => "1")
       end
     end
 

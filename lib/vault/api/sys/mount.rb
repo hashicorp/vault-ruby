@@ -16,6 +16,11 @@ module Vault
     #   Type of the mount.
     #   @return [String]
     field :type
+
+    # @!attribute [r] type
+    #   Options given to the mount.
+    #   @return [Hash<Symbol, Object>]
+    field :options
   end
 
   class Sys < Request
