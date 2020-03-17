@@ -57,6 +57,9 @@ Vault.configure do |config|
   # ENV["VAULT_SSL_PEM_CONTENTS_BASE64"] then ENV["VAULT_SSL_PEM_CONTENTS"]
   config.ssl_pem_contents = "-----BEGIN ENCRYPTED..."
 
+  # The path to the CA cert on disk to use for certificate verification, also reas as ENV["VAULT_CACERT"]
+  config.ssl_ca_cert = "/path/on/disk/ca_cert.pem"
+
   # Use SSL verification, also read as ENV["VAULT_SSL_VERIFY"]
   config.ssl_verify = false
 
