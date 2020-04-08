@@ -1,3 +1,4 @@
+require 'pry'
 # Vendored and modified from github.com/drbrain/net-http-persistent
 #
 require 'net/http'
