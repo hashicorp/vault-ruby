@@ -28,6 +28,7 @@ RSpec.configure do |config|
   # Disable real connections.
   config.before(:suite) do
     WebMock.disable_net_connect!(allow_localhost: true)
+    abort "Must set VAULT_VERSION environment variable" if (TEST_VAULT_VERSION.to_s == '')
   end
 
   # Ensure our configuration is reset on each run.
