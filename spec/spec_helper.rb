@@ -68,7 +68,7 @@ def versioned_kv_by_default?
 end
 
 def vault_is_enterprise?
-  vault_version_string.match(/\+i(ent|prem)$/)
+  vault_version_string.match(/\+(ent|prem)$/)
 end
 
 def with_stubbed_env(env = {})
