@@ -8,7 +8,11 @@ require_relative "support/vault_server"
 require_relative "support/redirect_server"
 require_relative "support/sample_certificate"
 
-TEST_VAULT_VERSION = Gem::Version.new(ENV["VAULT_VERSION"])
+def vault_version_string
+  @vault_version_string ||= `vault --version`
+end
+
+TEST_VAULT_VERSION = Gem::Version.new(vault_version_string.match(/(\d+\.\d+\.\d+)/)[1])
 
 RSpec.configure do |config|
   # Custom helper modules and extensions
@@ -28,7 +32,6 @@ RSpec.configure do |config|
   # Disable real connections.
   config.before(:suite) do
     WebMock.disable_net_connect!(allow_localhost: true)
-    abort "Must set VAULT_VERSION environment variable" if (TEST_VAULT_VERSION.to_s == '')
   end
 
   # Ensure our configuration is reset on each run.
@@ -62,6 +65,10 @@ end
 
 def versioned_kv_by_default?
   Gem::Requirement.new(">= 0.10").satisfied_by?(TEST_VAULT_VERSION)
+end
+
+def vault_is_enterprise?
+  vault_version_string.match(/\+i(ent|prem)$/)
 end
 
 def with_stubbed_env(env = {})
