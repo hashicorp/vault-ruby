@@ -104,7 +104,7 @@ module Vault
       end
     end
 
-    # Write the metadata of a secret at the given path. Note that teh data must
+    # Write the metadata of a secret at the given path. Note that the data must
     # be a {Hash}.
     #
     # @example
