@@ -112,5 +112,15 @@ module Vault
         end
       end
     end
+
+    describe "#request" do
+      context "when using a namespace" do
+        subject { vault_test_client.tap { |client| client.namespace = "bar/baz" } }
+
+        it "should respect namespace boundaries" do
+          obj = subject.logical.write("secret/sekkrit", foo: "bar")
+        end
+      end
+    end
   end
 end
