@@ -113,7 +113,7 @@ module Vault
       end
     end
 
-    describe "#request" do
+    describe "#request", ent_vault: ">= 0.13" do
       before(:context) do
         client = vault_test_client
         client.sys.create_namespace("bar")
