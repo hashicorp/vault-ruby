@@ -1,6 +1,6 @@
 # Vault Ruby Changelog
 
-## v0.12.1 (September 05, 2018)
+## v0.13.0 (April 20, 2020)
 
 IMPROVEMENTS
 

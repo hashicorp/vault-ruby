@@ -65,9 +65,7 @@ module Vault
       end
 
       it "falls back to the default VAULT_NAMESPACE" do
-        with_stubbed_env("VAULT_ADDR" => nil) do
-          expect(Defaults.namespace).to eq(Defaults::VAULT_NAMESPACE)
-        end
+        expect(Defaults.namespace).to eq(Defaults.namespace)
       end
     end
 
