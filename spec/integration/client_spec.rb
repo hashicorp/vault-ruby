@@ -131,7 +131,12 @@ module Vault
 
       after(:context) do
         client = vault_test_client
+        client.namespace = "bar"
+        client.sys.delete_namespace("baz")
+        sleep 0.1
         client.namespace = nil
+        client.sys.delete_namespace("bar")
+        sleep 0.1
 
         next unless versioned_kv_by_default?
 

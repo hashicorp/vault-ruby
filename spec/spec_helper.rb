@@ -75,7 +75,7 @@ def vault_is_enterprise?
 end
 
 def vault_meets_requirements?(v)
-  !Gem::Requirement.new(v).satisfied_by?(TEST_VAULT_VERSION)
+  Gem::Requirement.new(v).satisfied_by?(TEST_VAULT_VERSION)
 end
 
 def with_stubbed_env(env = {})
