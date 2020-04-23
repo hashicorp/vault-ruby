@@ -209,7 +209,8 @@ Development
 
 Important Notes:
 
-- **All new features must include test coverage.** At a bare minimum, Unit tests are required. It is preferred if you include acceptance tests as well.
+- **All new features must include test coverage.** At a bare minimum, Unit tests are required. It is preferred if you include integration tests as well.
 - **The tests must be be idempotent.** The HTTP calls made during a test should be able to be run over and over.
 - **Tests are order independent.** The default RSpec configuration randomizes the test order, so this should not be a problem.
 - **Integration tests require Vault**  Vault must be available in the path for the integration tests to pass.
+   - **In order to be considered an integration test:** The test MUST use the `vault_test_client` or `vault_redirect_test_client` as the client. This spawns a process, or uses an already existing process from another test, to run against.
