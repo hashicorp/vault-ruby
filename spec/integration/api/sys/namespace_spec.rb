@@ -1,10 +1,10 @@
 require "spec_helper"
 
 module Vault
-  describe Sys, ent_vault: ">= 0.13" do
+  describe Sys do
     subject { vault_test_client }
 
-    describe "#namespaces" do
+    describe "#namespaces", ent_vault: ">= 0.13" do
       it "lists the available namespaces" do
         subject.sys.create_namespace("foo")
         subject.sys.create_namespace("baz")
@@ -45,7 +45,7 @@ module Vault
       end
     end
 
-    describe "#namespace" do
+    describe "#get_namespace", ent_vault: ">= 0.13" do
       it "gives info on the namespace provided" do
         subject.sys.create_namespace("foo")
         expect(subject.sys.get_namespace("foo").path).to eq("foo/")
@@ -67,6 +67,14 @@ module Vault
         subject.namespace = nil
         subject.sys.delete_namespace("foo")
         sleep 0.1
+      end
+    end
+
+    describe "unsupported namespaces", non_ent_vault: ">= 0.13" do
+      context "#namespace" do
+        it "returns a Vault::HTTPClientError with a note that the path is unsupported" do
+          expect{ subject.sys.get_namespace("foo") }.to raise_error(Vault::HTTPClientError, /unsupported path/)
+        end
       end
     end
   end

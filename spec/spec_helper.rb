@@ -29,7 +29,10 @@ RSpec.configure do |config|
     !vault_meets_requirements?(v)
   }
   config.filter_run_excluding ent_vault: lambda { |v|
-    !vault_is_enterprise? && !vault_meets_requirements?(v)
+    !vault_is_enterprise? || !vault_meets_requirements?(v)
+  }
+  config.filter_run_excluding non_ent_vault: lambda { |v|
+    vault_is_enterprise? && !vault_meets_requirements?(v)
   }
 
   # Disable real connections.
