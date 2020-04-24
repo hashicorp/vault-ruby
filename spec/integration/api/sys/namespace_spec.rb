@@ -9,9 +9,9 @@ module Vault
         subject.sys.create_namespace("foo")
         subject.sys.create_namespace("baz")
         
-        keys = subject.sys.namespaces[:data][:keys]
-        expect(keys).to include("foo/")
-        expect(keys).to include("baz/")
+        keys = subject.sys.namespaces.keys
+        expect(keys).to include(:foo)
+        expect(keys).to include(:baz)
         
         # Cleanup
         subject.sys.delete_namespace("foo")
@@ -25,13 +25,18 @@ module Vault
 
         subject.namespace = "foo"
         subject.sys.create_namespace("bar")
+        subject.sys.create_namespace("bardle")
 
-        keys = subject.sys.namespaces[:data][:keys]
-        expect(keys).not_to include("baz/")
-        expect(keys).to include("bar/")
+        namespaces = subject.sys.namespaces
+        expect(namespaces.keys).not_to include(:baz)
+        expect(namespaces.keys).to include(:bar)
+        expect(namespaces[:bar].path).to eq("foo/bar/")
+        expect(namespaces.keys).to include(:bardle)
+        expect(namespaces[:bardle].path).to eq("foo/bardle/")
 
         # Cleanup
         subject.sys.delete_namespace("bar")
+        subject.sys.delete_namespace("bardle")
         subject.namespace = nil
         subject.sys.delete_namespace("baz")
         sleep 0.1
@@ -43,9 +48,23 @@ module Vault
     describe "#namespace" do
       it "gives info on the namespace provided" do
         subject.sys.create_namespace("foo")
-        expect(subject.sys.namespace("foo")[:data][:path]).to eq("foo/")
+        expect(subject.sys.get_namespace("foo").path).to eq("foo/")
 
         # Cleanup
+        subject.sys.delete_namespace("foo")
+        sleep 0.1
+      end
+
+      it "gives info on the nested namespaces if one is provided" do
+        subject.sys.create_namespace("foo")
+        subject.namespace = "foo"
+        subject.sys.create_namespace("bar")
+        expect(subject.sys.get_namespace("bar").path).to eq("foo/bar/")
+
+        # Cleanup
+        subject.sys.delete_namespace("bar")
+        sleep 0.1
+        subject.namespace = nil
         subject.sys.delete_namespace("foo")
         sleep 0.1
       end

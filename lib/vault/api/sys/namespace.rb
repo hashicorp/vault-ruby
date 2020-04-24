@@ -1,8 +1,18 @@
 module Vault
+  class Namespace < Response
+    field :id
+    field :path
+  end
+
   class Sys
     def namespaces(scoped=nil)
       path = ["v1", scoped, "sys", "namespaces"].compact
-      client.list(path.join("/"))
+      json = client.list(path.join("/"))
+      json = json[:data] if json[:data]
+      json = json[:key_info] if json[:key_info]
+      return Hash[*json.map do |k,v|
+        [k.to_s.chomp("/").to_sym, Namespace.decode(v)]
+      end.flatten]
     end
 
     def create_namespace(namespace, opts = {})
@@ -15,9 +25,11 @@ module Vault
       return true
     end
 
-    def namespace(namespace)
+    def get_namespace(namespace)
       json = client.get("/v1/sys/namespaces/#{namespace}")
-      return json
+      json = json[:data] if json[:data]
+      json = json[:key_info] if json[:key_info]
+      Namespace.decode(json)
     end
   end
 end
