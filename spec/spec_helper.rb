@@ -26,7 +26,13 @@ RSpec.configure do |config|
   # is focused, then all tests are executed.
   config.filter_run_when_matching :focus
   config.filter_run_excluding vault: lambda { |v|
-    !Gem::Requirement.new(v).satisfied_by?(TEST_VAULT_VERSION)
+    !vault_meets_requirements?(v)
+  }
+  config.filter_run_excluding ent_vault: lambda { |v|
+    !vault_is_enterprise? || !vault_meets_requirements?(v)
+  }
+  config.filter_run_excluding non_ent_vault: lambda { |v|
+    vault_is_enterprise? || !vault_meets_requirements?(v)
   }
 
   # Disable real connections.
@@ -64,11 +70,15 @@ def vault_redirect_test_client
 end
 
 def versioned_kv_by_default?
-  Gem::Requirement.new(">= 0.10").satisfied_by?(TEST_VAULT_VERSION)
+  vault_meets_requirements?(">= 0.10")
 end
 
 def vault_is_enterprise?
-  vault_version_string.match(/\+(ent|prem)$/)
+  !!vault_version_string.match(/\+(?:ent|prem)/)
+end
+
+def vault_meets_requirements?(v)
+  Gem::Requirement.new(v).satisfied_by?(TEST_VAULT_VERSION)
 end
 
 def with_stubbed_env(env = {})

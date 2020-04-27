@@ -16,6 +16,9 @@ module Vault
     # The name of the header used to hold the Vault token.
     TOKEN_HEADER = "X-Vault-Token".freeze
 
+    # The name of the header used to hold the Namespace.
+    NAMESPACE_HEADER = "X-Vault-Namespace".freeze
+
     # The name of the header used to hold the wrapped request ttl.
     WRAP_TTL_HEADER = "X-Vault-Wrap-TTL".freeze
 
@@ -253,6 +256,12 @@ module Vault
       # per-request basis
       if !token.nil?
         headers[TOKEN_HEADER] ||= token
+      end
+
+      # Add the Vault Namespace header - users could still override this on a
+      # per-request basis
+      if !namespace.nil?
+        headers[NAMESPACE_HEADER] ||= namespace
       end
 
       # Add headers

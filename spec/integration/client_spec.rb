@@ -112,5 +112,86 @@ module Vault
         end
       end
     end
+
+    describe "#request"do
+
+      context "when using an enterprise vault version", ent_vault: ">= 0.13" do
+        before(:context) do
+          client = vault_test_client
+          client.sys.create_namespace("bar")
+          client.namespace = "bar"
+          client.sys.create_namespace("baz")
+          client.namespace = "bar/baz"
+
+          next unless versioned_kv_by_default?
+
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v1 KV", options: {version: "1"}
+          )
+        end
+
+        after(:context) do
+          client = vault_test_client
+          client.namespace = "bar"
+          client.sys.delete_namespace("baz")
+          sleep 0.1
+          client.namespace = nil
+          client.sys.delete_namespace("bar")
+          sleep 0.1
+
+          next unless versioned_kv_by_default?
+
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v2 KV", options: {version: "2"}
+          )
+        end
+
+        context "when using a namespace" do
+          subject { vault_test_client.tap{ |o| o.namespace = "bar/baz" } }
+
+          it "should respect namespace boundaries" do
+            subject.logical.write("secret/sekkrit", foo: "bar")
+            subject.namespace = nil
+            expect(subject.logical.read("secret/sekkrit")).to eq(nil)
+            subject.namespace = "bar/baz"
+            expect(subject.logical.read("secret/sekkrit").data).to eq(foo: "bar")
+          end
+        end
+      end
+
+      context "when using a non-enterprise version", non_ent_vault: ">= 0.13" do
+        subject { vault_test_client }
+
+        before(:context) do
+          next unless versioned_kv_by_default?
+
+          client = vault_test_client
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v1 KV", options: {version: "1"}
+          )
+        end
+      
+        after(:context) do
+          next unless versioned_kv_by_default?
+
+          client = vault_test_client
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v2 KV", options: {version: "2"}
+          )
+        end
+
+        context "when a namespace is provided" do
+          it "ignores the namespace" do
+            subject.logical.write("secret/sekkrit", foo: "bar")  
+            subject.namespace = "foo"
+            expect(subject.logical.read("secret/sekkrit").data).to eq(foo: "bar")
+          end
+        end
+      end
+    end
   end
 end

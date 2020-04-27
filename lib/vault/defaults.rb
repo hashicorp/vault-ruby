@@ -61,6 +61,13 @@ module Vault
         nil
       end
 
+
+      # Vault Namespace, if any.
+      # @return [String, nil]
+      def namespace
+        ENV["VAULT_NAMESPACE"]
+      end
+
       # The SNI host to use when connecting to Vault via TLS.
       # @return [String, nil]
       def hostname

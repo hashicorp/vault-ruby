@@ -7,6 +7,7 @@ module Vault
         :address,
         :token,
         :hostname,
+        :namespace,
         :open_timeout,
         :proxy_address,
         :proxy_password,

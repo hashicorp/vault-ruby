@@ -57,6 +57,18 @@ module Vault
       end
     end
 
+    describe ".namespace" do
+      it "uses ENV['VAULT_NAMESPACE'] if present" do
+        with_stubbed_env("VAULT_NAMESPACE" => "test") do
+          expect(Defaults.namespace).to eq("test")
+        end
+      end
+
+      it "falls back to the default VAULT_NAMESPACE" do
+        expect(Defaults.namespace).to eq(Defaults.namespace)
+      end
+    end
+
     describe ".hostname" do
       it "defaults to ENV['VAULT_TLS_SERVER_NAME']" do
         with_stubbed_env("VAULT_TLS_SERVER_NAME" => "www.foo.com") do

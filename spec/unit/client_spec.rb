@@ -85,6 +85,31 @@ module Vault
       end
     end
 
+    describe "#namespace" do
+      context "when given a namespace as part of startup" do
+        it "has that namespace available" do
+          with_stubbed_env("VAULT_NAMESPACE" => "foo/bar") do
+            expect(subject.namespace).to eq("foo/bar")
+          end
+        end
+
+        it "can have the namespace changed" do
+          with_stubbed_env("VAULT_NAMESPACE" => "foo/bar") do
+            expect(subject.namespace).to eq("foo/bar")
+            subject.namespace = "bar/baz"
+            expect(subject.namespace).to eq("bar/baz")
+          end
+        end
+      end
+
+      context "when provided a namespace during client initialization" do
+        it "has that namespace available" do
+          client = described_class.new(address: "localhost:8100", token: "foo", namespace: "bar/baz")
+          expect(client.namespace).to eq("bar/baz")
+        end
+      end
+    end
+
     context "#with_retries" do
       let(:options) do
         {
