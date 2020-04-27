@@ -19,16 +19,18 @@ module Vault
     #
     #   @return [Hash<Symbol, Namespace>]
     #
-    #   NOTE: Due to a bug in Vault, to be fixed soon, this method CAN return a pure JSON string if a scoping namespace is provided.
+    #   NOTE: Due to a bug in Vault Enterprise, to be fixed soon, this method CAN return a pure JSON string if a scoping namespace is provided.
     def namespaces(scoped=nil)
       path = ["v1", scoped, "sys", "namespaces"].compact
       json = client.list(path.join("/"))
       json = json[:data] if json[:data]
       if json[:key_info]
-        json = json[:key_info] if json[:key_info]
-        return Hash[*json.map do |k,v|
-          [k.to_s.chomp("/").to_sym, Namespace.decode(v)]
-        end.flatten]
+        json = json[:key_info]
+        hash = {}
+        json.each do |k,v|
+          hash[k.to_s.chomp("/").to_sym] = Namespace.decode(v)
+        end
+        hash
       else
         json
       end
@@ -73,9 +75,11 @@ module Vault
     # @return [Namespace]
     def get_namespace(namespace)
       json = client.get("/v1/sys/namespaces/#{namespace}")
-      json = json[:data] if json[:data]
-      json = json[:key_info] if json[:key_info]
-      Namespace.decode(json)
+      if data = json.dig(:data)
+        Namespace.decode(data)
+      else
+        json
+      end
     end
   end
 end
