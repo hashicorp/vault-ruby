@@ -114,25 +114,6 @@ module Vault
     end
 
     describe "#request"do
-      before(:context) do
-        next unless versioned_kv_by_default?
-
-        client = vault_test_client
-        client.sys.unmount("secret")
-        client.sys.mount(
-          "secret", "kv", "v1 KV", options: {version: "1"}
-        )
-      end
-    
-      after(:context) do
-        next unless versioned_kv_by_default?
-
-        client = vault_test_client
-        client.sys.unmount("secret")
-        client.sys.mount(
-          "secret", "kv", "v2 KV", options: {version: "2"}
-        )
-      end
 
       context "when using an enterprise vault version", ent_vault: ">= 0.13" do
         before(:context) do
@@ -141,6 +122,13 @@ module Vault
           client.namespace = "bar"
           client.sys.create_namespace("baz")
           client.namespace = "bar/baz"
+
+          next unless versioned_kv_by_default?
+
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v1 KV", options: {version: "1"}
+          )
         end
 
         after(:context) do
@@ -151,6 +139,13 @@ module Vault
           client.namespace = nil
           client.sys.delete_namespace("bar")
           sleep 0.1
+
+          next unless versioned_kv_by_default?
+
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v2 KV", options: {version: "2"}
+          )
         end
 
         context "when using a namespace" do
@@ -168,6 +163,26 @@ module Vault
 
       context "when using a non-enterprise version", non_ent_vault: ">= 0.13" do
         subject { vault_test_client }
+
+        before(:context) do
+          next unless versioned_kv_by_default?
+
+          client = vault_test_client
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v1 KV", options: {version: "1"}
+          )
+        end
+      
+        after(:context) do
+          next unless versioned_kv_by_default?
+
+          client = vault_test_client
+          client.sys.unmount("secret")
+          client.sys.mount(
+            "secret", "kv", "v2 KV", options: {version: "2"}
+          )
+        end
 
         context "when a namespace is provided" do
           it "ignores the namespace" do
