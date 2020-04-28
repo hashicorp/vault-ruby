@@ -11,7 +11,7 @@ IMPROVEMENTS
 
 IMPROVEMENTS
 
-- Add support for KV engine in the client
+- Add support for versioned KV secrets in the client
 
 ## v0.12.0 (August 14, 2018)
 
