@@ -7,6 +7,12 @@ IMPROVEMENTS
 - Added support for defining a namespace when initializing the client, as well as options for changing the namespace via method.
 - Added support for sys/namespaces API. Ability to Get, Create, Delete, and List namespaces has been provided.
 
+## v0.13.0 (October 1, 2019)
+
+IMPROVEMENTS
+
+- Add support for KV engine in the client
+
 ## v0.12.0 (August 14, 2018)
 
 IMPROVEMENTS
