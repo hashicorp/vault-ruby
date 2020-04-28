@@ -1,11 +1,17 @@
 # Vault Ruby Changelog
 
-## v0.13.0 (April 20, 2020)
+## v0.13.1 (April 28, 2020)
 
 IMPROVEMENTS
 
 - Added support for defining a namespace when initializing the client, as well as options for changing the namespace via method.
 - Added support for sys/namespaces API. Ability to Get, Create, Delete, and List namespaces has been provided.
+
+## v0.13.0 (October 1, 2019)
+
+IMPROVEMENTS
+
+- Add support for versioned KV secrets in the client
 
 ## v0.12.0 (August 14, 2018)
 
