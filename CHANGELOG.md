@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.13.2 (April 30, 2020)
+
+BUG FIXES
+
+- Fixed an issue where a namespace passed to a single request was being ignored.
+
 ## v0.13.1 (April 28, 2020)
 
 IMPROVEMENTS

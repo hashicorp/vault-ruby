@@ -29,6 +29,7 @@ module Vault
     def extract_headers!(options = {})
       extract = {
         wrap_ttl: Vault::Client::WRAP_TTL_HEADER,
+        namespace: Vault::Client::NAMESPACE_HEADER,
       }
 
       {}.tap do |h|
