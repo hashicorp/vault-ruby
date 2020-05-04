@@ -159,6 +159,16 @@ module Vault
             expect(subject.logical.read("secret/sekkrit").data).to eq(foo: "bar")
           end
         end
+
+        context "when using a namespace as part of the request options" do
+          subject { vault_test_client }
+
+          it "should respect namespace boundaries" do
+            subject.logical.write("secret/sekkrit", { foo: "bar" }, namespace: "bar/baz")
+            expect(subject.logical.read("secret/sekkrit")).to eq(nil)
+            expect(subject.logical.read("secret/sekkrit", namespace: "bar/baz").data).to eq(foo: "bar")
+          end
+        end
       end
 
       context "when using a non-enterprise version", non_ent_vault: ">= 0.13" do
