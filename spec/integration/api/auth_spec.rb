@@ -225,9 +225,14 @@ module Vault
 
       let!(:old_token) { subject.token }
       let(:credentials_provider) do
-        double(
-          credentials:
-            double(access_key_id: 'very', secret_access_key: 'secure', session_token: 'thing')
+        instance_double(
+          Aws::Sigv4::StaticCredentialsProvider,
+          credentials: instance_double(
+            Aws::Sigv4::Credentials,
+            access_key_id: 'very',
+            secret_access_key: 'secure',
+            session_token: 'thing'
+          )
         )
       end
       let(:secret) { double(auth: double(client_token: 'a great token')) }
@@ -243,7 +248,7 @@ module Vault
           ).and_call_original
         )
         expect do
-          subject.auth.aws_iam('a_rolename', credentials_provider, 'mismatched_iam_header', 'https://sts.cn-north-1.amazonaws.com.cn') 
+          subject.auth.aws_iam('a_rolename', credentials_provider, 'mismatched_iam_header', 'https://sts.cn-north-1.amazonaws.com.cn')
         end.to raise_error(Vault::HTTPClientError, /expected "?iam_header_canary"? but got "?mismatched_iam_header"?/)
       end
 
