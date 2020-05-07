@@ -1,4 +1,4 @@
-class Vault
+module Vault
   class Transform < Request
     class Transformation < Request
 

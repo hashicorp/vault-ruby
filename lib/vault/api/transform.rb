@@ -1,7 +1,7 @@
 require_relative '../client'
 require_relative '../request'
 
-class Vault
+module Vault
   class Client
     # A proxy to the {Transform} methods.
     # @return [Transform]

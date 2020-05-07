@@ -1,7 +1,7 @@
 require_relative '../../request'
 require_relative '../../response'
 
-class Vault
+module Vault
   class Transform < Request
     class Template < Response
       field :alphabet
