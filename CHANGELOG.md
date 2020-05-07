@@ -1,5 +1,12 @@
 # Vault Ruby Changelog
 
+## v0.13.2 (May 7, 2020)
+
+BUG FIXES
+
+- Fixed the ability to use namespace as an option for each request. Previously, that option was ignored.
+- aws-sigv4 gem was unlocked after a bug in 1.1.2 broke CI
+
 ## v0.13.1 (April 28, 2020)
 
 IMPROVEMENTS
