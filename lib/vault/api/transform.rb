@@ -18,22 +18,6 @@ module Vault
     def decode
       # Do some decoding
     end
-
-    def role
-      @role ||= Role.new(self.client)
-    end
-
-    def transformation
-      @transformation ||= Transformation.new(self.client)
-    end
-
-    def template
-      @template ||= Template.new(self.client)
-    end
-
-    def alphabet
-      @alphabet ||= Alphabet.new(self.client)
-    end
   end
 end
 

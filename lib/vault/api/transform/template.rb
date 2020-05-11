@@ -33,11 +33,8 @@ module Vault
 
     def templates
       json = client.list("/v1/transform/template")
-      if key_info = json.dig(:data, :key_info)
-        key_info.each do |k,v|
-          p v
-          hash[k.to_s.chomp("/").to_sym] = Template.decode(v)
-        end
+      if keys = json.dig(:data, :keys)
+        keys
       else
         json
       end
