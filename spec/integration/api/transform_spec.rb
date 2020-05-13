@@ -13,6 +13,7 @@ module Vault
       vault_test_client.transform.create_transformation("foo_trans", type: "fpe", template: "builtin/creditcardnumber", allowed_roles: ["foo_role"])
     end
 
+    # Lists of possible input options for a given transform type
     base_names = Proc.new { SecureRandom.alphanumeric(5) }
     trans_types = ['fpe', 'masking']
     trans_tweak_sources = ['supplied', 'generated', 'internal']
@@ -21,6 +22,7 @@ module Vault
     temp_patterns = ['\d{3}-\d{2}-\d{4}', '\d{3}-\d{3}-\d{4}', '\d{4}-\d{4}-\d{4}-\d{4}']
     alpha_sets = ['1234567890abcdef', 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']
 
+    # A list of all Transform Secret types and the arguments they accept/require
     transform_types = {
       role: { name: base_names, other_attrs: { transformations: [["foo_trans"]] } },
       transformation: { name: base_names, other_attrs: { type: trans_types, tweak_source: trans_tweak_sources, template: trans_templates } },
@@ -29,10 +31,13 @@ module Vault
     }
 
     transform_types.each do |type, attrs|
+      # With a given type...
       context "#{type.capitalize}" do
         attr_values = attrs[:other_attrs].values
         attr_keys = attrs[:other_attrs].keys
 
+        # Iterate over its possible input options to provide a full permutation of options
+        # i.e. if I have a type with 3 inputs that have 3 options each, this will provide all 27 permutations for testing 
         (0...(attr_values[0]&.length || 1)).each do |index_0|
           (0...(attr_values[1]&.length || 1)).each do |index_1|
             (0...(attr_values[2]&.length || 1)).each do |index_2|

@@ -4,6 +4,9 @@ require_relative '../../response'
 module Vault
   class Transform < Request
     class Alphabet < Response
+      # @!attribute [r] id
+      #   String listing all possible characters of the alphabet
+      #   @return [String]
       field :alphabet
     end
 

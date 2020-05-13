@@ -4,6 +4,9 @@ require_relative '../../response'
 module Vault
   class Transform < Request
     class Role < Response
+      # @!attribute [r] transformations
+      #   Array of all transformations the role has access to
+      #   @return [Array<String>]
       field :transformations
     end
 
