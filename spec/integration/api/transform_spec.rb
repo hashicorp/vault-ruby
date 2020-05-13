@@ -73,7 +73,6 @@ module Vault
                 describe "#delete_#{type}" do
                   it "removes the #{type} from the server" do
                     subject.transform.send("delete_#{type}", @name)
-                    sleep 0.1
                     expect(subject.transform.send("#{type}s")).not_to include(@name)
                   end
                 end
@@ -87,6 +86,7 @@ module Vault
     describe "#encode and #decode" do
       let(:value) { "4111-1111-1111-1111"}
       let(:tweak) { Base64.encode64("somenum") }
+
       it "encodes a value with a supplied tweak value then decodes it to the original value" do
         resp = subject.transform.encode(role_name: "foo_role", value: value, tweak: tweak)
         encoded_value = resp[:data][:encoded_value]
@@ -103,6 +103,139 @@ module Vault
         expect(resp[:data][:decoded_value]).to_not eq(value)
         expect(resp[:data][:decoded_value]).to_not eq(encoded_value)
         expect(resp[:data][:decoded_value]).to match(/\d{4}-\d{4}-\d{4}-\d{4}/)
+      end
+
+      context "with a transformation" do
+        let(:allowed_roles) { ["foo_role"] }
+        let(:trans_name) { "#{type}_#{tweak_source}_#{template.gsub('/','-')}" }
+        let(:role) { "foo_role" }
+        before do
+          subject.transform.create_transformation(trans_name, type: type, template: template, tweak_source: tweak_source, allowed_roles: allowed_roles)
+        end
+
+        context "with an fpe type" do
+          let(:type) { "fpe" }
+
+          context "and a credit card template" do
+            let(:template_regex) { /\d{4}-\d{4}-\d{4}-\d{4}/ }
+            let(:template) { "builtin/creditcardnumber" }
+            let(:value) { "4111-1111-1111-1111"}
+
+            context "and a supplied tweak source" do
+              let(:tweak_source) { "supplied" }
+
+              it "encodes a value and decodes it to the original value" do
+                resp = subject.transform.encode(role_name: "foo_role", value: value, tweak: tweak, transformation: trans_name)
+                encoded_value = resp[:data][:encoded_value]
+                expect(encoded_value).to match(template_regex)
+                expect(encoded_value).not_to eq(value)
+                resp = subject.transform.decode(role_name: "foo_role", value: encoded_value, tweak: tweak, transformation: trans_name)
+                expect(resp[:data][:decoded_value]).to eq(value)
+              end
+            end
+
+            context "and a generated tweak source" do
+              let(:tweak_source) { "generated" }
+
+              it "encodes a value and decodes it to the original value" do
+                resp = subject.transform.encode(role_name: "foo_role", value: value, transformation: trans_name)
+                encoded_value = resp[:data][:encoded_value]
+                generated_tweak = resp[:data][:tweak]
+                expect(encoded_value).to match(template_regex)
+                expect(encoded_value).not_to eq(value)
+                resp = subject.transform.decode(role_name: "foo_role", value: encoded_value, tweak: generated_tweak, transformation: trans_name)
+                expect(resp[:data][:decoded_value]).to eq(value)
+              end
+            end
+
+            context "and an internal tweak source" do
+              let(:tweak_source) { "internal" }
+
+              it "encodes a value and decodes it to the original value" do
+                resp = subject.transform.encode(role_name: "foo_role", value: value, transformation: trans_name)
+                encoded_value = resp[:data][:encoded_value]
+                expect(encoded_value).to match(template_regex)
+                expect(encoded_value).not_to eq(value)
+                resp = subject.transform.decode(role_name: "foo_role", value: encoded_value, transformation: trans_name)
+                expect(resp[:data][:decoded_value]).to eq(value)
+              end
+            end
+          end
+
+          context "and a social security template" do
+            let(:template_regex) { /\d{3}-\d{2}-\d{4}/ }
+            let(:template) { "builtin/socialsecuritynumber" }
+            let(:value) { "123-45-6789" }
+
+            context "and a supplied tweak source" do
+              let(:tweak_source) { "supplied" }
+
+              it "encodes a value and decodes it to the original value" do
+                resp = subject.transform.encode(role_name: "foo_role", value: value, tweak: tweak, transformation: trans_name)
+                encoded_value = resp[:data][:encoded_value]
+                expect(encoded_value).to match(template_regex)
+                expect(encoded_value).not_to eq(value)
+                resp = subject.transform.decode(role_name: "foo_role", value: encoded_value, tweak: tweak, transformation: trans_name)
+                expect(resp[:data][:decoded_value]).to eq(value)
+              end
+            end
+
+            context "and a generated tweak source" do
+              let(:tweak_source) { "generated" }
+
+              it "encodes a value and decodes it to the original value" do
+                resp = subject.transform.encode(role_name: "foo_role", value: value, transformation: trans_name)
+                encoded_value = resp[:data][:encoded_value]
+                generated_tweak = resp[:data][:tweak]
+                expect(encoded_value).to match(template_regex)
+                expect(encoded_value).not_to eq(value)
+                resp = subject.transform.decode(role_name: "foo_role", value: encoded_value, tweak: generated_tweak, transformation: trans_name)
+                expect(resp[:data][:decoded_value]).to eq(value)
+              end
+            end
+
+            context "and an internal tweak source" do
+              let(:tweak_source) { "internal" }
+
+              it "encodes a value and decodes it to the original value" do
+                resp = subject.transform.encode(role_name: "foo_role", value: value, transformation: trans_name)
+                encoded_value = resp[:data][:encoded_value]
+                expect(encoded_value).to match(template_regex)
+                expect(encoded_value).not_to eq(value)
+                resp = subject.transform.decode(role_name: "foo_role", value: encoded_value, transformation: trans_name)
+                expect(resp[:data][:decoded_value]).to eq(value)
+              end
+            end
+          end
+        end
+        context "with a masking type" do
+          let(:type) { "masking" }
+          let(:tweak_source) { nil }
+
+          context "and a credit card template" do
+            let(:template_regex) { /\d{4}-\d{4}-\d{4}-\d{4}/ }
+            let(:template) { "builtin/creditcardnumber" }
+            let(:value) { "4111-1111-1111-1111"}
+
+            it "encodes a value, providing the masked value" do
+              resp = subject.transform.encode(role_name: "foo_role", value: value, transformation: trans_name)
+              encoded_value = resp[:data][:encoded_value]
+              expect(encoded_value).to eq("****-****-****-****")
+            end
+          end
+
+          context "and a social security template" do
+            let(:template_regex) { /\d{3}-\d{2}-\d{4}/ }
+            let(:template) { "builtin/socialsecuritynumber" }
+            let(:value) { "123-45-6789" }
+
+            it "encodes a value, providing the masked value" do
+              resp = subject.transform.encode(role_name: "foo_role", value: value, transformation: trans_name)
+              encoded_value = resp[:data][:encoded_value]
+              expect(encoded_value).to eq("***-**-****")
+            end
+          end
+        end
       end
     end
   end
