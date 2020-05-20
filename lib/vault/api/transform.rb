@@ -11,15 +11,13 @@ module Vault
   end
 
   class Transform < Request
-    def encode(role_name:, value:, **opts)
+    def encode(role_name:, **opts)
       opts ||= {}
-      opts[:value] = value
       client.post("/v1/transform/encode/#{encode_path(role_name)}", JSON.fast_generate(opts))
     end
 
-    def decode(role_name:, value:, **opts)
+    def decode(role_name:, **opts)
       opts ||= {}
-      opts[:value] = value
       client.post("/v1/transform/decode/#{encode_path(role_name)}", JSON.fast_generate(opts))
     end
   end
