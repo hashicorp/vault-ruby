@@ -9,5 +9,6 @@ module Vault
     require_relative "api/logical"
     require_relative "api/secret"
     require_relative "api/sys"
+    require_relative "api/transform"
   end
 end
