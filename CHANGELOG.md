@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.14.0 (May 28, 2020)
+
+IMPROVEMENTS
+
+- Added support for the Transform Secrets Engine
+
 ## v0.13.2 (May 7, 2020)
 
 BUG FIXES
