@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  gem: zfhui/ruby-gem@0.2.1
+
 references:
   images:
     ubuntu: &UBUNTU_IMAGE ubuntu-1604:201903-01
@@ -15,6 +18,12 @@ jobs:
         type: string
     steps:
       - checkout
+            # Restore bundle cache
+      - restore_cache:
+          keys:
+            - v1-dependencies-bundler-<< parameters.ruby-version >>-{{ checksum "vault.gemspec" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-bundler-
       - run:
           name: Install vault
           command: |
@@ -24,12 +33,34 @@ jobs:
             mv vault ~/bin
             export PATH="~/bin:$PATH"
       - run:
+          name: Set ruby version
+          command: |
+            rvm install << parameters.ruby-version >>
+            echo . $(rvm << parameters.ruby-version >> do rvm env --path) >> $BASH_ENV
+      - run:
           name: Run tests
           command: |
             export VAULT_VERSION=<< parameters.vault-version >>
-            rvm use << parameters.ruby-version >> --install --binary --fuzzy
+            ruby --version
+            gem install bundler
+            bundle -v
             bundle install --jobs=3 --retry=3 --path=vendor/bundle
             bundle exec rake
+      # Store bundle cache
+      - save_cache:
+          key: v1-dependencies-bundler-<< parameters.ruby-version >>-{{ checksum "vault.gemspec" }}
+          paths:
+            - vendor/bundle
+
+  build-release:
+    working_directory: ~/repo
+    executor: gem/default
+    steps:
+      - gem/build:
+          gem-name: vault
+      - gem/release:
+          gem-name: vault
+          gem-credentials-env-name: $RUBYGEMS_API_KEY
 
 workflows:
   run-tests:
@@ -37,6 +68,15 @@ workflows:
       - test:
           matrix:
             parameters:
-              ruby-version: ["2.2", "2.3", "2.4"]
-              vault-version: ["1.0.3", "1.1.5", "1.2.4", "1.3.0"]
+              ruby-version: ["2.7.1", "2.6", "2.5"]
+              vault-version: ["1.4.2", "1.4.1", "1.4.0", "1.3.6"]
           name: test-ruby-<< matrix.ruby-version >>-vault-<< matrix.vault-version >>
+      - build-release:
+          requires:
+            - test
+          context: vault-gem-release
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
