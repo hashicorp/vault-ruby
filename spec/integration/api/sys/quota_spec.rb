@@ -29,7 +29,7 @@ RSpec.shared_examples "quota specs" do |type|
 end
 
 module Vault
-  describe Sys, vault: ">= 1.4" do
+  describe Sys, vault: ">= 1.5" do
     subject { vault_test_client }
     it "raises an error if the type is not rate-limit or lease-count" do
       expect{ subject.sys.create_quota("foo-bar", "test_1", {}) }.to(
@@ -55,7 +55,7 @@ module Vault
       include_examples "quota specs", "rate-limit"
     end
 
-    context "with lease-counts", ent_vault: ">= 1.4" do
+    context "with lease-counts", ent_vault: ">= 1.5" do
       let(:create_args) do
         {
           max_leases: 3,
