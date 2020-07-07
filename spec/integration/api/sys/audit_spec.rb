@@ -19,6 +19,7 @@ module Vault
 
         subject.enable_audit("test_enable", "file", "", path: path)
         expect(subject.audits[:test_enable]).to be
+        subject.disable_audit("test_enable")
       end
     end
 
