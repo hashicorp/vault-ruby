@@ -18,8 +18,6 @@ module Vault
     #   Vault.sys.namespaces #=> { :foo => #<struct Vault::Namespace id="xxxx1", path="foo/" }
     #
     #   @return [Hash<Symbol, Namespace>]
-    #
-    #   NOTE: Due to a bug in Vault Enterprise, to be fixed soon, this method CAN return a pure JSON string if a scoping namespace is provided.
     def namespaces(scoped=nil)
       path = ["v1", scoped, "sys", "namespaces"].compact
       json = client.list(path.join("/"))
