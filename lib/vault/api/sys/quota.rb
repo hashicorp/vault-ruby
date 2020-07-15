@@ -1,17 +1,44 @@
 module Vault
   class Quota < Response
+    # @!attribute [r] name
+    #   Name of the quota rule.
+    #   @return [String]
     field :name
+
+    # @!attribute [r] path
+    #   Namespace/Path combination the quota applies to.
+    #   @return [String]
     field :path
+
+    # @!attribute [r] type
+    #   Type of the quota rule, must be one of "lease-count" or "rate-limit"
+    #   @return [String]
     field :type
   end
 
   class RateLimitQuota < Quota
+    # @!attribute [r] rate
+    #   The rate at which allowed requests are refilled per second by the quota
+    #   rule.
+    #   @return [Float]
     field :rate
+
+    # @!attribute [r] burst
+    #   The maximum number of requests at any given second allowed by the quota
+    #   rule.
+    #   @return [Int]
     field :burst
   end
 
   class LeaseCountQuota < Quota
+    # @!attribute [r] counter
+    #   Number of currently active leases for the quota.
+    #   @return [Int]
     field :counter
+
+    # @!attribute [r] max_leases
+    #   The maximum number of allowed leases for this quota.
+    #   @return [Int]
     field :max_leases
   end
 
@@ -48,8 +75,13 @@ module Vault
       end
     end
 
-    def get_config
+    def get_quota_config
       client.get("v1/sys/quotas/config")
+    end
+    
+    def update_quota_config(opts={})
+      client.post("v1/sys/quotas/config", JSON.fast_generate(opts))
+      return true
     end
 
     private
