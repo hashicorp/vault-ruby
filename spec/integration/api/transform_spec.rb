@@ -45,7 +45,7 @@ module Vault
               options[attr_keys[0].to_sym] = attr_values[0][index_0] if attr_values[0]
               options[attr_keys[1].to_sym] = attr_values[1][index_1] if attr_values[1]
               options[attr_keys[2].to_sym] = attr_values[2][index_2] if attr_values[2]
-              
+
               let(:opts) { options.clone }
 
               before(:context) do
