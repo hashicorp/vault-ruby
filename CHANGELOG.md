@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.15.0 (July 29, 2020)
+
+IMPROVEMENTS
+
+- Added support for Resource Quotas
+
 ## v0.14.0 (May 28, 2020)
 
 IMPROVEMENTS
