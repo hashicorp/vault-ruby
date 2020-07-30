@@ -11,6 +11,7 @@ RSpec.shared_examples "quota specs" do |type|
 
   it "creates a #{type} quota" do
     subject.sys.create_quota(type, "test_1", create_args)
+    p subject.sys.get_quota(type, "test_1")
     expect(subject.sys.get_quota(type, "test_1").to_h).to include(create_args)
     subject.sys.delete_quota(type, "test_1")
   end
@@ -41,7 +42,6 @@ module Vault
       let(:create_args) do
         {
           rate: 16.7,
-          burst: 300,
         }
       end
 
@@ -74,16 +74,16 @@ module Vault
     context "for quota configuration" do
       it "allows you to set and retrieve quota configs" do
         expect(subject.sys.get_quota_config[:data])
-          .to eq(enable_rate_limit_audit_logging: false)
+          .to include(enable_rate_limit_audit_logging: false)
         subject.sys.update_quota_config(enable_rate_limit_audit_logging: true)
         expect(subject.sys.get_quota_config[:data])
-          .to eq(enable_rate_limit_audit_logging: true)
+          .to include(enable_rate_limit_audit_logging: true)
       end
 
       it "performs a no-op for a bad input" do
-        expect(subject.sys.get_quota_config[:data]).to eq(enable_rate_limit_audit_logging: false)
+        expect(subject.sys.get_quota_config[:data]).to include(enable_rate_limit_audit_logging: false)
         subject.sys.update_quota_config(foo: "bar")
-        expect(subject.sys.get_quota_config[:data]).to eq(enable_rate_limit_audit_logging: false)
+        expect(subject.sys.get_quota_config[:data]).to include(enable_rate_limit_audit_logging: false)
       end
     end
   end
