@@ -11,7 +11,6 @@ RSpec.shared_examples "quota specs" do |type|
 
   it "creates a #{type} quota" do
     subject.sys.create_quota(type, "test_1", create_args)
-    p subject.sys.get_quota(type, "test_1")
     expect(subject.sys.get_quota(type, "test_1").to_h).to include(create_args)
     subject.sys.delete_quota(type, "test_1")
   end
