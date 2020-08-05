@@ -72,7 +72,7 @@ workflows:
           matrix:
             parameters:
               ruby-version: ["2.7.1", "2.6", "2.5"]
-              vault-version: ["1.4.2", "1.4.1", "1.4.0", "1.3.6"]
+              vault-version: ["1.5.0", "1.4.2", "1.4.1", "1.4.0", "1.3.6"]
           name: test-ruby-<< matrix.ruby-version >>-vault-<< matrix.vault-version >>
       - build-release:
           requires:
