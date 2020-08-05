@@ -77,6 +77,7 @@ module Vault
         subject.sys.update_quota_config(enable_rate_limit_audit_logging: true)
         expect(subject.sys.get_quota_config[:data])
           .to include(enable_rate_limit_audit_logging: true)
+        subject.sys.update_quota_config(enable_rate_limit_audit_logging: false)
       end
 
       it "performs a no-op for a bad input" do
