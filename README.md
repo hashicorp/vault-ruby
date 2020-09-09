@@ -3,7 +3,9 @@ Vault Ruby Client [![Build Status](https://secure.travis-ci.org/hashicorp/vault-
 
 Vault is the official Ruby client for interacting with [Vault](https://vaultproject.io) by HashiCorp.
 
-**The documentation in this README corresponds to the master branch of the Vault Ruby client. It may contain unreleased features or different APIs than the most recently released version. Please see the Git tag that corresponds to your version of the Vault Ruby client for the proper documentation.**
+**If you're viewing this README from GitHub on the `master` branch, know that it may contain unreleased features or
+different APIs than the most recently released version. Please see the Git tag that corresponds to your version of the
+Vault Ruby client for the proper documentation.**
 
 Quick Start
 -----------
@@ -18,7 +20,7 @@ Install via Rubygems:
 or add it to your Gemfile if you're using Bundler:
 
 ```ruby
-gem "vault", "~> 0.1"
+gem "vault"
 ```
 
 and then run the `bundle` command to install.
