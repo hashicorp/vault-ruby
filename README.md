@@ -1,4 +1,4 @@
-Vault Ruby Client [![Build Status](https://secure.travis-ci.org/hashicorp/vault-ruby.svg)](http://travis-ci.org/hashicorp/vault-ruby)
+Vault Ruby Client [![Build Status](https://circleci.com/gh/hashicorp/vault-ruby.svg?style=shield)](https://circleci.com/gh/hashicorp/vault-ruby)
 =================
 
 Vault is the official Ruby client for interacting with [Vault](https://vaultproject.io) by HashiCorp.
