@@ -30,6 +30,9 @@ module Vault
     # The default size of the connection pool
     DEFAULT_POOL_SIZE = 16
 
+    # The default timeout for retrieving a connection from the connection pool
+    DEFAULT_POOL_TIMEOUT = 16
+
     # The set of exceptions that are detect and retried by default
     # with `with_retries`
     RETRIED_EXCEPTIONS = [HTTPServerError]
@@ -88,6 +91,16 @@ module Vault
           return var.to_i
         else
           DEFAULT_POOL_SIZE
+        end
+      end
+
+      # The timeout for getting a connection from the connection pool that communicates with Vault
+      # @return Float
+      def pool_timeout
+        if var = ENV["VAULT_POOL_SIZE"]
+          return var.to_f
+        else
+          DEFAULT_POOL_TIMEOUT
         end
       end
 
