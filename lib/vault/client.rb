@@ -86,7 +86,7 @@ module Vault
       @lock.synchronize do
         return @nhp if @nhp
 
-        @nhp = PersistentHTTP.new("vault-ruby", nil, pool_size)
+        @nhp = PersistentHTTP.new("vault-ruby", nil, pool_size, pool_timeout)
 
         if proxy_address
           proxy_uri = URI.parse "http://#{proxy_address}"

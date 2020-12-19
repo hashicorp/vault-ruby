@@ -203,11 +203,6 @@ class PersistentHTTP
   HAVE_OPENSSL = defined? OpenSSL::SSL # :nodoc:
 
   ##
-  # The default connection pool size is 1/4 the allowed open files.
-
-  DEFAULT_POOL_SIZE = 16
-
-  ##
   # The version of PersistentHTTP you are using
 
   VERSION = '3.0.0'
@@ -505,7 +500,7 @@ class PersistentHTTP
   # Defaults to 1/4 the number of allowed file handles.  You can have no more
   # than this many threads with active HTTP transactions.
 
-  def initialize name=nil, proxy=nil, pool_size=DEFAULT_POOL_SIZE
+  def initialize name=nil, proxy=nil, pool_size=Vault::Defaults::DEFAULT_POOL_SIZE, pool_timeout=Vault::Defaults::DEFAULT_POOL_TIMEOUT
     @name = name
 
     @debug_output     = nil
@@ -525,7 +520,7 @@ class PersistentHTTP
     @socket_options << [Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1] if
       Socket.const_defined? :TCP_NODELAY
 
-    @pool = PersistentHTTP::Pool.new size: pool_size do |http_args|
+    @pool = PersistentHTTP::Pool.new size: pool_size, timeout: pool_timeout do |http_args|
       PersistentHTTP::Connection.new Net::HTTP, http_args, @ssl_generation
     end
 

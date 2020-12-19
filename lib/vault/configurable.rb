@@ -14,6 +14,7 @@ module Vault
         :proxy_port,
         :proxy_username,
         :pool_size,
+        :pool_timeout,
         :read_timeout,
         :ssl_ciphers,
         :ssl_pem_contents,
