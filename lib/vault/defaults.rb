@@ -88,7 +88,7 @@ module Vault
       # @return Integer
       def pool_size
         if var = ENV["VAULT_POOL_SIZE"]
-          return var.to_i
+          var.to_i
         else
           DEFAULT_POOL_SIZE
         end
@@ -98,7 +98,7 @@ module Vault
       # @return Float
       def pool_timeout
         if var = ENV["VAULT_POOL_TIMEOUT"]
-          return var.to_f
+          var.to_f
         else
           DEFAULT_POOL_TIMEOUT
         end
