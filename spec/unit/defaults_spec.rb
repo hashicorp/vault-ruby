@@ -85,6 +85,22 @@ module Vault
       end
     end
 
+    describe ".pool_size" do
+      it "defaults to ENV['VAULT_POOL_SIZE']" do
+        with_stubbed_env("VAULT_POOL_SIZE" => "30") do
+          expect(Defaults.pool_size).to eq(30)
+        end
+      end
+    end
+
+    describe ".pool_timeout" do
+      it "defaults to ENV['VAULT_POOL_TIMEOUT']" do
+        with_stubbed_env("VAULT_POOL_TIMEOUT" => "30.5") do
+          expect(Defaults.pool_timeout).to eq(30.5)
+        end
+      end
+    end
+
     describe ".proxy_address" do
       it "defaults to ENV['VAULT_PROXY_ADDRESS']" do
         with_stubbed_env("VAULT_PROXY_ADDRESS" => "30") do
