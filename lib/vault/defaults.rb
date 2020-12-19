@@ -97,7 +97,7 @@ module Vault
       # The timeout for getting a connection from the connection pool that communicates with Vault
       # @return Float
       def pool_timeout
-        if var = ENV["VAULT_POOL_SIZE"]
+        if var = ENV["VAULT_POOL_TIMEOUT"]
           return var.to_f
         else
           DEFAULT_POOL_TIMEOUT
