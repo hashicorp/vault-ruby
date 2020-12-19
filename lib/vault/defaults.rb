@@ -30,8 +30,8 @@ module Vault
     # The default size of the connection pool
     DEFAULT_POOL_SIZE = 16
 
-    # The default timeout for retrieving a connection from the connection pool
-    DEFAULT_POOL_TIMEOUT = 16
+    # The default timeout in seconds for retrieving a connection from the connection pool
+    DEFAULT_POOL_TIMEOUT = 0.5
 
     # The set of exceptions that are detect and retried by default
     # with `with_retries`
