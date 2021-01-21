@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## v0.16.0 (??? ??, 2021)
+
+IMPROVEMENTS
+
+- The timeout used to get a connection from the connection pool that talks with vault is now configurable. Using `Vault.pool_timeout` or the env var `VAULT_POOL_TIMEOUT`.
+
 ## v0.15.0 (July 29, 2020)
 
 IMPROVEMENTS

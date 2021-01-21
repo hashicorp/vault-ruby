@@ -31,7 +31,7 @@ class PersistentHTTP::Pool < Vault::ConnectionPool # :nodoc:
     stack  = stacks[net_http_args]
 
     if stack.empty? then
-      conn = @available.pop connection_args: net_http_args
+      conn = @available.pop @timeout, connection_args: net_http_args
     else
       conn = stack.last
     end
