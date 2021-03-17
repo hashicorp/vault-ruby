@@ -11,7 +11,7 @@ Quick Start
 -----------
 Install Ruby 2.0+: [Guide](https://www.ruby-lang.org/en/documentation/installation/).
 
-> Please note that as of Vault Ruby version 0.13.0 versions of Ruby prior to 2.0 are longer supported.
+> Please note that as of Vault Ruby version 0.14.0 versions of Ruby prior to 2.0 are no longer supported.
 
 Install via Rubygems:
 
