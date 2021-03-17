@@ -11,7 +11,7 @@ Quick Start
 -----------
 Install Ruby 2.0+: [Guide](https://www.ruby-lang.org/en/documentation/installation/).
 
-> Please note that Vault Ruby may work on older Ruby installations like Ruby 1.9, but you **should not** use these versions of Ruby when communicating with a Vault server. Ruby 1.9 has [reached EOL](https://www.ruby-lang.org/en/news/2014/01/10/ruby-1-9-3-will-end-on-2015/) and will no longer receive important security patches or maintenance updates. There _are known security vulnerabilities_ specifically around SSL ciphers, which this library uses to communicate with a Vault server. While many distros still ship with Ruby 1.9 as the default, you are **highly discouraged** from using this library on any version of Ruby lower than Ruby 2.0.
+> Please note that as of Vault Ruby version 0.13.0 versions of Ruby prior to 2.0 are longer supported.
 
 Install via Rubygems:
 
