@@ -23,6 +23,48 @@ module Vault
     field :options
   end
 
+  class MountTune < Response
+    # @!attribute [r] description
+    #   Specifies the description of the mount.
+    #   @return [String]
+    field :description
+
+    # @!attribute [r] default_lease_ttl
+    #   Specifies the default time-to-live.
+    #   @return [Fixnum]
+    field :default_lease_ttl
+
+    # @!attribute [r] max_lease_ttl
+    #   Specifies the maximum time-to-live.
+    #   @return [Fixnum]
+    field :max_lease_ttl
+
+    # @!attribute [r] audit_non_hmac_request_keys
+    #   Specifies the comma-separated list of keys that will not be HMAC'd by audit devices in the request data object.
+    #   @return [Array<String>]
+    field :audit_non_hmac_request_keys
+
+    # @!attribute [r] audit_non_hmac_response_keys
+    #   Specifies the comma-separated list of keys that will not be HMAC'd by audit devices in the response data object.
+    #   @return [Array<String>]
+    field :audit_non_hmac_response_keys
+
+    # @!attribute [r] listing_visibility
+    #   Specifies whether to show this mount in the UI-specific listing endpoint.
+    #   @return [String]
+    field :listing_visibility
+
+    # @!attribute [r] passthrough_request_headers
+    #   Comma-separated list of headers to whitelist and pass from the request to the plugin.
+    #   @return [Array<String>]
+    field :passthrough_request_headers
+
+    # @!attribute [r] allowed_response_headers
+    #   Comma-separated list of headers to whitelist, allowing a plugin to include them in the response.
+    #   @return [Array<String>]
+    field :allowed_response_headers
+  end
+
   class Sys < Request
     # List all mounts in the vault.
     #
@@ -55,6 +97,18 @@ module Vault
 
       client.post("/v1/sys/mounts/#{encode_path(path)}", JSON.fast_generate(payload))
       return true
+    end
+
+    # Get the mount tunings at a given path.
+    #
+    # @example
+    #   Vault.sys.get_mount_tune("pki") #=> { :pki => #<struct Vault::MountTune default_lease_ttl=2764800> }
+    #
+    # @return [MountTune]
+    def get_mount_tune(path)
+      json = client.get("/v1/sys/mounts/#{encode_path(path)}/tune")
+      json = json[:data] if json[:data]
+      return MountTune.decode(json)
     end
 
     # Tune a mount at the given path.
