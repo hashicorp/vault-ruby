@@ -44,6 +44,21 @@ module Vault
       end
     end
 
+    describe "#get_mount_tune" do
+      it "gets the mount tune settings" do
+        subject.mount("test_mount_get_tune", "aws")
+        result = subject.get_mount_tune("test_mount_get_tune")
+        expect(result.default_lease_ttl).to eq(2764800)
+        expect(result).to be_a(MountTune)
+
+        # Modify the mount tuning setting and recheck
+        subject.mount_tune("test_mount_get_tune", default_lease_ttl: 12345)
+        result = subject.get_mount_tune("test_mount_get_tune")
+        expect(result.default_lease_ttl).to eq(12345)
+        expect(result).to be_a(MountTune)
+      end
+    end
+
     describe "#mount_tune" do
       it "tunes the mount" do
         expect(subject.mount("test_mount_tune", "aws")).to be(true)
