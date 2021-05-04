@@ -202,6 +202,13 @@ module Vault
         expect(subject.token).to eq(result.auth.client_token)
       end
 
+      it "returns nil if a certificate name is provided that doesn't exist" do
+        pending "dev server does not support tls"
+        secret = subject.auth.tls(auth_cert, name: "not_here")
+        
+        expect(secret).to_be nil
+      end
+
       it "raises an error if the authentication is bad", vault: "> 0.6.1" do
         subject.sys.disable_auth("cert")
 
