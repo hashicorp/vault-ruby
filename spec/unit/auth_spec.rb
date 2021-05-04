@@ -2,7 +2,22 @@ require "spec_helper"
 
 module Vault
   describe Authenticate do
-    let(:auth) { Authenticate.new(client: nil) }
+    let(:client) { double('client') }
+    let(:auth) { Authenticate.new(client: client) }
+
+    describe '#kubernetes' do
+      before do
+        allow(::File).to receive(:read).with(
+          '/var/run/secrets/kubernetes.io/serviceaccount/token'
+        ).and_return('abc123')
+      end
+
+      it 'authenticates with Kubernetes Auth method' do
+        expect(client).to receive(:post).with('/v1/auth/kubernetes/login', '{"blah": "wrong"}')
+        expect(auth.kubernetes('test-role')).to eq('secret')
+      end
+    end
+
     describe "#region_from_sts_endpoint" do
       subject { auth.send(:region_from_sts_endpoint, sts_endpoint) }
 
