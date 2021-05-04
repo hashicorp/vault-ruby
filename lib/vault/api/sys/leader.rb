@@ -14,6 +14,11 @@ module Vault
     #   URL where the server is running.
     #   @return [String]
     field :leader_address, as: :address
+    
+    # @!attribute [r] cluster_address
+    #   URL where the cluster leader is running.
+    #   @return [String]
+    field :leader_cluster_address, as: :cluster_address
 
     # @deprecated Use {#ha_enabled?} instead
     def ha?; ha_enabled?; end
