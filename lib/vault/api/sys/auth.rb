@@ -11,6 +11,11 @@ module Vault
     #   Name of the auth backend.
     #   @return [String]
     field :type
+
+    # @!attribute [r] accessor
+    #   Mount accessor for auth backend.
+    #   @return [String]
+    field :accessor
   end
 
   class AuthConfig < Response
