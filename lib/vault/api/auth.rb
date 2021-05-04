@@ -267,6 +267,28 @@ module Vault
       return secret
     end
 
+    # Authenticate via the okta authentication method. If authentication
+    # is successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.okta("sethvargo", "s3kr3t") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] username
+    # @param [String] password
+    # @param [Hash] options
+    #   additional options to pass to the authentication call, such as a custom
+    #   mount point
+    #
+    # @return [Secret]
+    def okta(username, password, options = {})
+      payload = { password: password }.merge(options)
+      json = client.post("/v1/auth/okta/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
     # Authenticate via a TLS authentication method. If authentication is
     # successful, the resulting token will be stored on the client and used
     # for future requests.
