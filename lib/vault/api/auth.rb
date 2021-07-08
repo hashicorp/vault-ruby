@@ -89,10 +89,10 @@ module Vault
     #   It is required when `bind_secret_id` is enabled for the specified role_id
     #
     # @return [Secret]
-    def approle(role_id, secret_id=nil)
+    def approle(role_id, secret_id=nil, mount="/v1/auth/approle/login")
       payload = { role_id: role_id }
       payload[:secret_id] = secret_id if secret_id
-      json = client.post("/v1/auth/approle/login", JSON.fast_generate(payload))
+      json = client.post(mount, JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
