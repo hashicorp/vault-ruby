@@ -87,6 +87,7 @@ module Vault
     # @param [String] role_id
     # @param [String] secret_id (default: nil)
     #   It is required when `bind_secret_id` is enabled for the specified role_id
+    # @param [String] mount (default: '/v1/auth/approle/login') custom mount point for the authorization
     #
     # @return [Secret]
     def approle(role_id, secret_id=nil, mount="/v1/auth/approle/login")
