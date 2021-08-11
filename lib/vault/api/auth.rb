@@ -286,6 +286,9 @@ module Vault
     # @param [String] path (default: 'cert')
     #   The path to the auth backend to use for the login procedure.
     #
+    # @param [String] name optional
+    #   The named certificate role provided to the login request. 
+    #
     # @return [Secret]
     def tls(pem = nil, path = 'cert', name: nil)
       new_client = client.dup
