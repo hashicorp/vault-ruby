@@ -60,7 +60,11 @@ module Vault
         subject.write("b:@c%n-read", foo: "bar")
         secret = subject.read("b:@c%n-read")
         expect(secret).to be
-        expect(secret.metadata.keys).to match_array([:created_time, :deletion_time, :version, :destroyed])
+        if vault_meets_requirements?(">= 1.9.0")
+          expect(secret.metadata.keys).to match_array([:created_time, :deletion_time, :version, :destroyed, :custom_metadata])
+        else
+          expect(secret.metadata.keys).to match_array([:created_time, :deletion_time, :version, :destroyed])
+        end
       end
     end
 
@@ -115,6 +119,38 @@ module Vault
         expect(subject.read_metadata("test-meta")[:max_versions]).to eq(0)
         subject.write_metadata("test-meta", max_versions: 3)
         expect(subject.read_metadata("test-meta")[:max_versions]).to eq(3)
+      end
+    end
+
+    describe "#update", vault: ">= 1.9.0" do
+      it "merges data and returns the secret" do
+        subject.write("test-update", zip: "zap")
+        subject.update("test-update", zig: "zag")
+        result = subject.read("test-update")
+        expect(result).to be
+        expect(result.data).to eq(zip: "zap", zig: "zag")
+      end
+
+      it "raises an error if the path does not exist" do
+        expect {
+          subject.update("test-update-non-existent", zig: "zag")
+        }.to raise_error(Vault::HTTPClientError)
+      end
+
+      it "raises an error if the path has been deleted" do
+        expect {
+          subject.write("test-update-deleted", zip: "zap")
+          subject.delete("test-update-deleted")
+          subject.update("test-update-deleted", zig: "zag")
+        }.to raise_error(Vault::HTTPClientError)
+      end
+
+      it "raises an error if the path has been destroyed" do
+        expect {
+          subject.write("test-update-destroyed", zip: "zap")
+          subject.delete("test-update-destroyed")
+          subject.update("test-update-destroyed", zig: "zag")
+        }.to raise_error(Vault::HTTPClientError)
       end
     end
 

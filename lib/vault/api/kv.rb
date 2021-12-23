@@ -122,6 +122,32 @@ module Vault
       true
     end
 
+    # Update the secret at the given path with the given data. Note that the
+    # data must be a {Hash}! Data will be merged with existing values.
+    #
+    # Note: This will raise an error if used on KV Secrets Engine Version 1.
+    #
+    # @example
+    #   Vault.kv.write("secret/multiple", password: "secret") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] path
+    #   the path to update
+    # @param [Hash] data
+    #   the data to merge
+    #
+    # @return [Secret]
+    def update(path, data = {}, options = {})
+      headers = extract_headers!(options)
+      headers["Content-Type"] = "application/merge-patch+json"
+      json = client.patch("/v1/#{mount}/data/#{encode_path(path)}", JSON.fast_generate(:data => data), headers)
+      if json.nil?
+        return true
+      else
+        return Secret.decode(json)
+      end
+    end
+
+
     # Delete the secret at the given path. If the secret does not exist, vault
     # will still return true.
     #

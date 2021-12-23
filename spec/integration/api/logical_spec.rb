@@ -91,6 +91,57 @@ module Vault
       end
     end
 
+    describe "#update", vault: ">= 1.9.0" do
+      context "v1 KV" do
+        before do
+          @original_mount = vault_test_client.sys.mounts[:secret]
+          vault_test_client.sys.unmount("secret")
+          vault_test_client.sys.mount(
+            "secret", "kv", "v1 KV", options: {version: "1"}
+          )
+        end
+
+        after do
+          vault_test_client.sys.unmount("secret")
+          vault_test_client.sys.mount(
+            "secret", @original_mount.type, @original_mount.description, options: @original_mount.options
+          )
+        end
+
+        it "raises an error" do
+          subject.write("secret/test-update-v1", zip: "zap")
+          expect {
+            subject.update("secret/test-update-v1", bacon: true)
+          }.to raise_error(Vault::HTTPClientError)
+        end
+      end
+
+      context "v2 KV" do
+        before do
+          @original_mount = vault_test_client.sys.mounts[:secret]
+          vault_test_client.sys.unmount("secret")
+          vault_test_client.sys.mount(
+            "secret", "kv", "v2 KV", options: {version: "2"}
+          )
+        end
+
+        after do
+          vault_test_client.sys.unmount("secret")
+          vault_test_client.sys.mount(
+            "secret", @original_mount.type, @original_mount.description, options: @original_mount.options
+          )
+        end
+
+        it "updates existing secrets" do
+          subject.write("secret/data/test-update-v2", data: {zip: "zap"})
+          subject.update("secret/data/test-update-v2", data: {bacon: true})
+          result = subject.read("secret/data/test-update-v2")
+          expect(result).to be
+          expect(result.data[:data]).to eq(zip: "zap", bacon: true)
+        end
+      end
+    end
+
     describe "#delete" do
       it "deletes the secret" do
         subject.write("secret/delete", foo: "bar")
