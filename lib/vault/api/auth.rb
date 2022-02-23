@@ -267,6 +267,39 @@ module Vault
       return secret
     end
 
+        # Authenticate via the Azure authentication method. If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.azure("read-only", "jwt", "subscription_id", "resource_group", "vm_name", "vmss_name") #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] jwt
+    #   jwt returned by the instance identity metadata,
+    # @param [String] subscription_id
+    # @param [String] resource_group
+    # @param [String] vm_name
+    # @param [String] mount_point optional
+    #   the path were the azure auth backend is mounted
+    #
+    # @return [Secret]
+    def azure(role, jwt, subscription_id, resource_group, vm_name, mount_point = 'azure')
+      route = "/v1/auth/#{mount_point}/login"
+
+      payload = {
+        role: role,
+        jwt: jwt,
+        subscription_id: subscription_id,
+        resource_group_name: resource_group,
+        vm_name: vm_name
+      }
+      json = client.post(route, JSON.fast_generate(payload))
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+      return secret
+    end
+
     # Authenticate via a TLS authentication method. If authentication is
     # successful, the resulting token will be stored on the client and used
     # for future requests.
