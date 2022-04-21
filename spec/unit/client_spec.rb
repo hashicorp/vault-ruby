@@ -147,16 +147,38 @@ module Vault
       end
 
       (400..422).each do |code|
-        it "does not retry on a #{code} response code" do
-          wrong_error = StandardError.new("bad")
-          stub_request(:get, "https://vault.test/")
-            .to_return(status: code)
-            .to_raise(wrong_error)
+        unless code == 412 then
+          it "does not retry on a #{code} response code" do
+            wrong_error = StandardError.new("bad")
+            stub_request(:get, "https://vault.test/")
+              .to_return(status: code)
+              .to_raise(wrong_error)
 
-          expect {
-            subject.get("/")
-          }.to raise_error(Vault::HTTPClientError)
+            expect {
+              subject.get("/")
+            }.to raise_error(Vault::HTTPClientError)
+          end
         end
+      end
+
+      it "retries on a 412 response code" do
+        stub_request(:get, "https://vault.test/")
+          .to_return(status: 412).then
+          .to_return(status: 200, body: "{}")
+
+        subject.with_retries(Vault::MissingRequiredStateError, options) do
+          subject.get("/")
+        end 
+      end
+
+      it "is detected by default on 412" do
+          stub_request(:get, "https://vault.test/")
+            .to_return(status: 412, body: "{}")
+          expect {
+            subject.with_retries(options) do
+              subject.get("/")
+            end
+          }.to raise_error(Vault::MissingRequiredStateError)
       end
 
       (500..520).each do |code|

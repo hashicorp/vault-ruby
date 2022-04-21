@@ -296,6 +296,8 @@ module Vault
           request(verb, response[LOCATION_HEADER], data, headers)
         when Net::HTTPSuccess
           success(response)
+        when Net::HTTPPreconditionFailed
+          raise MissingRequiredStateError.new
         else
           error(response)
         end
