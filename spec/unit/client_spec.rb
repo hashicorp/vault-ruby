@@ -161,7 +161,16 @@ module Vault
         end
       end
 
-      it "retries on a 412 response code" do
+      it "returns the correct error type on a 412" do
+        stub_request(:get, "https://vault.test/")
+          .to_return(status: 412, body: "{}")
+
+        expect {
+          subject.get("/")
+        }.to raise_error(Vault::MissingRequiredStateError)
+      end
+
+      it "retries on a 412 response code when passed to with_retries" do
         stub_request(:get, "https://vault.test/")
           .to_return(status: 412).then
           .to_return(status: 200, body: "{}")
@@ -171,14 +180,14 @@ module Vault
         end 
       end
 
-      it "is detected by default on 412" do
+      it "is retried by default on 412 when passed to with_retries" do
           stub_request(:get, "https://vault.test/")
-            .to_return(status: 412, body: "{}")
-          expect {
-            subject.with_retries(options) do
-              subject.get("/")
-            end
-          }.to raise_error(Vault::MissingRequiredStateError)
+            .to_return(status: 412).then
+            .to_return(status: 200, body: "{}")
+
+          subject.with_retries(options) do
+            subject.get("/")
+          end
       end
 
       (500..520).each do |code|
