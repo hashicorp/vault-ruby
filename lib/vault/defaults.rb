@@ -35,7 +35,7 @@ module Vault
 
     # The set of exceptions that are detect and retried by default
     # with `with_retries`
-    RETRIED_EXCEPTIONS = [HTTPServerError]
+    RETRIED_EXCEPTIONS = [HTTPServerError, MissingRequiredStateError]
 
     class << self
       # The list of calculated options for this configurable.

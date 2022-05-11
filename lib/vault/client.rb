@@ -392,6 +392,8 @@ module Vault
 
       # Use the correct exception class
       case response
+      when Net::HTTPPreconditionFailed
+        raise MissingRequiredStateError.new
       when Net::HTTPClientError
         klass = HTTPClientError
       when Net::HTTPServerError
