@@ -2,6 +2,12 @@
 
 ## v?.??.? (Unreleased)
 
+## v0.17.0 (May 11, 2022)
+
+IMPROVEMENTS
+
+- Added MissingRequiredStateErr error type to refer to 412s returned by Vault 1.10 when the WAL index on the node does not match the index in the Server-Side Consistent Token. This error type can be passed as a parameter to `#with_retries`, and will also be retried automatically when `#with_retries` is used with no parameters.
+
 ## v0.16.0 (March 17, 2021)
 
 IMPROVEMENTS
