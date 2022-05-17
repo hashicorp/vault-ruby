@@ -603,10 +603,10 @@ class PersistentHTTP
   def connection_for uri
     use_ssl = uri.scheme.downcase == 'https'
 
-    net_http_args = [uri.host, uri.port]
+    net_http_args = [uri.hostname, uri.port]
 
     net_http_args.concat @proxy_args if
-      @proxy_uri and not proxy_bypass? uri.host, uri.port
+      @proxy_uri and not proxy_bypass? uri.hostname, uri.port
 
     connection = @pool.checkout net_http_args
 
@@ -715,7 +715,7 @@ class PersistentHTTP
   # Returns the HTTP protocol version for +uri+
 
   def http_version uri
-    @http_versions["#{uri.host}:#{uri.port}"]
+    @http_versions["#{uri.hostname}:#{uri.port}"]
   end
 
   ##
@@ -798,7 +798,7 @@ class PersistentHTTP
 
     if @proxy_uri then
       @proxy_args = [
-        @proxy_uri.host,
+        @proxy_uri.hostname,
         @proxy_uri.port,
         unescape(@proxy_uri.user),
         unescape(@proxy_uri.password),
@@ -973,7 +973,7 @@ class PersistentHTTP
       end
     end
 
-    @http_versions["#{uri.host}:#{uri.port}"] ||= response.http_version
+    @http_versions["#{uri.hostname}:#{uri.port}"] ||= response.http_version
 
     response
   end
