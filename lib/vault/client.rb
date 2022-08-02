@@ -388,7 +388,7 @@ module Vault
     #   the response object from the request
     def error(response)
       if response.body && response.body.match("missing client token")
-        # this behavior changed in Vault 1.10
+        # Vault 1.10+ no longer returns "missing" client token" so we use HTTPClientError
         klass = HTTPClientError
       else
         # Use the correct exception class
