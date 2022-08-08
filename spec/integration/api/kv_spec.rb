@@ -60,7 +60,7 @@ module Vault
         subject.write("b:@c%n-read", foo: "bar")
         secret = subject.read("b:@c%n-read")
         expect(secret).to be
-        expect(secret.metadata.keys).to match_array([:created_time, :deletion_time, :version, :destroyed])
+        expect(secret.metadata.keys).to match_array([:created_time, :custom_metadata, :deletion_time, :version, :destroyed])
       end
     end
 

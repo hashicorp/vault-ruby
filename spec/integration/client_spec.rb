@@ -49,7 +49,7 @@ module Vault
 
         expect {
           client.get("/v1/secret/password")
-        }.to raise_error(MissingTokenError)
+        }.to raise_error(HTTPClientError)
       end
     end
 
@@ -183,7 +183,7 @@ module Vault
             "secret", "kv", "v1 KV", options: {version: "1"}
           )
         end
-      
+
         after(:context) do
           next unless versioned_kv_by_default?
 
@@ -196,7 +196,7 @@ module Vault
 
         context "when a namespace is provided" do
           it "ignores the namespace" do
-            subject.logical.write("secret/sekkrit", foo: "bar")  
+            subject.logical.write("secret/sekkrit", foo: "bar")
             subject.namespace = "foo"
             expect(subject.logical.read("secret/sekkrit").data).to eq(foo: "bar")
           end
