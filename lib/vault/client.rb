@@ -45,6 +45,7 @@ module Vault
 
       # Failed to reach the server (aka bad URL)
       a << Errno::ECONNREFUSED
+      a << Errno::EADDRNOTAVAIL
 
       # Failed to read body or no response body given
       a << EOFError
@@ -387,19 +388,20 @@ module Vault
     #   the response object from the request
     def error(response)
       if response.body && response.body.match("missing client token")
-        raise MissingTokenError
-      end
-
-      # Use the correct exception class
-      case response
-      when Net::HTTPPreconditionFailed
-        raise MissingRequiredStateError.new
-      when Net::HTTPClientError
+        # Vault 1.10+ no longer returns "missing" client token" so we use HTTPClientError
         klass = HTTPClientError
-      when Net::HTTPServerError
-        klass = HTTPServerError
       else
-        klass = HTTPError
+        # Use the correct exception class
+        case response
+        when Net::HTTPPreconditionFailed
+          raise MissingRequiredStateError.new
+        when Net::HTTPClientError
+          klass = HTTPClientError
+        when Net::HTTPServerError
+          klass = HTTPServerError
+        else
+          klass = HTTPError
+        end
       end
 
       if (response.content_type || '').include?("json")

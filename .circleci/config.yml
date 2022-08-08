@@ -3,14 +3,10 @@ version: 2.1
 orbs:
   gem: zfhui/ruby-gem@0.2.1
 
-references:
-  images:
-    ubuntu: &UBUNTU_IMAGE ubuntu-1604:201903-01
-
 jobs:
   test:
-    machine:
-      image: *UBUNTU_IMAGE
+    docker:
+      - image: cimg/ruby:<< parameters.ruby-version >>
     parameters:
       ruby-version:
         type: string
@@ -32,11 +28,6 @@ jobs:
             mkdir -p ~/bin
             mv vault ~/bin
             export PATH="~/bin:$PATH"
-      - run:
-          name: Set ruby version
-          command: |
-            rvm install << parameters.ruby-version >>
-            echo . $(rvm << parameters.ruby-version >> do rvm env --path) >> $BASH_ENV
       - run:
           name: Run tests
           command: |
@@ -71,8 +62,8 @@ workflows:
               only: /^v[0-9]+\.[0-9]+\.[0-9]+.*/
           matrix:
             parameters:
-              ruby-version: ["2.7.1", "2.6", "2.5"]
-              vault-version: ["1.5.0", "1.4.2", "1.4.1", "1.4.0", "1.3.6"]
+              ruby-version: ["3.1.2", "3.0.4", "2.7.6", "2.6.10"]
+              vault-version: ["1.11.1", "1.10.5", "1.9.8"]
           name: test-ruby-<< matrix.ruby-version >>-vault-<< matrix.vault-version >>
       - build-release:
           requires:
@@ -80,6 +71,6 @@ workflows:
           context: vault-gem-release
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+.*/ 
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+.*/
             branches:
               ignore: /.*/
