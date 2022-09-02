@@ -45,5 +45,20 @@ module Vault
       client.put("/v1/sys/revoke-prefix/#{id}", nil)
       return true
     end
+    
+    # Lookup lease details at the given id.
+    #
+    # @example
+    #   Vault.sys.lookup("database/creds/my-role/LeaseID") #=> #<Vault::Secret ...>
+    #
+    # @param [String] id
+    #   the lease ID
+    #
+    # @return [Secret]
+    def lookup(id)
+      json = client.put("/v1/sys/leases/lookup", JSON.fast_generate(
+        lease_id: id))
+      return Secret.decode(json)
+    end
   end
 end
