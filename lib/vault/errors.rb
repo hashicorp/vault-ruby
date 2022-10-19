@@ -22,6 +22,18 @@ EOH
     end
   end
 
+  class MissingRequiredStateError < VaultError
+    def initialize
+      super <<-EOH
+The performance standby node does not yet have the 
+most recent index state required to authenticate 
+the request.
+
+Generally, the request should be retried with the with_retries clause.
+EOH
+    end
+  end
+
   class HTTPConnectionError < VaultError
     attr_reader :address
 
