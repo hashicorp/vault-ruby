@@ -134,7 +134,7 @@ module Vault
     #    the metadata to patch
     #
     # @return [true]
-    def patch_metadata(path, metadata = {}, options ={})
+    def patch_metadata(path, metadata = {}, options = {})
       headers = extract_headers!(options)
       headers["Content-Type"] = "application/merge-patch+json"
       client.patch("/v1/#{mount}/metadata/#{encode_path(path)}", JSON.fast_generate(metadata), headers)
