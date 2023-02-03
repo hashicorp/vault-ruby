@@ -118,7 +118,7 @@ module Vault
       end
     end
 
-    describe "#patch_metadata" do
+    describe "#patch_metadata", vault: ">= 1.10.0" do
       it "updates metadata for the secret" do
         subject.write("test-patch-meta", zip: "zap")
         subject.write_metadata("test-patch-meta", custom_metadata: {zip: "zap"})
