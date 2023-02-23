@@ -203,6 +203,7 @@ module Vault
     # @param [String] sts_endpoint optional
     #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html
     # @param [String] route optional
+    #   The full api path to the auth method's login endpoint, ie `/v1/auth/aws/mycorp/myorg/login`
     # @return [Secret]
     def aws_iam(role, credentials_provider, iam_auth_header_value = nil, sts_endpoint = 'https://sts.amazonaws.com', route = nil)
       require "aws-sigv4"
