@@ -9,6 +9,7 @@ module Vault
         :hostname,
         :namespace,
         :open_timeout,
+        :allowed_proxy_addresses,
         :proxy_address,
         :proxy_password,
         :proxy_port,

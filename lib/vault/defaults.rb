@@ -104,6 +104,14 @@ module Vault
         end
       end
 
+      # HTTP Proxy server addresses to allow even if HTTPS is being used.
+      # If this set is empty, the Vault URL uses HTTPS, and a proxy is specified,
+      # an error will occur.
+      # @return [Array, nil]
+      def allowed_proxy_addresses
+        []
+      end
+
       # The HTTP Proxy server address as a string
       # @return [String, nil]
       def proxy_address

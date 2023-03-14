@@ -2,6 +2,10 @@
 
 ## v?.??.? (Unreleased)
 
+IMPROVEMENTS
+
+- Added configuration option `Vault.allowed_proxy_addresses` so a proxy can be specified even with an HTTPS connection.
+
 ## v0.17.0 (May 11, 2022)
 
 IMPROVEMENTS

@@ -101,6 +101,12 @@ module Vault
       end
     end
 
+    describe ".allowed_proxy_addresses" do
+      it "defaults to an empty set" do
+        expect(Defaults.allowed_proxy_addresses).to eq([])
+      end
+    end
+
     describe ".proxy_address" do
       it "defaults to ENV['VAULT_PROXY_ADDRESS']" do
         with_stubbed_env("VAULT_PROXY_ADDRESS" => "30") do

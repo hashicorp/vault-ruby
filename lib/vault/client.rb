@@ -246,7 +246,7 @@ module Vault
         request.basic_auth uri.user, uri.password
       end
 
-      if proxy_address and uri.scheme.downcase == "https"
+      if proxy_address and uri.scheme.downcase == "https" and ! allowed_proxy_addresses.includes?(proxy_address)
         raise SecurityError, "no direct https connection to vault"
       end
 
