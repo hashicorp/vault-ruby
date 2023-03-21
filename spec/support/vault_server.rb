@@ -61,7 +61,7 @@ module RSpec
     end
 
     def wait_for_ready(&block)
-      Timeout.timeout(5) do
+      Timeout.timeout(15) do
         while !File.exist?(TOKEN_PATH)
           sleep(0.25)
         end
@@ -69,7 +69,7 @@ module RSpec
 
       yield
     rescue Timeout::Error
-      raise "Vault did not start in 5 seconds!"
+      raise "Vault did not start in 15 seconds!"
     end
   end
 end
