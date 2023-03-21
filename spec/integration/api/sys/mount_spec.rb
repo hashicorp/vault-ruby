@@ -80,6 +80,7 @@ module Vault
       it "remounts at the new path" do
         subject.mount("test_remount", "aws")
         subject.remount("test_remount", "new_test_remount")
+        sleep 0.1
         expect(subject.mounts[:test_remount]).to be(nil)
         expect(subject.mounts[:new_test_remount]).to be
       end
