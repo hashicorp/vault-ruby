@@ -61,11 +61,6 @@ module Vault
       a << PersistentHTTP::Error
     end.freeze
 
-    # Indicates a requested operation is not possible due to security
-    # concerns.
-    class SecurityError < RuntimeError
-    end
-
     include Vault::Configurable
 
     # Create a new Client with the given options. Any options given take
@@ -244,10 +239,6 @@ module Vault
       request = class_for_request(verb).new(uri.request_uri)
       if uri.userinfo()
         request.basic_auth uri.user, uri.password
-      end
-
-      if proxy_address and uri.scheme.downcase == "https"
-        raise SecurityError, "no direct https connection to vault"
       end
 
       # Get a list of headers
