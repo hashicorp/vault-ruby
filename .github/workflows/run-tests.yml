@@ -1,0 +1,62 @@
+name: hashicorp/vault-ruby/run-tests
+on:
+  push:
+    branches:
+    - master
+jobs:
+  test:
+    if: # GitHub does not currently support regular expressions inside if conditions
+#         github.ref == 'refs/tags//^v[0-9]+\.[0-9]+\.[0-9]+.*/'
+    runs-on: ubuntu-latest
+    container:
+      image: ruby:${{ matrix.ruby-version }}
+    strategy:
+      matrix:
+        ruby-version:
+        - 3.1.2
+        - 3.0.4
+        - 2.7.6
+        - 2.6.10
+        vault-version:
+        - 1.11.1
+        - 1.10.5
+        - 1.9.8
+    steps:
+    - uses: actions/checkout@v3.5.0
+    - name: restore_cache
+      uses: actions/cache@v3.3.1
+      with:
+        key: v1-dependencies-bundler-${{ matrix.ruby-version }}-{{ checksum "vault.gemspec" }}
+        restore-keys: |-
+          v1-dependencies-bundler-${{ matrix.ruby-version }}-{{ checksum "vault.gemspec" }}
+          v1-dependencies-bundler-
+        path: vendor/bundle
+    - name: Install vault
+      run: |-
+        curl -sLo vault.zip https://releases.hashicorp.com/vault/${{ matrix.vault-version }}/vault_${{ matrix.vault-version }}_linux_amd64.zip
+        unzip vault.zip
+        mkdir -p ~/bin
+        mv vault ~/bin
+        export PATH="~/bin:$PATH"
+    - name: Run tests
+      run: |-
+        export VAULT_VERSION=${{ matrix.vault-version }}
+        ruby --version
+        gem install bundler
+        bundle -v
+        bundle install --jobs=3 --retry=3 --path=vendor/bundle
+        bundle exec rake
+  build-release:
+    if: # GitHub does not currently support regular expressions inside if conditions
+#         (github.ref == 'refs/tags//^v[0-9]+\.[0-9]+\.[0-9]+.*/') && (github.ref != 'refs/heads//.*/')
+    defaults:
+      run:
+        working-directory: "~/repo"
+    runs-on: ubuntu-latest
+    needs:
+    - test
+    steps:
+#     # This item has no matching transformer
+#     - zfhui_ruby_gem_build:
+#     # This item has no matching transformer
+#     - zfhui_ruby_gem_release:
