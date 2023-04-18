@@ -22,9 +22,9 @@ jobs:
         - 1.10.5
         - 1.9.8
     steps:
-    - uses: actions/checkout@v3.5.0
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
     - name: restore_cache
-      uses: actions/cache@v3.3.1
+      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
       with:
         key: v1-dependencies-bundler-${{ matrix.ruby-version }}-{{ checksum "vault.gemspec" }}
         restore-keys: |-
