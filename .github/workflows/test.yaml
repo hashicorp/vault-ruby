@@ -19,5 +19,11 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - run:
+    - name: 'Install vault cli'
+      run: |
+        curl -sLo vault.zip https://releases.hashicorp.com/vault/${{ matrix.vault }}/vault_${{ matrix.vault }}_linux_amd64.zip
+        unzip vault.zip
+        mkdir -p $HOME/bin
+        mv vault $HOME/bin
+        echo "$HOME/bin" >> $GITHUB_PATH
     - run: bundle exec rake
