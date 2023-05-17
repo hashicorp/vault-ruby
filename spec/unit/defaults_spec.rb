@@ -26,8 +26,40 @@ module Vault
     end
 
     describe ".token" do
+      it "uses ENV['VAULT_TOKEN'] if present" do
+        with_stubbed_env("VAULT_TOKEN" => "testing") do
+          expect(Defaults.token).to eq("testing")
+        end
+      end
+
+      it "delegates to fetch_from_disk if ENV['VAULT_TOKEN'] is not present" do
+        with_stubbed_env("VAULT_TOKEN" => nil) do
+          allow(Defaults).to receive(:fetch_from_disk).with("VAULT_TOKEN_FILE").and_return("fetch_from_disk_token")
+          expect(Defaults.token).to eq("fetch_from_disk_token")
+          expect(Defaults).to have_received(:fetch_from_disk)
+        end
+      end
+
+      it "prefers the environment over local token" do
+        with_stubbed_env("VAULT_TOKEN" => "testing2") do
+          allow(Defaults).to receive(:fetch_from_disk)
+          expect(Defaults.token).to eq("testing2")
+          expect(Defaults).to_not have_received(:fetch_from_disk)
+        end
+      end
+
+      it "returns nil if ENV['VAULT_TOKEN'] is not present and fetch_from_disk return nil" do
+        with_stubbed_env("VAULT_TOKEN" => nil) do
+          allow(Defaults).to receive(:fetch_from_disk).and_return(nil)
+          expect(Defaults.token).to be_nil
+        end
+      end
+    end
+
+    describe ".fetch_from_disk" do
       let(:token) { File.expand_path("~/.vault-token") }
       let(:backup_token) { File.expand_path("~/.vault-token.old") }
+      let(:custom_token_path) { File.expand_path("~/custom_token_path") }
 
       before do
         if File.exist?(token)
@@ -41,21 +73,23 @@ module Vault
         end
       end
 
-      it "uses ~/.vault-token when present" do
-        File.open(token, "w") { |f| f.write("testing\n") }
-        expect(Defaults.token).to eq("testing")
-      end
-
-      it "uses ENV['VAULT_TOKEN'] if present" do
-        with_stubbed_env("VAULT_TOKEN" => "testing") do
-          expect(Defaults.token).to eq("testing")
+      it "reads from ENV specified path if present and file is readable" do
+        File.open(custom_token_path, "w") { |f| f.write("token_from_custom_path\n") }
+        with_stubbed_env("VAULT_TOKEN_FILE" => custom_token_path) do
+          expect(Defaults.fetch_from_disk("VAULT_TOKEN_FILE")).to eq("token_from_custom_path")
         end
       end
 
-      it "prefers the environment over local token" do
-        File.open(token, "w") { |f| f.write("testing1\n") }
-        with_stubbed_env("VAULT_TOKEN" => "testing2") do
-          expect(Defaults.token).to eq("testing2")
+      it "reads from default path if ENV specified path is not present" do
+        File.open(Defaults::DEFAULT_VAULT_DISK_TOKEN, "w") { |f| f.write("default_path_token\n") }
+        with_stubbed_env("VAULT_TOKEN_FILE" => nil) do
+          expect(Defaults.fetch_from_disk("VAULT_TOKEN_FILE")).to eq("default_path_token")
+        end
+      end
+
+      it "returns nil if no readable file is found" do
+        with_stubbed_env("VAULT_TOKEN_FILE" => "/non/existent/path") do
+          expect(Defaults.fetch_from_disk("VAULT_TOKEN_FILE")).to be_nil
         end
       end
     end
