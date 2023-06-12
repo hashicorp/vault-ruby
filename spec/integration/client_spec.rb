@@ -43,7 +43,7 @@ module Vault
 
       it "raises an error when a token was missing" do
         client = Vault::Client.new(
-          address: RSpec::VaultServer.address,
+          address: RSpec.configuration.vault_container.address,
           token: nil,
         )
 

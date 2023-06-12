@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "yard",    "~> 0.9.24"
   spec.add_development_dependency "webmock", "~> 3.8.3"
   spec.add_development_dependency "webrick", "~> 1.5"
+  spec.add_development_dependency "testcontainers", "~> 0.1.3"
 end

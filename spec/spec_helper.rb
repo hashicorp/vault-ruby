@@ -37,12 +37,21 @@ RSpec.configure do |config|
 
   # Disable real connections.
   config.before(:suite) do
-    WebMock.disable_net_connect!(allow_localhost: true)
+    # WebMock.disable_net_connect!(allow_localhost: true)
   end
 
+  # set up vault container
+  config.add_setting :vault_container, default: nil
+
   # Ensure our configuration is reset on each run.
-  config.before(:each) { Vault.setup! }
-  config.after(:each)  { Vault.setup! }
+  config.before(:each) {
+    config.vault_container = RSpec::VaultServer.new
+    Vault.setup!
+  }
+  config.after(:each)  {
+    config.vault_container&.stop
+    Vault.setup!
+  }
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
@@ -57,15 +66,15 @@ end
 
 def vault_test_client
   Vault::Client.new(
-    address: RSpec::VaultServer.address,
-    token:   RSpec::VaultServer.token,
+    address: RSpec.configuration.vault_container.address,
+    token:   RSpec.configuration.vault_container.token,
   )
 end
 
 def vault_redirect_test_client
   Vault::Client.new(
     address: RSpec::RedirectServer.address,
-    token:   RSpec::VaultServer.token,
+    token:   RSpec.configuration.vault_container.token,
   )
 end
 
