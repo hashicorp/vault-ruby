@@ -126,7 +126,7 @@ module Vault
     # be a {Hash}.
     #
     # @example
-    #    Vault.kv("secret").patch_metadata("password", custom_metadata: { data: update }, max_versions => 3)
+    #    Vault.kv("secret").patch_metadata("password", custom_metadata: { my_custom_key: "my_value" }, max_versions: 3)
     #
     # @param [String] path
     #   the path to patch
