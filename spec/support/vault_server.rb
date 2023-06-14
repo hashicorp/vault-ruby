@@ -18,7 +18,11 @@ module RSpec
     def initialize(vault_version = nil)
       if vault_version == nil
         env_version = ENV["VAULT_VERSION"]
-        vault_version = env_version if env_version != nil else "latest"
+        if env_version == nil
+          vault_version = "latest"
+        else
+          vault_version = env_version
+        end
       end
       @container = Testcontainers::DockerContainer.new("hashicorp/vault:#{vault_version}")
                                                   .with_exposed_port(8200)
@@ -29,6 +33,8 @@ module RSpec
       puts "waiting for container to be ready"
       @container.wait_for_http(container_port: 8200, path: "/v1/sys/health")
       puts "container ready!"
+      # we need to wait to get the unseal token
+      sleep(5)
 
       got_unseal_token = false
       @container.logs.each { |log_line|
