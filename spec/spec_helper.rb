@@ -2,7 +2,6 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "vault"
 
 require "pathname"
-# require "webmock/rspec"
 
 require_relative "support/vault_server"
 require_relative "support/redirect_server"
