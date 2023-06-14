@@ -44,7 +44,7 @@ module Vault
     #
     # @return [true]
     def create_namespace(namespace)
-      client.put("/v1/sys/namespaces/#{namespace}", {})
+      client.post("/v1/sys/namespaces/#{namespace}", {})
       return true
     end
 

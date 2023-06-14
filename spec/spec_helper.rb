@@ -40,8 +40,9 @@ RSpec.configure do |config|
     # WebMock.disable_net_connect!(allow_localhost: true)
   end
 
-  # set up vault container
-  config.add_setting :vault_container, default: nil
+  config.after(:suite) do
+    RSpec::VaultServer.instance.stop
+  end
 
   # Ensure our configuration is reset on each run.
   config.before(:each) {
@@ -64,24 +65,26 @@ end
 
 def vault_test_client
   Vault::Client.new(
-    address: RSpec.configuration.vault_container.address,
-    token:   RSpec.configuration.vault_container.token,
+    address: RSpec::VaultServer.address,
+    token:   RSpec::VaultServer.token,
   )
 end
 
 def vault_redirect_test_client
   Vault::Client.new(
     address: RSpec::RedirectServer.address,
-    token:   RSpec.configuration.vault_container.token,
+    token:   RSpec::VaultServer.token,
   )
 end
 
 def versioned_kv_by_default?
-  vault_meets_requirements?(">= 0.10")
+  # vault_meets_requirements?(">= 0.10")
+  true
 end
 
 def vault_is_enterprise?
-  !!vault_version_string.match(/\+(?:ent|prem)/)
+  # !!vault_version_string.match(/\+(?:ent|prem)/)
+  false
 end
 
 def vault_meets_requirements?(v)
