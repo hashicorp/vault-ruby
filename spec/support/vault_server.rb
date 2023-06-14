@@ -6,6 +6,7 @@ require "testcontainers"
 
 module RSpec
   class VaultServer
+    include Singleton
 
     TOKEN_PATH = File.expand_path("~/.vault-token").freeze
     TOKEN_PATH_BKUP = "#{TOKEN_PATH}.bak".freeze
@@ -22,8 +23,10 @@ module RSpec
                                                   .with_exposed_port(8200)
                                                   .with_env(VAULT_DEV_ROOT_TOKEN_ID: "root")
       @token = "root"
+      puts "starting container"
       @container.start
-      @container.wait_for_tcp_port(8200)
+      puts "waiting for container to be ready"
+      @container.wait_for_http(container_port: 8200, path: "/v1/sys/health")
 
       @container.logs.each { |log_line|
         if log_line.match(/Unseal Key.*: (.+)/)

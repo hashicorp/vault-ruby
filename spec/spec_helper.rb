@@ -2,7 +2,7 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "vault"
 
 require "pathname"
-require "webmock/rspec"
+# require "webmock/rspec"
 
 require_relative "support/vault_server"
 require_relative "support/redirect_server"
@@ -45,11 +45,9 @@ RSpec.configure do |config|
 
   # Ensure our configuration is reset on each run.
   config.before(:each) {
-    config.vault_container = RSpec::VaultServer.new
     Vault.setup!
   }
   config.after(:each)  {
-    config.vault_container&.stop
     Vault.setup!
   }
 
