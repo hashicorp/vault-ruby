@@ -24,9 +24,13 @@ module RSpec
           vault_version = env_version
         end
       end
-      @container = Testcontainers::DockerContainer.new("hashicorp/vault:#{vault_version}")
-                                                  .with_exposed_port(8200)
-                                                  .with_env(VAULT_DEV_ROOT_TOKEN_ID: "root")
+
+      fs_binds = { Pathname.new(File.expand_path("../../tmp", __FILE__)).to_s => "/tmp" }
+      @container = Testcontainers::DockerContainer
+                     .new("hashicorp/vault:#{vault_version}")
+                     .with_exposed_port(8200)
+                     .with_env(VAULT_DEV_ROOT_TOKEN_ID: "root")
+                     .with_filesystem_binds(fs_binds)
       @token = "root"
       puts "starting container"
       @container.start
