@@ -8,11 +8,11 @@ require_relative "support/vault_server"
 require_relative "support/redirect_server"
 require_relative "support/sample_certificate"
 
-def vault_version_string
-  @vault_version_string ||= ENV.fetch("VAULT_VERSION", "1.14.0")
-end
-
-TEST_VAULT_VERSION = Gem::Version.new(vault_version_string.match(/(\d+\.\d+\.\d+)/)[1])
+# def vault_version_string
+#   @vault_version_string ||= ENV.fetch("VAULT_VERSION", "1.14.0")
+# end
+#
+# TEST_VAULT_VERSION = Gem::Version.new(vault_version_string.match(/(\d+\.\d+\.\d+)/)[1])
 
 RSpec.configure do |config|
   # Custom helper modules and extensions
@@ -88,7 +88,7 @@ def vault_is_enterprise?
 end
 
 def vault_meets_requirements?(v)
-  Gem::Requirement.new(v).satisfied_by?(TEST_VAULT_VERSION)
+  true
 end
 
 def with_stubbed_env(env = {})
