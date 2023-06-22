@@ -28,7 +28,7 @@ module RSpec
 
       dir = Dir.mktmpdir("vault-ruby-tests-")
       at_exit { FileUtils.remove_entry(dir) }
-      fs_binds = { dir => "/tmp" }
+      fs_binds = { dir => "/vault-temp" }
       @container = Testcontainers::DockerContainer
                      .new("hashicorp/vault:#{vault_version}")
                      .with_exposed_port(8200)

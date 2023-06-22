@@ -17,7 +17,7 @@ module Vault
         # path = tmp.join("enable_audit.log")
         # FileUtils.touch(path)
 
-        subject.enable_audit("test_enable", "file", "", path: "/tmp/enable_audit.log")
+        subject.enable_audit("test_enable", "file", "", path: "/vault-temp/enable_audit.log")
         expect(subject.audits[:test_enable]).to be
         subject.disable_audit("test_enable")
       end
@@ -28,7 +28,7 @@ module Vault
         # path = tmp.join("disable_audit.log")
         # FileUtils.touch(path)
 
-        subject.enable_audit("test_disable", "file", "", path: "/tmp/disable_audit.log")
+        subject.enable_audit("test_disable", "file", "", path: "/vault-temp/disable_audit.log")
         expect(subject.disable_audit("test_disable")).to be(true)
         expect(subject.audits[:test_disable]).to be(nil)
       end
