@@ -68,7 +68,9 @@ module Vault
         before(:context) do
           opts = {
             bind_secret_id: false,
-            bound_cidr_list: "127.0.0.1/32"
+            # 172.17.0.0/16 comes from docker
+            # `docker network inspect bridge`
+            secret_id_bound_cidrs: "172.17.0.0/16"
           }
           vault_test_client.approle.set_role(@approle, opts)
           @role_id = vault_test_client.approle.role_id(@approle)
