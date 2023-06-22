@@ -9,7 +9,7 @@ require_relative "support/redirect_server"
 require_relative "support/sample_certificate"
 
 def vault_version_string
-  @vault_version_string ||= `vault --version`
+  @vault_version_string ||= ENV.fetch("VAULT_VERSION", "1.14.0")
 end
 
 TEST_VAULT_VERSION = Gem::Version.new(vault_version_string.match(/(\d+\.\d+\.\d+)/)[1])
