@@ -22,7 +22,7 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: run tests
         env:
-          VAULT_VERSION: ${{ matrix.vault }}
+          VAULT_VERSION: "${{ matrix.vault }}"
         run: bundle exec rake
 
 permissions:
