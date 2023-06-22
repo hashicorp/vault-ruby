@@ -2,6 +2,7 @@ require "open-uri"
 require "singleton"
 require "timeout"
 require "tempfile"
+require "tmpdir"
 require "testcontainers"
 
 module RSpec
@@ -25,7 +26,9 @@ module RSpec
         end
       end
 
-      fs_binds = { Pathname.new(File.expand_path("../../tmp", __FILE__)).to_s => "/tmp" }
+      dir = Dir.mktmpdir("vault-ruby-tests-")
+      at_exit { FileUtils.remove_entry(dir) }
+      fs_binds = { dir => "/tmp" }
       @container = Testcontainers::DockerContainer
                      .new("hashicorp/vault:#{vault_version}")
                      .with_exposed_port(8200)
