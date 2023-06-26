@@ -44,7 +44,7 @@ module RSpec
       wait_for_ready
       puts "vault server is ready"
 
-      @token = File.read(TOKEN_PATH)
+      @token = "root"
 
       output = ""
       while io.rewind
