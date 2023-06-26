@@ -28,7 +28,11 @@ module RSpec
       end
 
       io = Tempfile.new("vault-server")
-      pid = Process.spawn({}, "vault server -dev", out: io.to_i, err: io.to_i)
+      pid = Process.spawn(
+        { "VAULT_DEV_ROOT_TOKEN_ID" => "root" },
+        "vault server -dev",
+        out: io.to_i, err: io.to_i
+      )
 
       at_exit do
         Process.kill("INT", pid)
@@ -37,22 +41,20 @@ module RSpec
         io.close
         io.unlink
       end
+      wait_for_ready
 
-      wait_for_ready do
-        @token = File.read(TOKEN_PATH)
+      @token = File.read(TOKEN_PATH)
 
-        output = ""
-        while
-          io.rewind
-          output = io.read
-          break if !output.empty?
-        end
+      output = ""
+      while io.rewind
+        output = io.read
+        break unless output.empty?
+      end
 
-        if output.match(/Unseal Key.*: (.+)/)
-          @unseal_token = $1.strip
-        else
-          raise "Vault did not return an unseal token!"
-        end
+      if output.match(/Unseal Key.*: (.+)/)
+        @unseal_token = $1.strip
+      else
+        raise "Vault did not return an unseal token!"
       end
     end
 
@@ -60,16 +62,19 @@ module RSpec
       "http://127.0.0.1:8200"
     end
 
-    def wait_for_ready(&block)
-      Timeout.timeout(15) do
-        while !File.exist?(TOKEN_PATH)
-          sleep(0.25)
+    def wait_for_ready
+      uri = URI(address + "/v1/sys/health")
+      Timeout.timeout(60) do
+        loop do
+          begin
+            response = Net::HTTP.get_response(uri)
+            return true if response.code != 200
+          end
+          sleep 1
         end
       end
-
-      yield
     rescue Timeout::Error
-      raise "Vault did not start in 15 seconds!"
+      raise TimeoutError, "Timed out waiting for vault health check"
     end
   end
 end
