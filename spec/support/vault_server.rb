@@ -43,6 +43,8 @@ module RSpec
       end
       wait_for_ready
       puts "vault server is ready"
+      # sleep to get unseal token
+      sleep 5
 
       @token = "root"
 
