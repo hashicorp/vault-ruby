@@ -42,6 +42,7 @@ module RSpec
         io.unlink
       end
       wait_for_ready
+      puts "vault server is ready"
 
       @token = File.read(TOKEN_PATH)
 
@@ -64,13 +65,15 @@ module RSpec
 
     def wait_for_ready
       uri = URI(address + "/v1/sys/health")
-      Timeout.timeout(60) do
+      Timeout.timeout(10) do
         loop do
           begin
             response = Net::HTTP.get_response(uri)
             return true if response.code != 200
+          rescue Errno::ECONNREFUSED
+            puts "waiting for vault to start"
           end
-          sleep 1
+          sleep 2
         end
       end
     rescue Timeout::Error
