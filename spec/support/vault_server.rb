@@ -29,8 +29,7 @@ module RSpec
 
       io = Tempfile.new("vault-server")
       pid = Process.spawn(
-        { "VAULT_DEV_ROOT_TOKEN_ID" => "root" },
-        "vault server -dev",
+        "vault server -dev -dev-root-token-id=root",
         out: io.to_i, err: io.to_i
       )
 
@@ -67,11 +66,13 @@ module RSpec
 
     def wait_for_ready
       uri = URI(address + "/v1/sys/health")
-      Timeout.timeout(10) do
+      Timeout.timeout(15) do
         loop do
           begin
             response = Net::HTTP.get_response(uri)
-            return true if response.code != 200
+            if response.code != 200
+              return true
+            end
           rescue Errno::ECONNREFUSED
             puts "waiting for vault to start"
           end
