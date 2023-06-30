@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "vault"
   spec.version       = Vault::VERSION
   spec.authors       = ["Seth Vargo"]
-  spec.email         = ["sethvargo@gmail.com"]
+  spec.email         = ["team-vault-devex@hashicorp.com"]
   spec.licenses      = ["MPL-2.0"]
 
   spec.summary       = "Vault is a Ruby API client for interacting with a Vault server."
@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec",   "~> 3.5"
   spec.add_development_dependency "yard",    "~> 0.9.24"
   spec.add_development_dependency "webmock", "~> 3.8.3"
+  spec.add_development_dependency "webrick", "~> 1.5"
 end

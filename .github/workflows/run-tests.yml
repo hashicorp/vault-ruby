@@ -1,0 +1,33 @@
+name: hashicorp/vault-ruby/run-tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # https://endoflife.date/ruby
+        ruby: ["2.7", "3.0", "3.1", "3.2"]
+        vault: ["1.11.9", "1.12.5", "1.13.1"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: "Install vault cli"
+        run: |
+          curl -sLo vault.zip "https://releases.hashicorp.com/vault/${{ matrix.vault }}/vault_${{ matrix.vault }}_linux_amd64.zip"
+          unzip vault.zip
+          mkdir -p "$HOME/bin"
+          mv vault "$HOME/bin"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+      - run: bundle exec rake
+
+permissions:
+  contents: read

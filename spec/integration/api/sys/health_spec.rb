@@ -16,7 +16,7 @@ module Vault
         expect(result.standby?).to be(false)
         expect(result.replication_performance_mode).to be_a(String).or be(nil) # added in 0.9.2
         expect(result.replication_dr_mode).to be_a(String).or be(nil) # added in 0.9.2
-        expect(result.server_time_utc).to be_a(Fixnum)
+        expect(result.server_time_utc).to be_a(Integer)
         expect(result.version).to be_a(String).or be(nil) # added in 0.6.1
         expect(result.cluster_name).to be_a(String).or be(nil)
         expect(result.cluster_id).to be_a(String).or be(nil)

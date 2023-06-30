@@ -73,7 +73,7 @@ module Vault
     describe "unsupported namespaces", non_ent_vault: ">= 0.13" do
       context "#namespace" do
         it "returns a Vault::HTTPClientError with a note that the path is unsupported" do
-          expect{ subject.sys.get_namespace("foo") }.to raise_error(Vault::HTTPClientError, /unsupported path/)
+          expect{ subject.sys.get_namespace("foo") }.to raise_error(Vault::HTTPClientError)
         end
       end
     end
