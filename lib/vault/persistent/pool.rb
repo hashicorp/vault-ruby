@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 module Vault
 class PersistentHTTP::Pool < Vault::ConnectionPool # :nodoc:
 
