@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 ##
 # A Net::HTTP connection wrapper that holds extra information for managing the
 # connection's lifetime.

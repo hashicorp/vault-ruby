@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 require "spec_helper"
 
 #  => #<Vault::HealthStatus:0x007fab0ea2e700 @initialized=true, @sealed=false, @standby=false, @replication_performance_mode=nil, @replication_dr_mode=nil, @server_time_utc=1519776016, @version="0.6.5", @cluster_name="vault-cluster-a784b68d", @cluster_id="53f278b8-e33f-031a-60d2-11189f696b02">
