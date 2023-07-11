@@ -28,6 +28,11 @@ module Vault
         let(:sts_endpoint) { "https:sts.amazonaws.com" }
         it { expect { subject }.to raise_exception(StandardError, "Unable to parse STS endpoint https:sts.amazonaws.com") }
       end
+
+      context 'with a potentially malicious url' do
+        let(:sts_endpoint) { "https://stsXamazonaws.com" }
+        it { expect {subject}.to raise_exception(StandardError, "Unable to parse STS endpoint https://stsXamazonaws.com") }
+      end
     end
   end
 end
