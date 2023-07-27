@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 require "spec_helper"
 
 module Vault
@@ -24,6 +27,11 @@ module Vault
       context 'with a malformed url' do
         let(:sts_endpoint) { "https:sts.amazonaws.com" }
         it { expect { subject }.to raise_exception(StandardError, "Unable to parse STS endpoint https:sts.amazonaws.com") }
+      end
+
+      context 'with a potentially malicious url' do
+        let(:sts_endpoint) { "https://stsXamazonaws.com" }
+        it { expect {subject}.to raise_exception(StandardError, "Unable to parse STS endpoint https://stsXamazonaws.com") }
       end
     end
   end

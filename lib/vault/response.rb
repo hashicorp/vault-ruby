@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 module Vault
   class Response
     # Defines a new field. This is designed to be used by the subclass as a

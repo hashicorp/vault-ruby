@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 module Vault
   require_relative "vault/errors"
   require_relative "vault/client"

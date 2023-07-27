@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # Vendored and modified from github.com/drbrain/net-http-persistent
 #
 require 'net/http'
