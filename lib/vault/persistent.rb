@@ -1043,7 +1043,15 @@ class PersistentHTTP
     connection.use_ssl = true
 
     connection.ciphers     = @ciphers     if @ciphers
-    connection.min_version = @min_version if @min_version
+
+    if @min_version
+      if connection.respond_to? :min_version=
+        connection.min_version = @min_version
+      else
+        connection.ssl_version = @min_version
+      end
+    end
+
     connection.ssl_timeout = @ssl_timeout if @ssl_timeout
 
     connection.verify_depth = @verify_depth
