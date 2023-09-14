@@ -112,8 +112,8 @@ module Vault
 
         @nhp.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-        # Vault requires TLS1.2
-        @nhp.ssl_version = "TLSv1_2"
+        # Vault requires at least TLS1.2
+        @nhp.min_version = OpenSSL::SSL::TLS1_2_VERSION
 
         # Only use secure ciphers
         @nhp.ciphers = ssl_ciphers

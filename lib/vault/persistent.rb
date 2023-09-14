@@ -74,11 +74,11 @@ autoload :OpenSSL, 'openssl'
 # #ca_path            :: Directory with certificate-authorities
 # #cert_store         :: An SSL certificate store
 # #ciphers            :: List of SSl ciphers allowed
+# #min_version        :: Minimum SSL version to use
 # #private_key        :: The client's SSL private key
 # #reuse_ssl_sessions :: Reuse a previously opened SSL session for a new
 #                        connection
 # #ssl_timeout        :: SSL session lifetime
-# #ssl_version        :: Which specific SSL version to use
 # #verify_callback    :: For server certificate verification
 # #verify_depth       :: Depth of certificate verification
 # #verify_mode        :: How connections should be verified
@@ -368,6 +368,11 @@ class PersistentHTTP
   attr_reader :name
 
   ##
+  # Minimum SSL version to use.
+
+  attr_reader :min_version
+
+  ##
   # Seconds to wait until a connection is opened.  See Net::HTTP#open_timeout
 
   attr_accessor :open_timeout
@@ -436,14 +441,6 @@ class PersistentHTTP
   # SSL session lifetime
 
   attr_reader :ssl_timeout
-
-  ##
-  # SSL version to use.
-  #
-  # By default, the version will be negotiated automatically between client
-  # and server.  Ruby 1.9 and newer only.
-
-  attr_reader :ssl_version
 
   ##
   # Where this instance's last-use times live in the thread local variables
@@ -531,9 +528,9 @@ class PersistentHTTP
     @ca_file            = nil
     @ca_path            = nil
     @ciphers            = nil
+    @min_version        = nil
     @private_key        = nil
     @ssl_timeout        = nil
-    @ssl_version        = nil
     @verify_callback    = nil
     @verify_depth       = nil
     @verify_mode        = nil
@@ -1046,8 +1043,8 @@ class PersistentHTTP
     connection.use_ssl = true
 
     connection.ciphers     = @ciphers     if @ciphers
+    connection.min_version = @min_version if @min_version
     connection.ssl_timeout = @ssl_timeout if @ssl_timeout
-    connection.ssl_version = @ssl_version if @ssl_version
 
     connection.verify_depth = @verify_depth
     connection.verify_mode  = @verify_mode
@@ -1101,19 +1098,19 @@ application:
   end
 
   ##
-  # SSL session lifetime
+  # Minimum SSL version to use
 
-  def ssl_timeout= ssl_timeout
-    @ssl_timeout = ssl_timeout
+  def min_version= min_version
+    @min_version = min_version
 
     reconnect_ssl
   end
 
   ##
-  # SSL version to use
+  # SSL session lifetime
 
-  def ssl_version= ssl_version
-    @ssl_version = ssl_version
+  def ssl_timeout= ssl_timeout
+    @ssl_timeout = ssl_timeout
 
     reconnect_ssl
   end

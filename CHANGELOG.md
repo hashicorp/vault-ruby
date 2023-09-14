@@ -2,6 +2,12 @@
 
 ## v?.??.? (Unreleased)
 
+## v0.18.0 (September 14, 2023)
+
+IMPROVEMENTS
+
+- Added support for TLS v1.3 by replacing `ssl_version` with `min_version`.
+
 ## v0.17.0 (May 11, 2022)
 
 IMPROVEMENTS
