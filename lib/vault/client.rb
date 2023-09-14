@@ -64,6 +64,13 @@ module Vault
       a << PersistentHTTP::Error
     end.freeze
 
+    # Vault requires at least TLS1.2
+    MIN_TLS_VERSION = if defined? OpenSSL::SSL::TLS1_2_VERSION
+                        OpenSSL::SSL::TLS1_2_VERSION
+                      else
+                        "TLSv1_2"
+                      end
+
     include Vault::Configurable
 
     # Create a new Client with the given options. Any options given take
@@ -112,8 +119,7 @@ module Vault
 
         @nhp.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-        # Vault requires at least TLS1.2
-        @nhp.min_version = OpenSSL::SSL::TLS1_2_VERSION
+        @nhp.min_version = MIN_TLS_VERSION
 
         # Only use secure ciphers
         @nhp.ciphers = ssl_ciphers

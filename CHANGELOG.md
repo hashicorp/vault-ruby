@@ -2,6 +2,13 @@
 
 ## v?.??.? (Unreleased)
 
+## v0.18.1 (September 14, 2023)
+
+BUG FIXES
+
+- Restored the ability to use this gem with older Ruby versions that do not have
+  the `OpenSSL::SSL::TLS1_2_VERSION` constant.
+
 ## v0.18.0 (September 14, 2023)
 
 IMPROVEMENTS
