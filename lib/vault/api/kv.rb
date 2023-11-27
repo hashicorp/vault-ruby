@@ -125,6 +125,26 @@ module Vault
       true
     end
 
+    # Patch the metadata of a secret at the given path. Note that the data must
+    # be a {Hash}.
+    #
+    # @example
+    #    Vault.kv("secret").patch_metadata("password", custom_metadata: { my_custom_key: "my_value" }, max_versions: 3)
+    #
+    # @param [String] path
+    #   the path to patch
+    # @param [Hash] metadata
+    #    the metadata to patch
+    #
+    # @return [true]
+    def patch_metadata(path, metadata = {}, options = {})
+      headers = extract_headers!(options)
+      headers["Content-Type"] = "application/merge-patch+json"
+      client.patch("/v1/#{mount}/metadata/#{encode_path(path)}", JSON.fast_generate(metadata), headers)
+
+      true
+    end
+
     # Delete the secret at the given path. If the secret does not exist, vault
     # will still return true.
     #

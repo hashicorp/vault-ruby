@@ -121,6 +121,17 @@ module Vault
       end
     end
 
+    describe "#patch_metadata", vault: ">= 1.10.0" do
+      it "updates metadata for the secret" do
+        subject.write("test-patch-meta", zip: "zap")
+        subject.write_metadata("test-patch-meta", custom_metadata: {zip: "zap"})
+        expect(subject.read_metadata("test-patch-meta")[:custom_metadata]).to eq(zip: "zap")
+        subject.patch_metadata("test-patch-meta", custom_metadata: {zop: "zup"}, max_versions: 3)
+        expect(subject.read_metadata("test-patch-meta")[:max_versions]).to eq(3)
+        expect(subject.read_metadata("test-patch-meta")[:custom_metadata]).to eq({ zip: "zap", zop: "zup"})
+      end
+    end
+
     describe "#delete" do
       it "deletes the secret" do
         subject.write("delete", foo: "bar")
