@@ -10,9 +10,9 @@ module Vault
     # @return [String]
     VAULT_ADDRESS = "https://127.0.0.1:8200".freeze
 
-    # The path to the vault token on disk.
+    # The default path to the vault token on disk.
     # @return [String]
-    VAULT_DISK_TOKEN = Pathname.new("#{ENV["HOME"]}/.vault-token").expand_path.freeze
+    DEFAULT_VAULT_DISK_TOKEN = Pathname.new("#{ENV["HOME"]}/.vault-token").expand_path.freeze
 
     # The list of SSL ciphers to allow. You should not change this value unless
     # you absolutely know what you are doing!
@@ -56,17 +56,15 @@ module Vault
       # The vault token to use for authentiation.
       # @return [String, nil]
       def token
-        if !ENV["VAULT_TOKEN"].nil?
-          return ENV["VAULT_TOKEN"]
-        end
-
-        if VAULT_DISK_TOKEN.exist? && VAULT_DISK_TOKEN.readable?
-          return VAULT_DISK_TOKEN.read.chomp
-        end
-
-        nil
+        ENV["VAULT_TOKEN"] || fetch_from_disk("VAULT_TOKEN_FILE")
       end
 
+      def fetch_from_disk(env_var)
+        path = ENV[env_var] ? Pathname.new(ENV[env_var]) : DEFAULT_VAULT_DISK_TOKEN
+        if path.exist? && path.readable?
+          path.read.chomp
+        end
+      end
 
       # Vault Namespace, if any.
       # @return [String, nil]
