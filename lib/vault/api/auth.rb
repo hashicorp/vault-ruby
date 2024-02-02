@@ -90,12 +90,14 @@ module Vault
     # @param [String] role_id
     # @param [String] secret_id (default: nil)
     #   It is required when `bind_secret_id` is enabled for the specified role_id
+    # @param [String] path optional
+    #   the path were the approle auth backend is mounted
     #
     # @return [Secret]
-    def approle(role_id, secret_id=nil)
+    def approle(role_id, secret_id=nil, path = 'approle')
       payload = { role_id: role_id }
       payload[:secret_id] = secret_id if secret_id
-      json = client.post("/v1/auth/approle/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
