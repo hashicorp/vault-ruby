@@ -174,8 +174,10 @@ module Vault
 
     # Shutdown any open pool connections. Pool will be recreated upon next request.
     def shutdown
-      @nhp.shutdown()
-      @nhp = nil
+      @lock.synchronize do
+        @nhp.shutdown()
+        @nhp = nil
+      end
     end
 
     # Creates and yields a new client object with the given token. This may be
