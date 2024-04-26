@@ -3,9 +3,10 @@ Vault Ruby Client [![Build Status](https://circleci.com/gh/hashicorp/vault-ruby.
 
 Vault is the official Ruby client for interacting with [Vault](https://vaultproject.io) by HashiCorp.
 
-HashiCorp has [announced](https://github.com/hashicorp/vault-rails) the deprecation and planned end of support of this resource.
+HashiCorp has [announced](https://developer.hashicorp.com/vault/docs/deprecation#ruby-client-libraries)
+the deprecation and planned end of support of this resource.
 At this time we will be assessing new Ruby resources to list as community-supported libraries in our
-[documentation](https://developer.hashicorp.com/vault/api-docs/libraries#ruby).
+[documentation](https://developer.hashicorp.com/vault/api-docs/libraries).
 
 **If you're viewing this README from GitHub on the `master` branch, know that it may contain unreleased features or
 different APIs than the most recently released version. Please see the Git tag that corresponds to your version of the
