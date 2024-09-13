@@ -12,7 +12,7 @@ module Vault
     #
     # @return [String]
     def encode_path(path)
-      path.b.gsub(%r!([^a-zA-Z0-9_.-/]+)!) { |m|
+      path.b.gsub(%r!([^a-zA-Z0-9_.\-/]+)!) { |m|
         '%' + m.unpack('H2' * m.bytesize).join('%').upcase
       }
     end
