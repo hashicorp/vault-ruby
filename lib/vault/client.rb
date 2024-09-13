@@ -305,6 +305,15 @@ module Vault
       end
     end
 
+    # Removes double slashes from a path.
+    # 
+    # @param [String]
+    # 
+    # @return [String]
+    def remove_double_slash(path)
+      path.b.gsub(%r{//+}, '/')
+    end
+
     # Construct a URL from the given verb and path. If the request is a GET or
     # DELETE request, the params are assumed to be query params are are
     # converted as such using {Client#to_query_string}.
@@ -332,6 +341,8 @@ module Vault
 
       # Don't merge absolute URLs
       uri = URI.parse(File.join(address, path)) unless uri.absolute?
+
+      uri.path = remove_double_slash(uri.path)
 
       # Return the URI object
       uri
