@@ -20,14 +20,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.0"
-  if Gem::Version.new(RUBY_VERSION) <= Gem::Version.new("2.4.0")
-    spec.add_runtime_dependency "aws-sigv4", "= 1.6.0"
-    spec.add_runtime_dependency "aws-eventstream", "= 1.2.0"
-  else
-    spec.add_runtime_dependency "aws-sigv4"
-    spec.add_runtime_dependency "base64"
-  end
+  spec.required_ruby_version = ">= 3.1"
+  spec.add_runtime_dependency "aws-sigv4"
+  spec.add_runtime_dependency "base64"
 
   spec.add_development_dependency "bundler", "~> 2"
   spec.add_development_dependency "pry",     "~> 0.13.1"
