@@ -51,6 +51,14 @@ module Vault
       a << Errno::ECONNREFUSED
       a << Errno::EADDRNOTAVAIL
 
+      # Broken connection errors
+      a << Errno::ECONNRESET
+      a << Errno::ECONNABORTED
+      a << Errno::EPIPE
+      a << Errno::ETIMEDOUT
+      a << OpenSSL::SSL::SSLError
+      a << IOError
+
       # Failed to read body or no response body given
       a << EOFError
 
