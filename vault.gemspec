@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
     spec.add_runtime_dependency "aws-eventstream", "= 1.2.0"
   else
     spec.add_runtime_dependency "aws-sigv4"
+    spec.add_runtime_dependency "base64"
   end
 
   spec.add_development_dependency "bundler", "~> 2"
