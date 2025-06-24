@@ -24,6 +24,9 @@ Gem::Specification.new do |spec|
   if Gem::Version.new(RUBY_VERSION) <= Gem::Version.new("2.4.0")
     spec.add_runtime_dependency "aws-sigv4", "= 1.6.0"
     spec.add_runtime_dependency "aws-eventstream", "= 1.2.0"
+  elsif Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.7.0")
+    spec.add_runtime_dependency "aws-sigv4", "= 1.11.0"
+    spec.add_runtime_dependency "aws-eventstream", "= 1.3.2"
   else
     spec.add_runtime_dependency "aws-sigv4"
   end
