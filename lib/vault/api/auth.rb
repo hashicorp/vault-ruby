@@ -71,7 +71,7 @@ module Vault
     # @return [Secret]
     def app_id(app_id, user_id, options = {})
       payload = { app_id: app_id, user_id: user_id }.merge(options)
-      json = client.post("/v1/auth/app-id/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/app-id/login", JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -95,7 +95,7 @@ module Vault
     def approle(role_id, secret_id=nil)
       payload = { role_id: role_id }
       payload[:secret_id] = secret_id if secret_id
-      json = client.post("/v1/auth/approle/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/approle/login", JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -120,7 +120,7 @@ module Vault
     # @return [Secret]
     def userpass(username, password, options = {})
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/userpass/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/userpass/login/#{encode_path(username)}", JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -142,7 +142,7 @@ module Vault
     # @return [Secret]
     def ldap(username, password, options = {})
       payload = { password: password }.merge(options)
-      json = client.post("/v1/auth/ldap/login/#{encode_path(username)}", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/ldap/login/#{encode_path(username)}", JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -160,7 +160,7 @@ module Vault
     # @return [Secret]
     def github(github_token, path="/v1/auth/github/login")
       payload = {token: github_token}
-      json = client.post(path, JSON.fast_generate(payload))
+      json = client.post(path, JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -185,7 +185,7 @@ module Vault
       payload = { role: role, pkcs7: pkcs7 }
       # Set a custom nonce if client is providing one
       payload[:nonce] = nonce if nonce
-      json = client.post(route, JSON.fast_generate(payload))
+      json = client.post(route, JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -242,7 +242,7 @@ module Vault
         iam_request_body: Base64.strict_encode64(request_body)
       }
 
-      json = client.post(route, JSON.fast_generate(payload))
+      json = client.post(route, JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret
@@ -264,7 +264,7 @@ module Vault
     # @return [Secret]
     def gcp(role, jwt, path = 'gcp')
       payload = { role: role, jwt: jwt }
-      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.fast_generate(payload))
+      json = client.post("/v1/auth/#{CGI.escape(path)}/login", JSON.generate(payload))
       secret = Secret.decode(json)
       client.token = secret.auth.client_token
       return secret

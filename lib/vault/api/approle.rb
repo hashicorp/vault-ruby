@@ -61,7 +61,7 @@ module Vault
     # @return [true]
     def set_role(name, options = {})
       headers = extract_headers!(options)
-      client.post("/v1/auth/approle/role/#{encode_path(name)}", JSON.fast_generate(options), headers)
+      client.post("/v1/auth/approle/role/#{encode_path(name)}", JSON.generate(options), headers)
       return true
     end
 
@@ -118,7 +118,7 @@ module Vault
     # @return [true]
     def set_role_id(name, role_id)
       options = { role_id: role_id }
-      client.post("/v1/auth/approle/role/#{encode_path(name)}/role-id", JSON.fast_generate(options))
+      client.post("/v1/auth/approle/role/#{encode_path(name)}/role-id", JSON.generate(options))
       return true
     end
 
@@ -163,9 +163,9 @@ module Vault
     def create_secret_id(role_name, options = {})
       headers = extract_headers!(options)
       if options[:secret_id]
-        json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/custom-secret-id", JSON.fast_generate(options), headers)
+        json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/custom-secret-id", JSON.generate(options), headers)
       else
-        json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id", JSON.fast_generate(options), headers)
+        json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id", JSON.generate(options), headers)
       end
       return Secret.decode(json)
     end
@@ -184,7 +184,7 @@ module Vault
     # @return [Secret, nil]
     def secret_id(role_name, secret_id)
       opts = { secret_id: secret_id }
-      json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id/lookup", JSON.fast_generate(opts), {})
+      json = client.post("/v1/auth/approle/role/#{encode_path(role_name)}/secret-id/lookup", JSON.generate(opts), {})
       return nil unless json
       return Secret.decode(json)
     rescue HTTPError => e

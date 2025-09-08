@@ -98,7 +98,7 @@ module Vault
       payload = options.merge type: type
       payload[:description] = description if !description.nil?
 
-      client.post("/v1/sys/mounts/#{encode_path(path)}", JSON.fast_generate(payload))
+      client.post("/v1/sys/mounts/#{encode_path(path)}", JSON.generate(payload))
       return true
     end
 
@@ -124,7 +124,7 @@ module Vault
     # @param [Hash] data
     #   the data to write
     def mount_tune(path, data = {})
-      json = client.post("/v1/sys/mounts/#{encode_path(path)}/tune", JSON.fast_generate(data))
+      json = client.post("/v1/sys/mounts/#{encode_path(path)}/tune", JSON.generate(data))
       return true
     end
 
@@ -155,7 +155,7 @@ module Vault
     #
     # @return [true]
     def remount(from, to)
-      client.post("/v1/sys/remount", JSON.fast_generate(
+      client.post("/v1/sys/remount", JSON.generate(
         from: from,
         to:   to,
       ))

@@ -75,7 +75,7 @@ module Vault
     #
     # @return [SealStatus]
     def unseal(shard)
-      json = client.put("/v1/sys/unseal", JSON.fast_generate(
+      json = client.put("/v1/sys/unseal", JSON.generate(
         key: shard,
       ))
       return SealStatus.decode(json)

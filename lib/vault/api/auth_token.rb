@@ -69,7 +69,7 @@ module Vault
     # @return [Secret]
     def create(options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/auth/token/create", JSON.fast_generate(options), headers)
+      json = client.post("/v1/auth/token/create", JSON.generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -84,7 +84,7 @@ module Vault
     # @return [Secret]
     def create_orphan(options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/auth/token/create-orphan", JSON.fast_generate(options), headers)
+      json = client.post("/v1/auth/token/create-orphan", JSON.generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -98,7 +98,7 @@ module Vault
     # @return [Secret]
     def create_with_role(name, options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/auth/token/create/#{encode_path(name)}", JSON.fast_generate(options), headers)
+      json = client.post("/v1/auth/token/create/#{encode_path(name)}", JSON.generate(options), headers)
       return Secret.decode(json)
     end
 
@@ -113,7 +113,7 @@ module Vault
     # @return [Secret]
     def lookup(token, options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/auth/token/lookup", JSON.fast_generate(
+      json = client.post("/v1/auth/token/lookup", JSON.generate(
         token: token,
       ), headers)
       return Secret.decode(json)
@@ -128,7 +128,7 @@ module Vault
     # @param [Hash] options
     def lookup_accessor(accessor, options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/auth/token/lookup-accessor", JSON.fast_generate(
+      json = client.post("/v1/auth/token/lookup-accessor", JSON.generate(
         accessor: accessor,
       ), headers)
       return Secret.decode(json)
@@ -157,7 +157,7 @@ module Vault
     # @return [Secret]
     def renew(token, increment = 0, options = {})
       headers = extract_headers!(options)
-      json = client.put("/v1/auth/token/renew", JSON.fast_generate(
+      json = client.put("/v1/auth/token/renew", JSON.generate(
         token: token,
         increment: increment,
       ), headers)
@@ -174,7 +174,7 @@ module Vault
     # @return [Secret]
     def renew_self(increment = 0, options = {})
       headers = extract_headers!(options)
-      json = client.put("/v1/auth/token/renew-self", JSON.fast_generate(
+      json = client.put("/v1/auth/token/renew-self", JSON.generate(
         increment: increment,
       ), headers)
       return Secret.decode(json)
@@ -201,7 +201,7 @@ module Vault
     # @return [true]
     def revoke_orphan(token, options = {})
       headers = extract_headers!(options)
-      client.put("/v1/auth/token/revoke-orphan", JSON.fast_generate(
+      client.put("/v1/auth/token/revoke-orphan", JSON.generate(
         token: token,
       ), headers)
       return true
@@ -218,7 +218,7 @@ module Vault
     # @return [true]
     def revoke_accessor(accessor, options = {})
       headers = extract_headers!(options)
-      client.put("/v1/auth/token/revoke-accessor", JSON.fast_generate(
+      client.put("/v1/auth/token/revoke-accessor", JSON.generate(
         accessor: accessor,
       ), headers)
       return true
@@ -235,7 +235,7 @@ module Vault
     # @return [true]
     def revoke(token, options = {})
       headers = extract_headers!(options)
-      client.put("/v1/auth/token/revoke", JSON.fast_generate(
+      client.put("/v1/auth/token/revoke", JSON.generate(
         token: token,
       ), headers)
       return true

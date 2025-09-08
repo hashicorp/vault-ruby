@@ -99,7 +99,7 @@ module Vault
     # @return [Secret]
     def write(path, data = {}, options = {})
       headers = extract_headers!(options)
-      json = client.post("/v1/#{mount}/data/#{encode_path(path)}", JSON.fast_generate(:data => data), headers)
+      json = client.post("/v1/#{mount}/data/#{encode_path(path)}", JSON.generate(:data => data), headers)
       if json.nil?
         return true
       else
@@ -120,7 +120,7 @@ module Vault
     #
     # @return [true]
     def write_metadata(path, metadata = {})
-      client.post("/v1/#{mount}/metadata/#{encode_path(path)}", JSON.fast_generate(metadata))
+      client.post("/v1/#{mount}/metadata/#{encode_path(path)}", JSON.generate(metadata))
 
       true
     end
@@ -140,7 +140,7 @@ module Vault
     def patch_metadata(path, metadata = {}, options = {})
       headers = extract_headers!(options)
       headers["Content-Type"] = "application/merge-patch+json"
-      client.patch("/v1/#{mount}/metadata/#{encode_path(path)}", JSON.fast_generate(metadata), headers)
+      client.patch("/v1/#{mount}/metadata/#{encode_path(path)}", JSON.generate(metadata), headers)
 
       true
     end
@@ -173,7 +173,7 @@ module Vault
     #
     # @return [true]
     def delete_versions(path, versions)
-      client.post("/v1/#{mount}/delete/#{encode_path(path)}", JSON.fast_generate(versions: versions))
+      client.post("/v1/#{mount}/delete/#{encode_path(path)}", JSON.generate(versions: versions))
 
       true
     end
@@ -190,7 +190,7 @@ module Vault
     #
     # @return [true]
     def undelete_versions(path, versions)
-      client.post("/v1/#{mount}/undelete/#{encode_path(path)}", JSON.fast_generate(versions: versions))
+      client.post("/v1/#{mount}/undelete/#{encode_path(path)}", JSON.generate(versions: versions))
 
       true
     end
@@ -222,7 +222,7 @@ module Vault
     #
     # @return [true]
     def destroy_versions(path, versions)
-      client.post("/v1/#{mount}/destroy/#{encode_path(path)}", JSON.fast_generate(versions: versions))
+      client.post("/v1/#{mount}/destroy/#{encode_path(path)}", JSON.generate(versions: versions))
 
       true
     end

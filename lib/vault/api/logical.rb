@@ -68,7 +68,7 @@ module Vault
     # @return [Secret]
     def write(path, data = {}, options = {})
       headers = extract_headers!(options)
-      json = client.put("/v1/#{encode_path(path)}", JSON.fast_generate(data), headers)
+      json = client.put("/v1/#{encode_path(path)}", JSON.generate(data), headers)
       if json.nil?
         return true
       else

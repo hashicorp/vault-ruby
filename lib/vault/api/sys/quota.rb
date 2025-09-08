@@ -60,7 +60,7 @@ module Vault
 
     def create_quota(type, name, opts={})
       path = generate_path(type, name)
-      client.post(path, JSON.fast_generate(opts))
+      client.post(path, JSON.generate(opts))
       return true
     end
 
@@ -83,7 +83,7 @@ module Vault
     end
     
     def update_quota_config(opts={})
-      client.post("v1/sys/quotas/config", JSON.fast_generate(opts))
+      client.post("v1/sys/quotas/config", JSON.generate(opts))
       return true
     end
 

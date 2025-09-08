@@ -15,7 +15,7 @@ module Vault
 
     def create_role(name, **opts)
       opts ||= {}
-      client.post("/v1/transform/role/#{encode_path(name)}", JSON.fast_generate(opts))
+      client.post("/v1/transform/role/#{encode_path(name)}", JSON.generate(opts))
       return true
     end
 
