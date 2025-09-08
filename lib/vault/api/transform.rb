@@ -16,12 +16,12 @@ module Vault
   class Transform < Request
     def encode(role_name:, **opts)
       opts ||= {}
-      client.post("/v1/transform/encode/#{encode_path(role_name)}", JSON.fast_generate(opts))
+      client.post("/v1/transform/encode/#{encode_path(role_name)}", JSON.generate(opts))
     end
 
     def decode(role_name:, **opts)
       opts ||= {}
-      client.post("/v1/transform/decode/#{encode_path(role_name)}", JSON.fast_generate(opts))
+      client.post("/v1/transform/decode/#{encode_path(role_name)}", JSON.generate(opts))
     end
   end
 end

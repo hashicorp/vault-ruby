@@ -16,7 +16,7 @@ module Vault
     def create_alphabet(name, alphabet:, **opts)
       opts ||= {}
       opts[:alphabet] = alphabet
-      client.post("/v1/transform/alphabet/#{encode_path(name)}", JSON.fast_generate(opts))
+      client.post("/v1/transform/alphabet/#{encode_path(name)}", JSON.generate(opts))
       return true
     end
 

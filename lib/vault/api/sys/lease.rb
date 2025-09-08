@@ -14,7 +14,7 @@ module Vault
     #
     # @return [Secret]
     def renew(id, increment = 0)
-      json = client.put("/v1/sys/renew/#{id}", JSON.fast_generate(
+      json = client.put("/v1/sys/renew/#{id}", JSON.generate(
         increment: increment,
       ))
       return Secret.decode(json)

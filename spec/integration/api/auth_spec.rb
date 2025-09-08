@@ -189,7 +189,7 @@ module Vault
     describe "#aws_iam", vault: "> 0.7.3" do
       before(:context) do
         vault_test_client.sys.enable_auth("aws", "aws", nil)
-        vault_test_client.post("/v1/auth/aws/config/client", JSON.fast_generate("iam_server_id_header_value" => "iam_header_canary"))
+        vault_test_client.post("/v1/auth/aws/config/client", JSON.generate("iam_server_id_header_value" => "iam_header_canary"))
       end
 
       after(:context) do
@@ -242,9 +242,9 @@ module Vault
         skip "gcp auth requires real resources and keys"
 
         vault_test_client.sys.enable_auth("gcp", "gcp", nil)
-        vault_test_client.post("/v1/auth/gcp/config", JSON.fast_generate("service_account" => "rspec_service_account"))
-        vault_test_client.post("/v1/auth/gcp/role/rspec_wrong_role", JSON.fast_generate("name" => "rspec_role", "project_id" => "wrong_project_id", "bound_service_accounts" => "\*", "type" => "iam"))
-        vault_test_client.post("/v1/auth/gcp/role/rspec_role", JSON.fast_generate("name" => "rspec_role", "project_id" => "project_id", "bound_service_accounts" => "\*", "type" => "iam"))
+        vault_test_client.post("/v1/auth/gcp/config", JSON.generate("service_account" => "rspec_service_account"))
+        vault_test_client.post("/v1/auth/gcp/role/rspec_wrong_role", JSON.generate("name" => "rspec_role", "project_id" => "wrong_project_id", "bound_service_accounts" => "\*", "type" => "iam"))
+        vault_test_client.post("/v1/auth/gcp/role/rspec_role", JSON.generate("name" => "rspec_role", "project_id" => "project_id", "bound_service_accounts" => "\*", "type" => "iam"))
       end
 
       after(:context) do

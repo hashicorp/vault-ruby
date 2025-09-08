@@ -70,7 +70,7 @@ module Vault
     #
     # @return [InitResponse]
     def init(options = {})
-      json = client.put("/v1/sys/init", JSON.fast_generate(
+      json = client.put("/v1/sys/init", JSON.generate(
         root_token_pgp_key: options.fetch(:root_token_pgp_key, nil),
         secret_shares:      options.fetch(:secret_shares, options.fetch(:shares, 5)),
         secret_threshold:   options.fetch(:secret_threshold, options.fetch(:threshold, 3)),

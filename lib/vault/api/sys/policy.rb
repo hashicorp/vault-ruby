@@ -73,7 +73,7 @@ module Vault
     #
     # @return [true]
     def put_policy(name, rules)
-      client.put("/v1/sys/policy/#{encode_path(name)}", JSON.fast_generate(
+      client.put("/v1/sys/policy/#{encode_path(name)}", JSON.generate(
         rules: rules,
       ))
       return true

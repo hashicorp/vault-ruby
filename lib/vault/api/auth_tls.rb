@@ -45,7 +45,7 @@ module Vault
     # @return [true]
     def set_certificate(name, options = {})
       headers = extract_headers!(options)
-      client.post("/v1/auth/cert/certs/#{encode_path(name)}", JSON.fast_generate(options), headers)
+      client.post("/v1/auth/cert/certs/#{encode_path(name)}", JSON.generate(options), headers)
       return true
     end
 

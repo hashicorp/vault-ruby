@@ -60,7 +60,7 @@ module Vault
       payload = { type: type }
       payload[:description] = description if !description.nil?
 
-      client.post("/v1/sys/auth/#{encode_path(path)}", JSON.fast_generate(payload))
+      client.post("/v1/sys/auth/#{encode_path(path)}", JSON.generate(payload))
       return true
     end
 
@@ -108,7 +108,7 @@ module Vault
     # @return [AuthConfig]
     #   configuration of the given auth path
     def put_auth_tune(path, config = {})
-      json = client.put("/v1/sys/auth/#{encode_path(path)}/tune", JSON.fast_generate(config))
+      json = client.put("/v1/sys/auth/#{encode_path(path)}/tune", JSON.generate(config))
       if json.nil?
         return true
       else

@@ -54,7 +54,7 @@ module Vault
     #
     # @return [true]
     def enable_audit(path, type, description, options = {})
-      client.put("/v1/sys/audit/#{encode_path(path)}", JSON.fast_generate(
+      client.put("/v1/sys/audit/#{encode_path(path)}", JSON.generate(
         type:        type,
         description: description,
         options:     options,
@@ -86,7 +86,7 @@ module Vault
     #
     # @return [String]
     def audit_hash(path, input)
-      json = client.post("/v1/sys/audit-hash/#{encode_path(path)}", JSON.fast_generate(input: input))
+      json = client.post("/v1/sys/audit-hash/#{encode_path(path)}", JSON.generate(input: input))
       json = json[:data] if json[:data]
       json[:hash]
     end

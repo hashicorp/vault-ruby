@@ -27,7 +27,7 @@ module Vault
       opts ||= {}
       opts[:type] = type
       opts[:pattern] = pattern
-      client.post("/v1/transform/template/#{encode_path(name)}", JSON.fast_generate(opts))
+      client.post("/v1/transform/template/#{encode_path(name)}", JSON.generate(opts))
       return true
     end
 
