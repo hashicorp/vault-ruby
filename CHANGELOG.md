@@ -2,6 +2,31 @@
 
 ## v?.??.? (Unreleased)
 
+## v0.19.0 (December 3, 2025)
+
+BREAKING CHANGES
+
+- Set minimum Ruby version to 3.1. All EOL Ruby versions are no longer supported. [GH-352]
+
+IMPROVEMENTS
+
+- Upgraded vendored `net-http-persistent` from 3.0.0 to upstream gem 4.0.2+, which includes:
+  - Fixes compatibility with `connection-pool` 2.4
+  - Supports TLS min/max and IPv6
+  - Fixes a memory leak in connection pooling
+  - Many bugfixes [GH-345]
+- Upgraded vendored `connection-pool` from 2.2.0 to upstream gem 2.4+, which includes:
+  - Fixes argument forwarding for Ruby 2.7+
+  - Automatically drops all connections after fork [GH-345]
+- Added dependency on `base64` gem for Ruby 3.4 compatibility [GH-352]
+- Added Ruby 3.3 and 3.4 to CI matrix [GH-352]
+- Added modern Vault versions (1.16, 1.19, 1.20, 1.21) to CI matrix [GH-352]
+- Replaced deprecated `JSON.fast_generate` with `JSON.generate` [GH-349]
+
+BUG FIXES
+
+- Fixed HTTP client shutdown to be lock-protected, ensuring thread-safe access to `@nhp` [GH-329]
+
 ## v0.18.1 (September 14, 2023)
 
 BUG FIXES

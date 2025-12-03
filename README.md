@@ -1,4 +1,4 @@
-Vault Ruby Client [![Build Status](https://circleci.com/gh/hashicorp/vault-ruby.svg?style=shield)](https://circleci.com/gh/hashicorp/vault-ruby)
+Vault Ruby Client [![Build Status](https://github.com/hashicorp/vault-ruby/actions/workflows/run-tests.yml/badge.svg?branch=master)](https://github.com/hashicorp/vault-ruby/actions/workflows/run-tests.yml)
 =================
 
 Vault is the official Ruby client for interacting with [Vault](https://vaultproject.io) by HashiCorp.
@@ -9,9 +9,9 @@ Vault Ruby client for the proper documentation.**
 
 Quick Start
 -----------
-Install Ruby 2.0+: [Guide](https://www.ruby-lang.org/en/documentation/installation/).
+Install Ruby 3.1+: [Guide](https://www.ruby-lang.org/en/documentation/installation/).
 
-> Please note that as of Vault Ruby version 0.14.0 versions of Ruby prior to 2.0 are no longer supported.
+> Please note that as of Vault Ruby version 0.19.0, the minimum required Ruby version is 3.1. All EOL Ruby versions are no longer supported.
 
 Install via Rubygems:
 
