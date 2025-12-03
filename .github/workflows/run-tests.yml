@@ -1,4 +1,4 @@
-name: hashicorp/vault-ruby/run-tests
+name: Tests
 on:
   push:
     branches:
