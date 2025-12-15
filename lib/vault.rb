@@ -20,15 +20,6 @@ module Vault
     def setup!
       @client = Vault::Client.new
 
-      # Set secure SSL options
-      OpenSSL::SSL::SSLContext::DEFAULT_PARAMS.tap do |opts|
-        opts[:options] &= ~OpenSSL::SSL::OP_DONT_INSERT_EMPTY_FRAGMENTS if defined?(OpenSSL::SSL::OP_DONT_INSERT_EMPTY_FRAGMENTS)
-        opts[:options] |= OpenSSL::SSL::OP_NO_COMPRESSION if defined?(OpenSSL::SSL::OP_NO_COMPRESSION)
-        opts[:options] |= OpenSSL::SSL::OP_NO_SSLv2 if defined?(OpenSSL::SSL::OP_NO_SSLv2)
-        opts[:options] |= OpenSSL::SSL::OP_NO_SSLv3 if defined?(OpenSSL::SSL::OP_NO_SSLv3)
-      end
-      
-
       self
     end
 
