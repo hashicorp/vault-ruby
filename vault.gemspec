@@ -26,11 +26,4 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "connection_pool",     "~> 2.4"
   spec.add_runtime_dependency "net-http-persistent", "~> 4.0", ">= 4.0.2"
 
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "pry"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "yard"
-  spec.add_development_dependency "webmock"
-  spec.add_development_dependency "webrick"
 end
