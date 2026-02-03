@@ -63,8 +63,26 @@ Vault.configure do |config|
   # ENV["VAULT_SSL_PEM_CONTENTS_BASE64"] then ENV["VAULT_SSL_PEM_CONTENTS"]
   config.ssl_pem_contents = "-----BEGIN ENCRYPTED..."
 
+  # Passphrase for encrypted PEM files
+  config.ssl_pem_passphrase = "my-passphrase"
+
+  # Custom SSL CA certificate for verification
+  config.ssl_ca_cert = "/path/to/ca.crt"
+
+  # Custom SSL CA certificate directory
+  config.ssl_ca_path = "/path/to/ca/directory"
+
+  # Custom SSL certificate store
+  config.ssl_cert_store = OpenSSL::X509::Store.new
+
+  # Specify SSL ciphers to use
+  config.ssl_ciphers = "TLSv1.2:!aNULL:!eNULL"
+
   # Use SSL verification, also read as ENV["VAULT_SSL_VERIFY"]
   config.ssl_verify = false
+
+  # SNI hostname to use for SSL connections
+  config.hostname = "vault.example.com"
 
   # Timeout the connection after a certain amount of time (seconds), also read
   # as ENV["VAULT_TIMEOUT"]
@@ -75,6 +93,10 @@ Vault.configure do |config|
   config.ssl_timeout  = 5
   config.open_timeout = 5
   config.read_timeout = 30
+
+  # Connection pool settings for persistent connections
+  config.pool_size = 5
+  config.pool_timeout = 5
 end
 ```
 
@@ -156,28 +178,73 @@ Vault.with_retries(Exception) do
 end #=> #<Exception>
 ```
 
+### KV Secrets Engine
+
+Vault's [KV secrets engine](https://developer.hashicorp.com/vault/docs/secrets/kv) has two versions: [v2](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2) (versioned, default in Vault 0.10+) and [v1](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v1) (unversioned). Use `Vault.kv(mount)` for v2 and `Vault.logical` for v1.
+
+```ruby
+# Check which version your mount uses
+mounts = Vault.sys.mounts
+mounts[:secret].options[:version] #=> "2" or "1"
+```
+
+#### KV v2 (versioned secrets)
+
+```ruby
+# Write and read
+Vault.kv("secret").write("db/creds", username: "admin", password: "secret123")
+secret = Vault.kv("secret").read("db/creds")
+secret.data[:data] #=> { :username => "admin", :password => "secret123" }
+
+# Read specific version
+secret = Vault.kv("secret").read("db/creds", 2)
+
+# List paths
+Vault.kv("secret").list("db") #=> ["creds"]
+
+# Soft delete (can be undeleted)
+Vault.kv("secret").delete("db/creds")
+Vault.kv("secret").delete_versions("db/creds", [1, 2])
+
+# Undelete
+Vault.kv("secret").undelete_versions("db/creds", [1])
+
+# Permanently destroy
+Vault.kv("secret").destroy_versions("db/creds", [1])
+Vault.kv("secret").destroy("db/creds") # destroys all versions and metadata
+
+# Metadata operations
+Vault.kv("secret").write_metadata("db/creds", max_versions: 5)
+metadata = Vault.kv("secret").read_metadata("db/creds")
+```
+
+#### KV v1 (unversioned secrets)
+
+```ruby
+Vault.logical.write("secret/db/creds", username: "admin", password: "secret123")
+secret = Vault.logical.read("secret/db/creds")
+secret.data #=> { :username => "admin", :password => "secret123" }
+
+Vault.logical.list("secret/db") #=> ["creds"]
+Vault.logical.delete("secret/db/creds") #=> true
+```
+
 #### Seal Status
 ```ruby
 Vault.sys.seal_status
 #=> #<Vault::SealStatus sealed=false, t=1, n=1, progress=0>
 ```
 
-#### Create a Secret
-```ruby
-Vault.logical.write("secret/bacon", delicious: true, cooktime: "11")
-#=> #<Vault::Secret lease_id="">
-```
+### Tokens
 
-#### Retrieve a Secret
-```ruby
-Vault.logical.read("secret/bacon")
-#=> #<Vault::Secret lease_id="">
-```
+See the [Token Auth API docs](https://developer.hashicorp.com/vault/api-docs/auth/token) for details.
 
-#### Retrieve the Contents of a Secret
 ```ruby
-secret = Vault.logical.read("secret/bacon")
-secret.data #=> { :cooktime = >"11", :delicious => true }
+# Create, lookup, renew, and revoke
+token = Vault.auth_token.create(policies: ["app-read"], ttl: "1h", renewable: true)
+info = Vault.auth_token.lookup_self
+Vault.auth_token.renew_self(3600)
+Vault.auth_token.revoke("hvs.CAESI...")
 ```
 
 ### Response wrapping
@@ -205,6 +272,21 @@ wrapped = Vault.auth_token.create(wrap_ttl: "5s")
 # Unwrap wrapped response for final token using the initial temporary token.
 token = Vault.logical.unwrap_token(wrapped)
 ```
+
+### API Coverage
+
+Available Ruby clients:
+
+- `Vault.kv(mount)` - [KV v2 secrets engine](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2)
+- `Vault.logical` - [KV v1](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v1) and generic logical operations
+- `Vault.sys` - [System backend](https://developer.hashicorp.com/vault/api-docs/system) (mounts, policies, seal status, etc.)
+- `Vault.auth` - [Authentication methods](https://developer.hashicorp.com/vault/api-docs/auth) (AWS, AppRole, GitHub, etc.)
+- `Vault.auth_token` - [Token auth](https://developer.hashicorp.com/vault/api-docs/auth/token)
+- `Vault.approle` - [AppRole auth configuration](https://developer.hashicorp.com/vault/api-docs/auth/approle)
+- `Vault.transform` - [Transform secrets engine](https://developer.hashicorp.com/vault/api-docs/secret/transform)
+- `Vault.help` - Interactive help
+
+For full API documentation, see [rubydoc.info/gems/vault](https://www.rubydoc.info/gems/vault) or check `spec/integration` for examples
 
 
 Development
