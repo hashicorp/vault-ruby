@@ -2,6 +2,11 @@
 
 ## v?.??.? (Unreleased)
 
+BUG FIXES
+
+- Fixed `encode_path` incorrectly encoding hyphens (`-`), which caused 403 errors on Vault 1.15+ [GH-350, GH-343]
+- Fixed `FrozenError` when loading the gem with OpenSSL 4.0.0+ by removing modification of `OpenSSL::SSL::SSLContext::DEFAULT_PARAMS`. Modern Ruby (3.1+) already has secure SSL defaults. [GH-366, GH-381]
+
 ## v0.19.0 (December 3, 2025)
 
 BREAKING CHANGES
