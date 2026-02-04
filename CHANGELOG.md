@@ -2,6 +2,10 @@
 
 ## v?.??.? (Unreleased)
 
+IMPROVEMENTS
+
+- Added support for custom mount paths in AppRole authentication via `mount:` option [GH-292]
+
 BUG FIXES
 
 - Fixed `encode_path` incorrectly encoding hyphens (`-`), which caused 403 errors on Vault 1.15+ [GH-350, GH-343]
