@@ -1,6 +1,6 @@
 # Vault Ruby Changelog
 
-## v?.??.? (Unreleased)
+## v0.20.0 (February 4, 2026)
 
 IMPROVEMENTS
 
