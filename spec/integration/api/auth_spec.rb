@@ -86,6 +86,33 @@ module Vault
           expect(subject.token).to eq(result.auth.client_token)
         end
       end
+
+      context "when using a custom mount path" do
+        before(:context) do
+          @custom_path = "custom-approle"
+          @custom_approle = "custom-role"
+          vault_test_client.sys.enable_auth(@custom_path, "approle", nil)
+
+          # Use logical.write to configure the role on the custom mount
+          vault_test_client.logical.write("auth/#{@custom_path}/role/#{@custom_approle}", {
+            secret_id_ttl: "10m",
+            token_ttl: "20m",
+          })
+
+          @role_id = vault_test_client.logical.read("auth/#{@custom_path}/role/#{@custom_approle}/role-id").data[:role_id]
+          @secret_id = vault_test_client.logical.write("auth/#{@custom_path}/role/#{@custom_approle}/secret-id", {}).data[:secret_id]
+        end
+
+        after(:context) do
+          vault_test_client.logical.delete("auth/#{@custom_path}/role/#{@custom_approle}")
+          vault_test_client.sys.disable_auth(@custom_path)
+        end
+
+        it "authenticates using the custom mount path" do
+          result = subject.auth.approle(@role_id, @secret_id, mount: @custom_path)
+          expect(subject.token).to eq(result.auth.client_token)
+        end
+      end
     end
 
     describe "#userpass" do
