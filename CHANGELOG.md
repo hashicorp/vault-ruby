@@ -36,6 +36,12 @@ BUG FIXES
 
 - Fixed HTTP client shutdown to be lock-protected, ensuring thread-safe access to `@nhp` [GH-329]
 
+## v0.18.2 (November 27, 2023)
+
+BUG FIXES
+
+- Locked aws-sdk gem versions to support EOL Ruby versions [GH-314]
+
 ## v0.18.1 (September 14, 2023)
 
 BUG FIXES
