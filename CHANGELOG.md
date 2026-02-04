@@ -5,6 +5,7 @@
 IMPROVEMENTS
 
 - Added `cluster_address` field to `LeaderStatus` response from `sys/leader` endpoint [GH-204]
+- Updated AppRole `set_role` documentation to include modern parameters like `secret_id_bound_cidrs`, `token_bound_cidrs`, and `token_policies`. Added reference to official Vault API docs for complete parameter list. [GH-220]
 
 BUG FIXES
 
