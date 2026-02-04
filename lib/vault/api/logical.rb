@@ -45,9 +45,9 @@ module Vault
     #   the path to read
     #
     # @return [Secret, nil]
-    def read(path, options = {})
+    def read(path, params = {}, options = {})
       headers = extract_headers!(options)
-      json = client.get("/v1/#{encode_path(path)}", {}, headers)
+      json = client.get("/v1/#{encode_path(path)}", params, headers)
       return Secret.decode(json)
     rescue HTTPError => e
       return nil if e.code == 404
