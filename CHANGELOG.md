@@ -2,6 +2,10 @@
 
 ## v?.??.? (Unreleased)
 
+IMPROVEMENTS
+
+- Added `cluster_address` field to `LeaderStatus` response from `sys/leader` endpoint [GH-204]
+
 BUG FIXES
 
 - Fixed `encode_path` incorrectly encoding hyphens (`-`), which caused 403 errors on Vault 1.15+ [GH-350, GH-343]
