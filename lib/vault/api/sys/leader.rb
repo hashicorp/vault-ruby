@@ -18,6 +18,11 @@ module Vault
     #   @return [String]
     field :leader_address, as: :address
 
+    # @!attribute [r] cluster_address
+    #   URL where the cluster leader is running.
+    #   @return [String]
+    field :leader_cluster_address, as: :cluster_address
+
     # @deprecated Use {#ha_enabled?} instead
     def ha?; ha_enabled?; end
 
@@ -35,7 +40,7 @@ module Vault
     # Determine the leader status for this vault.
     #
     # @example
-    #   Vault.sys.leader #=> #<Vault::LeaderStatus ha_enabled=false, is_self=false, leader_address="">
+    #   Vault.sys.leader #=> #<Vault::LeaderStatus ha_enabled=false, is_self=false, leader_address="", leader_cluster_address="">
     #
     # @return [LeaderStatus]
     def leader

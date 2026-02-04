@@ -17,6 +17,7 @@ module Vault
         expect(result.is_leader?).to be(false)
         expect(result.leader?).to be(false)
         expect(result.address).to eq("")
+        expect(result.cluster_address).to eq("")
       end
     end
 
