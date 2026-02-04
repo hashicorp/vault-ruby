@@ -107,6 +107,27 @@ client_1 = Vault::Client.new(address: "https://vault.mycompany.com")
 client_2 = Vault::Client.new(address: "https://other-vault.mycompany.com")
 ```
 
+### Authentication
+
+Authenticate using various methods:
+
+```ruby
+# LDAP
+Vault.auth.ldap("username", "password")
+
+# Username/Password
+Vault.auth.userpass("username", "password")
+
+# AppRole
+Vault.auth.approle("role_id", "secret_id")
+
+# GitHub token
+Vault.auth.github("github_token")
+
+# AWS IAM
+Vault.auth.aws_iam("role_name", credentials_provider, "header_value")
+```
+
 And if you want to authenticate with a `AWS EC2` :
 
 ```ruby
