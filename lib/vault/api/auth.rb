@@ -282,6 +282,41 @@ module Vault
       return secret
     end
 
+    # Authenticate via the kubernetes authentication method. If authentication is
+    # successful, the resulting token will be stored on the client and used
+    # for future requests.
+    #
+    # @example
+    #   Vault.auth.kubernetes("default", "/var/run/secrets/kubernetes.io/serviceaccount/token")
+    #   #=> #<Vault::Secret lease_id="">
+    #
+    # @param [String] role
+    # @param [String] service_account_path optional
+    #   Path on filesystem of service account token secret.
+    # @param [String] route optional
+    #
+    # @return [Secret]
+    def kubernetes(role, service_account_path = nil, route = nil)
+      route ||= '/v1/auth/kubernetes/login'
+      service_account_path ||=
+        '/var/run/secrets/kubernetes.io/serviceaccount/token'
+
+      payload = {
+        role: role,
+        jwt: File.read(service_account_path)
+      }
+
+      json = client.post(
+        route,
+        JSON.fast_generate(payload)
+      )
+
+      secret = Secret.decode(json)
+      client.token = secret.auth.client_token
+
+      return secret
+    end
+
     # Authenticate via a TLS authentication method. If authentication is
     # successful, the resulting token will be stored on the client and used
     # for future requests.
