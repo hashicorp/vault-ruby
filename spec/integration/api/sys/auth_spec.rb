@@ -8,8 +8,13 @@ module Vault
     subject { vault_test_client.sys }
 
     describe "#auths" do
-      it "returns the list of auths" do
+      it "returns the list of auths with fields" do
         expect(subject.auths).to be
+        auths = subject.auths
+        expect(auths[:token]).to be
+        expect(auths[:token].type).to eq('token')
+        expect(auths[:token].description).to eq('token based credentials')
+        expect(auths[:token].accessor).to be
       end
     end
 
