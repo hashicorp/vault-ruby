@@ -23,7 +23,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.1"
   spec.add_runtime_dependency "aws-sigv4"
   spec.add_runtime_dependency "base64"
-  spec.add_runtime_dependency "connection_pool",     "~> 2.4"
   spec.add_runtime_dependency "net-http-persistent", "~> 4.0", ">= 4.0.2"
 
 end

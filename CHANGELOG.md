@@ -1,5 +1,11 @@
 # Vault Ruby Changelog
 
+## Unreleased
+
+BUG FIXES
+
+- Removed explicit `connection_pool` runtime dependency to allow use of connection_pool 3.x for compatibility with sidekiq 8.1+. The gem is already managed as a transitive dependency by `net-http-persistent`, which supports connection_pool 2.2.4+ through 3.x. [GH-393]
+
 ## v0.20.0 (February 4, 2026)
 
 IMPROVEMENTS
