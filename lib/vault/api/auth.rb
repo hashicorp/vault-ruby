@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 require "json"
+require "uri"
 
 require_relative "secret"
 require_relative "../client"
@@ -302,7 +303,7 @@ module Vault
     #   The path to the auth backend to use for the login procedure.
     #
     # @param [String] name optional
-    #   The named certificate role provided to the login request. 
+    #   The named certificate role provided to the login request.
     #
     # @return [Secret]
     def tls(pem = nil, path = 'cert', name: nil)
@@ -328,9 +329,23 @@ module Vault
     #
     # @return [String] aws region
     def region_from_sts_endpoint(sts_endpoint)
-      valid_sts_endpoint = %r{https:\/\/sts\.?(.*)\.amazonaws\.com}.match(sts_endpoint)
-      raise "Unable to parse STS endpoint #{sts_endpoint}" unless valid_sts_endpoint
-      valid_sts_endpoint[1].empty? ? 'us-east-1' : valid_sts_endpoint[1]
+      uri = URI.parse(sts_endpoint)
+
+      unless uri.is_a?(URI::HTTPS) && uri.userinfo.nil?
+        raise "Unable to parse STS endpoint #{sts_endpoint}"
+      end
+
+      case uri.host
+      when "sts.amazonaws.com"
+        "us-east-1"
+      when /\Asts\.([a-z0-9-]+)\.amazonaws\.com\z/,
+           /\Asts\.([a-z0-9-]+)\.amazonaws\.com\.cn\z/
+        Regexp.last_match(1)
+      else
+        raise "Unable to parse STS endpoint #{sts_endpoint}"
+      end
+    rescue URI::InvalidURIError
+      raise "Unable to parse STS endpoint #{sts_endpoint}"
     end
   end
 end
