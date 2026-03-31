@@ -2,9 +2,12 @@
 
 ## Unreleased
 
+## v0.20.1 (March 31, 2026)
+
 BUG FIXES
 
 - Removed explicit `connection_pool` runtime dependency to allow use of connection_pool 3.x for compatibility with sidekiq 8.1+. The gem is already managed as a transitive dependency by `net-http-persistent`, which supports connection_pool 2.2.4+ through 3.x. [GH-393]
+- Hardened STS endpoint parsing in AWS auth by replacing permissive matching with strict HTTPS URI and host validation, preserving supported global, regional, GovCloud, and China endpoints while rejecting malformed inputs. [GH-402]
 
 ## v0.20.0 (February 4, 2026)
 
