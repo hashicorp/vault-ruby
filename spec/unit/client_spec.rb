@@ -113,6 +113,28 @@ module Vault
       end
     end
 
+    describe "JSON response parsing" do
+      before { subject.address = "https://vault.test" }
+
+      it "parses a JSON success response body with symbolized keys" do
+        stub_request(:get, "https://vault.test/")
+          .to_return(status: 200, body: '{"foo":"bar","nested":{"baz":1}}',
+                     headers: { "Content-Type" => "application/json" })
+
+        expect(subject.get("/")).to eq(foo: "bar", nested: { baz: 1 })
+      end
+
+      it "raises an HTTPClientError with the errors parsed from a JSON error response body" do
+        stub_request(:get, "https://vault.test/")
+          .to_return(status: 400, body: '{"errors":["boom"]}',
+                     headers: { "Content-Type" => "application/json" })
+
+        expect {
+          subject.get("/")
+        }.to raise_error(Vault::HTTPClientError) { |error| expect(error.errors).to eq(["boom"]) }
+      end
+    end
+
     context "#with_retries" do
       let(:options) do
         {

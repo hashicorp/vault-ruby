@@ -38,9 +38,8 @@ module Vault
 
     # The default list of options to use when parsing JSON.
     JSON_PARSE_OPTIONS = {
-      max_nesting:      false,
-      create_additions: false,
-      symbolize_names:  true,
+      max_nesting:     false,
+      symbolize_names: true,
     }.freeze
 
     RESCUED_EXCEPTIONS = [].tap do |a|
@@ -385,7 +384,7 @@ module Vault
     #   the parsed response, as an object
     def success(response)
       if response.body && (response.content_type || '').include?("json")
-        JSON.parse(response.body, JSON_PARSE_OPTIONS)
+        JSON.parse(response.body, **JSON_PARSE_OPTIONS)
       else
         response.body
       end
@@ -419,7 +418,7 @@ module Vault
       if (response.content_type || '').include?("json")
         # Attempt to parse the error as JSON
         begin
-          json = JSON.parse(response.body, JSON_PARSE_OPTIONS)
+          json = JSON.parse(response.body, **JSON_PARSE_OPTIONS)
 
           if json[:errors]
             raise klass.new(address, response, json[:errors])
