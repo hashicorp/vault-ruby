@@ -124,7 +124,7 @@ module Vault
     # @param [Hash] data
     #   the data to write
     def mount_tune(path, data = {})
-      json = client.post("/v1/sys/mounts/#{encode_path(path)}/tune", JSON.generate(data))
+      client.post("/v1/sys/mounts/#{encode_path(path)}/tune", JSON.generate(data))
       return true
     end
 

@@ -147,7 +147,7 @@ module Vault
       end
 
       return response.auth.client_token
-    rescue HTTPError => e
+    rescue HTTPError
       raise
     end
   end
