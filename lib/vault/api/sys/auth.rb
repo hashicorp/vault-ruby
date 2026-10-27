@@ -14,6 +14,11 @@ module Vault
     #   Name of the auth backend.
     #   @return [String]
     field :type
+
+    # @!attribute [r] accessor
+    #   Accessor of the auth backend.
+    #   @return [String]
+    field :accessor
   end
 
   class AuthConfig < Response
@@ -32,7 +37,7 @@ module Vault
     # List all auths in Vault.
     #
     # @example
-    #   Vault.sys.auths #=> {:token => #<Vault::Auth type="token", description="token based credentials">}
+    #   Vault.sys.auths #=> {:token => #<Vault::Auth type="token", description="token based credentials", accessor="auth_token_d73f8a39">}
     #
     # @return [Hash<Symbol, Auth>]
     def auths
