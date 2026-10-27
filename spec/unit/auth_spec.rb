@@ -5,7 +5,17 @@ require "spec_helper"
 
 module Vault
   describe Authenticate do
-    let(:auth) { Authenticate.new(client: nil) }
+    let(:client) { double('client') }
+    let(:auth) { Authenticate.new(client) }
+
+    describe '#okta' do
+      it 'authenticates with Okta auth method' do
+        allow(client).to receive(:post).with('/v1/auth/okta/login/user1', {password: 'secure'}.to_json) { {auth: {client_token: 'abcd-1234'}} }
+        allow(client).to receive(:token=)
+        expect(auth.okta('user1', 'secure').auth.client_token).to eq('abcd-1234')
+      end
+    end
+
     describe "#region_from_sts_endpoint" do
       subject { auth.send(:region_from_sts_endpoint, sts_endpoint) }
 
