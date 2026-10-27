@@ -302,5 +302,44 @@ module Vault
         subject.auth.gcp("rspec_role", jwt)
       end
     end
+
+    describe "#azure", vault: ">= 0.8.1" do
+      before(:context) do
+        skip "azure auth requires real resources and keys"
+
+        vault_test_client.sys.enable_auth("azure", "azure", nil)
+        vault_test_client.post("/v1/auth/azure/config", JSON.fast_generate("tenant_id" => "rspec_tenant_id", "resource" => "rspec_resource", "client_id" => "rspec_client_id", "client_secret" => "rspec_client_secret"))
+        vault_test_client.post("/v1/auth/azure/role/rspec_wrong_role", JSON.fast_generate("name" => "rspec_role", "bound_resource_groups" => "wrong_bound_resource_groups", "bound_subscription_ids" => "wrong_bound_subscription_ids"))
+        vault_test_client.post("/v1/auth/azure/role/rspec_role", JSON.fast_generate("name" => "rspec_role", "bound_resource_groups" => "bound_resource_groups", "bound_subscription_ids" => "bound_subscription_ids"))
+      end
+
+      after(:context) do
+        vault_test_client.sys.disable_auth("azure")
+      end
+
+      let!(:old_token) { subject.token }
+
+      let(:jwt) do
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuYXp1cmUuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvOTJkMTEzMTEtZmVhYy00ODk4LWEwMTItMWU0NTY1ZDUyNTg2LyIsImlhdCI6MTY0NTYxMDczMywibmJmIjoxNjQ1NjEwNzMzLCJleHAiOjE2NDU2OTc0MzMsImFpbyI6IkUyWmdZRGl6bWp0UXZNbnYwSGRad1hVZkJPWWVBUUE9IiwiYXBwaWQiOiJlZjEzYjJlMS05OGRkLTQxOTEtYjVlMy0wMDZkOTdiYjBhNjgiLCJhcHBpZGFjciI6IjIiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC85MmQxMTMxMS1mZWFjLTQ4OTgtYTAxMi0xZTQ1NjVkNTI1ODYvIiwiaWR0eXAiOiJhcHAiLCJvaWQiOiJiMGY2YTJmNi1iNTZjLTQyNTAtODY5Ni1jNzJmYjQ1NDgxYmUiLCJyaCI6IjAuQVN3QUVSUFJrcXotbUVpZ0VoNUZaZFVsaGtaSWYza0F1dGRQdWtQYXdmajJNQk1zQUFBLiIsInN1YiI6ImIwZjZhMmY2LWI1NmMtNDI1MC04Njk2LWM3MmZiNDU0OD"
+      end
+
+      after do
+        subject.token = old_token
+      end
+
+      it "does not authenticate if resource_groups does not match" do
+        pending "azure auth requires real resources and keys"
+
+        expect do
+          subject.auth.azure("rspec_wrong_role", jwt)
+        end.to raise_error(Vault::HTTPClientError, /resource_groups doesn't match/)
+      end
+
+      it "authenticates and saves the token on the client" do
+        pending "azure auth requires real resources and keys"
+
+        subject.auth.azure("rspec_role", jwt)
+      end
+    end
   end
 end
