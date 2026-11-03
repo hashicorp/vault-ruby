@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+BUG FIXES
+
+- `Client#with_token` now sends the given token from API objects (`#logical`, `#auth`, ...) that the original client had already used. Before, the copy reused them, and their requests went out with the original client's token.
+
 ## v0.20.1 (March 31, 2026)
 
 BUG FIXES

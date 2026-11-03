@@ -38,6 +38,18 @@ module Vault
         end
         expect(client.token).to eq("abcd-1234")
       end
+
+      it "sends the new token from an API the original client already used" do
+        client = described_class.new(address: "http://vault.test", token: "abcd-1234")
+        stub_request(:get, "http://vault.test/v1/secret/foo")
+          .to_return(body: '{"data":{}}', headers: { "Content-Type" => "application/json" })
+        client.logical.read("secret/foo")
+
+        client.with_token("defg-5678") { |c| c.logical.read("secret/foo") }
+
+        expect(a_request(:get, "http://vault.test/v1/secret/foo")
+          .with(headers: { "X-Vault-Token" => "defg-5678" })).to have_been_made.once
+      end
     end
 
     describe "#get" do
