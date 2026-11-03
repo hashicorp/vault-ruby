@@ -189,15 +189,22 @@ module Vault
       # Verify SSL requests (default: true)
       # @return [true, false]
       def ssl_verify
-        # Vault CLI uses this envvar, so accept it by precedence
-        if !ENV["VAULT_SKIP_VERIFY"].nil?
-          return false
-        end
+        # Vault CLI uses this envvar, so accept it by precedence. Like the CLI,
+        # read it as a boolean: VAULT_SKIP_VERIFY=false keeps verification on.
+        skip = env_boolean("VAULT_SKIP_VERIFY")
+        return !skip unless skip.nil?
 
-        if ENV["VAULT_SSL_VERIFY"].nil?
-          true
-        else
-          %w[t y].include?(ENV["VAULT_SSL_VERIFY"].downcase[0])
+        verify = env_boolean("VAULT_SSL_VERIFY")
+        verify.nil? ? true : verify
+      end
+
+      # The boolean value of an environment variable, or nil when it is unset
+      # or not a boolean, so that an unknown value never turns off verification.
+      # @return [true, false, nil]
+      def env_boolean(name)
+        case ENV[name].to_s.strip.downcase
+        when "1", "t", "true", "y", "yes" then true
+        when "0", "f", "false", "n", "no" then false
         end
       end
 

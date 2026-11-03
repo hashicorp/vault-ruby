@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+BUG FIXES
+
+- Read `VAULT_SKIP_VERIFY` and `VAULT_SSL_VERIFY` as booleans, like the Vault CLI. Before, any value of `VAULT_SKIP_VERIFY`, also `false` or `0`, turned TLS verification off, and `VAULT_SSL_VERIFY=1` turned it off too. A value that is not a boolean now keeps verification on.
+
 ## v0.20.1 (March 31, 2026)
 
 BUG FIXES

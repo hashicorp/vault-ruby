@@ -261,6 +261,36 @@ module Vault
           expect(Defaults.ssl_verify).to be(false)
         end
       end
+
+      %w[false FALSE f F 0].each do |value|
+        it "verifies when ENV['VAULT_SKIP_VERIFY'] is #{value.inspect}, as the Vault CLI does" do
+          with_stubbed_env("VAULT_SKIP_VERIFY" => value) do
+            expect(Defaults.ssl_verify).to be(true)
+          end
+        end
+      end
+
+      %w[true TRUE t T 1].each do |value|
+        it "skips verification when ENV['VAULT_SKIP_VERIFY'] is #{value.inspect}" do
+          with_stubbed_env("VAULT_SKIP_VERIFY" => value) do
+            expect(Defaults.ssl_verify).to be(false)
+          end
+        end
+      end
+
+      ["", "maybe"].each do |value|
+        it "verifies when ENV['VAULT_SKIP_VERIFY'] is not a boolean (#{value.inspect})" do
+          with_stubbed_env("VAULT_SKIP_VERIFY" => value) do
+            expect(Defaults.ssl_verify).to be(true)
+          end
+        end
+      end
+
+      it "verifies when ENV['VAULT_SSL_VERIFY'] is \"1\"" do
+        with_stubbed_env("VAULT_SSL_VERIFY" => "1") do
+          expect(Defaults.ssl_verify).to be(true)
+        end
+      end
     end
 
     describe ".ssl_timeout" do
