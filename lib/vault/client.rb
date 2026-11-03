@@ -96,6 +96,14 @@ module Vault
       @nhp = nil
     end
 
+    # The API objects (#logical, #auth, ...) are memoized with a reference to
+    # the client that built them. A copy must build its own, or a request
+    # through the copy would use the original client's token.
+    def initialize_copy(other)
+      super
+      @logical = @auth = @auth_token = @auth_tls = @approle = @sys = @transform = nil
+    end
+
     def pool
       @lock.synchronize do
         return @nhp if @nhp
