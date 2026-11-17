@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+IMPROVEMENTS
+
+- Client certificates given with `ssl_pem_file` or `ssl_pem_contents` can now use EC and Ed25519 keys.
+
 ## v0.20.1 (March 31, 2026)
 
 BUG FIXES

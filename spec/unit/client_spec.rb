@@ -30,6 +30,50 @@ module Vault
       end
     end
 
+    describe "client certificate" do
+      def self_signed_pem(key, passphrase = nil)
+        cert = OpenSSL::X509::Certificate.new
+        cert.version = 2
+        cert.serial = 1
+        cert.subject = cert.issuer = OpenSSL::X509::Name.parse("/CN=vault-ruby")
+        cert.public_key = key
+        cert.not_before = Time.now
+        cert.not_after = Time.now + 3600
+        cert.sign(key, key.oid == "ED25519" ? nil : "SHA256")
+
+        key_pem = if passphrase
+                    key.private_to_pem(OpenSSL::Cipher.new("aes-256-cbc"), passphrase)
+                  else
+                    key.private_to_pem
+                  end
+        [cert, cert.to_pem + key_pem]
+      end
+
+      {
+        "RSA"     => -> { OpenSSL::PKey::RSA.new(2048) },
+        "EC"      => -> { OpenSSL::PKey::EC.generate("prime256v1") },
+        "Ed25519" => -> { OpenSSL::PKey.generate_key("ED25519") },
+      }.each do |type, generate|
+        it "loads an #{type} key from ssl_pem_contents" do
+          cert, pem = self_signed_pem(generate.call)
+          pool = described_class.new(ssl_pem_contents: pem).send(:pool)
+
+          expect(pool.cert.to_der).to eq(cert.to_der)
+          expect(cert.check_private_key(pool.key)).to be(true)
+        end
+
+        it "loads an encrypted #{type} key with ssl_pem_passphrase" do
+          cert, pem = self_signed_pem(generate.call, "secret")
+          pool = described_class.new(
+            ssl_pem_contents: pem,
+            ssl_pem_passphrase: "secret",
+          ).send(:pool)
+
+          expect(cert.check_private_key(pool.key)).to be(true)
+        end
+      end
+    end
+
     describe "#with_token" do
       it "does not change the original client" do
         client.token = "abcd-1234"
